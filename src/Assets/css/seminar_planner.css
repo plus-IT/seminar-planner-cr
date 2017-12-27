@@ -1,0 +1,273 @@
+
+
+/* Temp. applied to make blade visible*/
+
+.col_wrapper {
+    display: inline-flex;
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.devider {
+    border-right: 2px solid #fff;
+}
+
+.seat_row .col-md-7, .seat_row .col-md-1, .seat_row .col-md-2 {
+    padding-right: 5px !important;
+    padding-left: 5px !important;
+}
+
+.portlet-title .form-control {
+    border: none !important
+}
+
+.portlet-title label.form-control {
+    float: right;
+    display: block;
+    width: auto;
+}
+
+.portlet-title label.form-control span {
+    font-weight: bold
+}
+
+ul.seat_map {
+    padding: 0;
+	margin: 10px 1px 15px 1px;
+    -webkit-padding-start: 0px;
+    display: flex !important; /*justify-content: space-between !important;*/
+    flex-direction: row;
+    flex-wrap: wrap;
+    position: relative
+}
+
+ul.with_bkgd {
+    background-color: #f4f4f5;
+    position: relative
+}
+
+.seat_map li.available {
+    background: url(../../images/seat_available.png) no-repeat center center;
+    width: 35px;
+    height: 27px;
+    padding: 50px 53px
+}
+
+.seat_map li.registered {
+    background: url(../../images/seat_registered.png) no-repeat center center;
+    width: 35px;
+    height: 27px;
+    padding: 50px 53px
+}
+
+.seat_map li.reserved {
+    background: url(../../images/seat_reserved.png) no-repeat center center;
+    width: 35px;
+    height: 27px;
+    padding: 50px 52px
+}
+.seat_map li.seat_free {
+    background: url(../../images/seat_free.png) no-repeat center center;
+    width: 35px;
+    height: 27px;
+    padding: 50px 53px
+}
+
+.seat_map li.seat_free:hover {
+    background: url(../../images/seat_free.png) no-repeat center center;
+    width: 35px;
+    height: 27px;
+    cursor: pointer
+}
+
+.seat_map li.available:hover {
+    background: url(../../images/seat_hover.png) no-repeat center center;
+    width: 35px;
+    height: 27px;
+    cursor: pointer
+}
+
+.seat_map li.active-hr {
+    background: url(../../images/seat_hover.png) no-repeat center center !important;
+    width: 35px;
+    height: 27px;
+}
+
+li.seat_header {
+    text-align: center;
+    margin: 0;
+    padding: 5px;
+    position: absolute;
+    width: 100%
+}
+
+.seat_header.active-hr {
+    background-image: none !important;
+}
+
+.seat_info {
+    border: 1px solid #f4f4f5;
+    background: #ffffff
+}
+
+.seat_info ul {
+    margin: 20px 10px;
+}
+
+.seat_info ul li {
+    display: inline-block;
+    margin-right: 20px
+}
+
+.seat_info ul li.active-hr {
+    background: none !important
+}
+
+.seat_info img {
+    width: 25px;
+    height: auto;
+    margin-right: 2px
+}
+
+/*popover style*/
+
+.frankfurt_pophover {
+    position: absolute;
+    background: #212c33;
+    z-index: 999999999;
+    width: 300px;
+    top: 110px;
+    right: 0;
+    padding: 8px 0px;
+    color: #fff;
+    display: none;
+}
+
+.frankfurt_pophover:after {
+    bottom: 100%;
+    left: 70%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    border-color: rgba(33, 44, 51, 0);
+    border-bottom-color: #212c33;
+    border-width: 10px;
+    margin-left: -10px;
+}
+
+.frankfurt_pophover hr {
+    border-color: #8c8c8c;
+    margin: 10px 0
+}
+
+.frankfurt_pophover p {
+    color: #fff;
+    margin: 0 10px 10px 10px !important
+}
+
+.frankfurt_pophover p span {
+    font-weight: bold
+}
+
+.frankfurt_pophover .fa {
+    margin-right: 10px;
+    margin-left: 5px
+}
+
+.seat_small {
+    background: url(../../images/seat_small.png) no-repeat center center;
+    width: 16px;
+    height: 12px;
+}
+
+.frankfurt_btn:hover .frankfurt_pophover {
+    display: block !important
+}
+
+.mainz_pophover {
+    position: absolute;
+    background: #212c33;
+    z-index: 999999999;
+    width: 325px;
+    top: 110px;
+    right: 0;
+    padding: 8px 0px;
+    color: #fff;
+    display: none;
+}
+
+.mainz_pophover:after {
+    bottom: 100%;
+    left: 85%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    border-color: rgba(33, 44, 51, 0);
+    border-bottom-color: #212c33;
+    border-width: 10px;
+    margin-left: -10px;
+}
+
+.mainz_pophover hr {
+    border-color: #8c8c8c;
+    margin: 10px 0
+}
+
+.mainz_pophover p {
+    color: #fff;
+    margin: 0 10px 10px 10px !important
+}
+
+.mainz_pophover p span {
+    font-weight: bold
+}
+
+.mainz_pophover .fa {
+    margin-right: 10px;
+    margin-left: 5px
+}
+
+.seat_small {
+    background: url(../../images/seat_small.png) no-repeat center center;
+    width: 16px;
+    height: 12px;
+}
+
+.mainz_btn:hover .mainz_pophover {
+    display: block !important
+}
+
+/*25 dec 2017*/
+
+ul.seat_map {border: 1px solid #fff;}
+ul.border_red {border: 1px solid #f30000 !important;}
+.portlet-title .btn {margin-bottom: 10px}
+
+
+
+/*26 dec 2017*/
+
+.btn-white-rounded {    background: #ffffff;
+    border-radius: 50px;
+    border: 1px solid #d1d1d1;}
+
+.btn-white-rounded:hover, .btn-white-rounded:focus, .btn-white-rounded:active, .btn-white-rounded.active {    background: #77b32b;
+    border-radius: 50px;
+    border: 1px solid #77b32b; color: #ffffff}
+
+.dataTables_wrapper thead td {    background-color: #949494 !important;    border: 1px solid #ffffff !important;    color: #ffffff;}
+.pagination>li>a, .pagination>li>span {line-height: 1.1em !important;}
+
+select.newselectbox, .dataTables_length select, .maindashboard .dashboard-stat.blue-madison select {margin:5px}
+
+
+@media screen and (max-width: 640px)	{
+.portlet.light { padding: 12px 0px 15px 0px;}
+}

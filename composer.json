@@ -1,0 +1,20 @@
+{
+  "name": "ptlyash/seminar-planner",
+  "description": "Manage Seminar Planner.",
+  "type": "laravel",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Yash Patel",
+      "email": "ptlyash@gmail.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "Ptlyash\\SeminarPlanner\\": "src/"
+
+    }
+  }
+}
