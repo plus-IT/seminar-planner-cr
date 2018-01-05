@@ -727,6 +727,7 @@ class SeminarPlannerController extends Controller
 
     public function seminarAllocationData($event_id = 0)
     {
+
         $allocation_data = $this->seminar_planning_repository->getAllotmentData($event_id);
 
         return Datatables::of($allocation_data)

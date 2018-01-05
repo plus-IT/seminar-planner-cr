@@ -1467,6 +1467,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
     public function getAllotmentData($eventId = 0)
     {
 
+
         $allocationdata = AllocationLevelValues::with([
             'getAttendees' => function ($query) use ($eventId) {
                 $query->where('event_attendees.event_id', '=', $eventId);
