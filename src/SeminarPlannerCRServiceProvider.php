@@ -10,7 +10,7 @@ use Ptlyash\SeminarPlanner\Repositories\PlannedTaskRepository;
 use Ptlyash\SeminarPlanner\Repositories\SeminarPlannerRepository;
 
 
-class SeminarPlannerServiceProvider extends ServiceProvider
+class SeminarPlannerCRServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application services.
