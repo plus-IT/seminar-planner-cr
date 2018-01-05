@@ -1,11 +1,11 @@
 <?php
 
-namespace Ptlyash\SeminarPlanner\Controllers;
+namespace Ptlyash\SeminarPlannerCR\Controllers;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Models\PlannedTask;
-use Ptlyash\SeminarPlanner\Interfaces\PlannedTaskRepositoryInterface;
+use Ptlyash\SeminarPlannerCR\Interfaces\PlannedTaskRepositoryInterface;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;

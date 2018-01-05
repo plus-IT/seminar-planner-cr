@@ -1,6 +1,6 @@
 <?php
 
-namespace Ptlyash\SeminarPlanner\Repositories;
+namespace Ptlyash\SeminarPlannerCR\Repositories;
 
 use App\Models\AllocationLevelValues;
 use App\Models\AllocationSettings;
@@ -13,7 +13,7 @@ use App\Models\SeminarSettings;
 use App\Models\User;
 use App\Models\EventAttendees;
 use Illuminate\Support\Facades\DB;
-use Ptlyash\SeminarPlanner\Interfaces\SeminarPlannerRepositoryInterface;
+use Ptlyash\SeminarPlannerCR\Interfaces\SeminarPlannerRepositoryInterface;
 
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;

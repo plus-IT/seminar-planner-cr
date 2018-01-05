@@ -1,13 +1,13 @@
 <?php
 
-namespace Ptlyash\SeminarPlanner\Controllers;
+namespace Ptlyash\SeminarPlannerCR\Controllers;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Models\PlannedEvent;
 use App\Models\PlannedEventSchedule;
 use App\Models\PlannedSchedule;
-use Ptlyash\SeminarPlanner\Interfaces\PlannedScheduleRepositoryInterface;
+use Ptlyash\SeminarPlannerCR\Interfaces\PlannedScheduleRepositoryInterface;
 use App\Models\Event;
 use App\Models\EventSchedule;
 use App\Models\Location;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ptlyash\SeminarPlanner\Controllers;
+namespace Ptlyash\SeminarPlannerCR\Controllers;
 
 use App\Models\AllocationLevels;
 use App\Models\AllocationLevelValues;
@@ -16,7 +16,7 @@ use App\Models\PlannedSeminarRevenue;
 use App\Models\SeminaItem;
 use App\Models\SeminarSettings;
 use Illuminate\Support\Facades\DB;
-use Ptlyash\SeminarRegistration\Repositories\AllocationSeatRepository;
+use Ptlyash\SeminarRegistrationCR\Repositories\AllocationSeatRepository;
 use Response;
 use App\Library\CustomFunction;
 use App\Http\Controllers\Controller;
@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
 use App\Http\Requests\StorePersonPostRequest;
 
-use Ptlyash\SeminarPlanner\Interfaces\SeminarPlannerRepositoryInterface;
+use Ptlyash\SeminarPlannerCR\Interfaces\SeminarPlannerRepositoryInterface;
 use App\Models\Person;
 use App\Models\Location;
 use App\Models\HolidayModal;

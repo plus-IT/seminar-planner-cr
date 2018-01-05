@@ -1,12 +1,12 @@
 <?php
 
-namespace Ptlyash\SeminarPlanner\Repositories;
+namespace Ptlyash\SeminarPlannerCR\Repositories;
 
 use App\Models\PlannedEvent;
 use App\Models\PlannedEventSchedule;
 use App\Models\PlannedSchedule;
 use App\Models\PlannedScheduleSlot;
-use Ptlyash\SeminarPlanner\Interfaces\PlannedScheduleRepositoryInterface;
+use Ptlyash\SeminarPlannerCR\Interfaces\PlannedScheduleRepositoryInterface;
 use App\Models\Event;
 use App\Models\EventSchedule;
 use App\Models\EventTask;

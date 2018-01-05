@@ -1,11 +1,11 @@
 <?php
 
-namespace Ptlyash\SeminarPlanner\Repositories;
+namespace Ptlyash\SeminarPlannerCR\Repositories;
 
 
 use App\Models\PlannedDocument;
 use App\Models\PlannedEventDocument;
-use Ptlyash\SeminarPlanner\Interfaces\PlannedDocumentRepositoryInterface;
+use Ptlyash\SeminarPlannerCR\Interfaces\PlannedDocumentRepositoryInterface;
 use App\Models\Document;
 use App\Models\DocumentCategory;
 use App\Models\LocationDocument;

@@ -1,12 +1,12 @@
 <?php
 
-namespace  Ptlyash\SeminarPlanner\Repositories;
+namespace  Ptlyash\SeminarPlannerCR\Repositories;
 
 
 use App\Models\PlannedEvent;
 use App\Models\PlannedEventTask;
 use App\Models\PlannedTask;
-use Ptlyash\SeminarPlanner\Interfaces\PlannedTaskRepositoryInterface;
+use Ptlyash\SeminarPlannerCR\Interfaces\PlannedTaskRepositoryInterface;
 use App\Models\EventTask;
 use App\Models\OrganizationTask;
 use App\Models\Person;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ptlyash\SeminarPlanner\Interfaces;
+namespace Ptlyash\SeminarPlannerCR\Interfaces;
 /**
  * Interface TaskRepositoryInterface
  * @package App\Interfaces

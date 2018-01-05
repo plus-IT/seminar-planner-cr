@@ -1,13 +1,13 @@
 <?php
 
-namespace Ptlyash\SeminarPlanner;
+namespace Ptlyash\SeminarPlannerCR;
 
 
 use Illuminate\Support\ServiceProvider;
-use Ptlyash\SeminarPlanner\Repositories\PlannedDocumentRepository;
-use Ptlyash\SeminarPlanner\Repositories\PlannedScheduleRepository;
-use Ptlyash\SeminarPlanner\Repositories\PlannedTaskRepository;
-use Ptlyash\SeminarPlanner\Repositories\SeminarPlannerRepository;
+use Ptlyash\SeminarPlannerCR\Repositories\PlannedDocumentRepository;
+use Ptlyash\SeminarPlannerCR\Repositories\PlannedScheduleRepository;
+use Ptlyash\SeminarPlannerCR\Repositories\PlannedTaskRepository;
+use Ptlyash\SeminarPlannerCR\Repositories\SeminarPlannerRepository;
 
 
 class SeminarPlannerCRServiceProvider extends ServiceProvider
@@ -60,16 +60,16 @@ class SeminarPlannerCRServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('Ptlyash\SeminarPlanner\Interfaces\SeminarPlannerRepositoryInterface', function ($app) {
+        $this->app->bind('Ptlyash\SeminarPlannerCR\Interfaces\SeminarPlannerRepositoryInterface', function ($app) {
             return new SeminarPlannerRepository();
         });
-        $this->app->bind('Ptlyash\SeminarPlanner\Interfaces\PlannedScheduleRepositoryInterface', function ($app) {
+        $this->app->bind('Ptlyash\SeminarPlannerCR\Interfaces\PlannedScheduleRepositoryInterface', function ($app) {
             return new PlannedScheduleRepository();
         });
-        $this->app->bind('Ptlyash\SeminarPlanner\Interfaces\PlannedTaskRepositoryInterface', function ($app) {
+        $this->app->bind('Ptlyash\SeminarPlannerCR\Interfaces\PlannedTaskRepositoryInterface', function ($app) {
             return new PlannedTaskRepository();
         });
-        $this->app->bind('Ptlyash\SeminarPlanner\Interfaces\PlannedDocumentRepositoryInterface', function ($app) {
+        $this->app->bind('Ptlyash\SeminarPlannerCR\Interfaces\PlannedDocumentRepositoryInterface', function ($app) {
             return new PlannedDocumentRepository();
         });
 

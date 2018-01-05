@@ -1,9 +1,9 @@
 <?php
 
-namespace Ptlyash\SeminarPlanner\Controllers;
+namespace Ptlyash\SeminarPlannerCR\Controllers;
 
 use App\Models\PlannedDocument;
-use Ptlyash\SeminarPlanner\Interfaces\PlannedDocumentRepositoryInterface;
+use Ptlyash\SeminarPlannerCR\Interfaces\PlannedDocumentRepositoryInterface;
 use App\Models\Document;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Input;
