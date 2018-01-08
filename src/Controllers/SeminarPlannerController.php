@@ -72,7 +72,9 @@ class SeminarPlannerController extends Controller
         $allocated_seats = AllocationSettings::where('parentID', '=', Auth::user()->LevelValueID)
             ->where('eventID', '=', $eventId)->sum('allocatedSeat');
 //        echo "<pre>";
-//        print_r($allocation_settings);exit;
+//        print_r($allocation_settings);
+//        print_r($allocated_seats);
+//        exit;
         return view('seminar_planner.seat_allocation.seat_allocation_info', compact('allocation_settings', 'allocated_seats'));
     }
 
@@ -743,7 +745,9 @@ class SeminarPlannerController extends Controller
     public function seminarUtilizationData($eventId = 0)
     {
         $allocation_data = $this->seminar_planning_repository->getAllotmentData($eventId);
-
+//        echo "<pre>";
+//        print_r($allocation_data);
+//        exit;
         $get_free_seat = EventAvailableSeat::where('event_id', '=', $eventId)->sum('no_of_release_seat');
         return view('seminar_planner.seat_allocation.seat_utilize_table', compact('allocation_data', 'get_free_seat'));
     }
@@ -767,7 +771,6 @@ class SeminarPlannerController extends Controller
         $organizationId = isset($organization['organizationId']) ? $organization['organizationId'] : null;
         $organization_data->allocatedSeat = Input::get('allocatedSeat');
         $organization_data->eventID = $eventid;
-        $organization_data->organizationID = $organizationId;
         $organization_data->createdBy = Auth::id();
         $organization_data->parentID = '1';
         $organization_data->modelLevel = $levelID;
