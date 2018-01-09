@@ -772,7 +772,7 @@ class SeminarPlannerController extends Controller
         $organization_data->allocatedSeat = Input::get('allocatedSeat');
         $organization_data->eventID = $eventid;
         $organization_data->createdBy = Auth::id();
-        $organization_data->parentID = '1';
+        $organization_data->parentID = Auth::user()->LevelValueID;
         $organization_data->modelLevel = $levelID;
         if (!$organization_data->save()) {
             return Response::json([
