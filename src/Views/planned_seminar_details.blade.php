@@ -55,7 +55,7 @@
                             </a>
                         </li>
                     @endcan
-
+                    @if(Auth::user()->LevelValueID!='')
                     <li class="">
                         <a data-toggle="tabajax"
                            href="{!!url(LaravelLocalization::getCurrentLocale() . "/" .'seminar-planner/seminar_seat_allocation/'. $event_data->id)!!}"
@@ -64,6 +64,7 @@
                             <p>{!! Html::customTrans("events.seminar_seat_allocation") !!}</p>
                         </a>
                     </li>
+                        @endif
 
                 </ul>
                 <div class="tab-content">
