@@ -1,3 +1,8 @@
+$.fn.dataTable.ext.order['dom-text'] = function (settings, col) {
+    return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
+        return $('input', td).val();
+    });
+}
 $(document).ready(function () {
     $body = $("body");
     $body.on('change', '.allocation_seat_total', function (e) {
@@ -85,13 +90,24 @@ function initAllocationTable() {
         },
         ajax: base_url + 'seminar-planner/allocationData/' + $eventID,
         columns: [
-            {data: 'name', name: 'name'},
+            {
+                data: 'name',
+                name: 'name'
+            },
             {
                 data: 'seats',
-                name: 'seats'
+                name: 'seats',
+                orderDataType: 'dom-text',
+                type: 'string'
             },
-            {data: 'createdBy', name: 'createdBy'},
-            {data: 'updated_at', name: 'updated_at'},
+            {
+                data: 'createdBy',
+                name: 'createdBy'
+            },
+            {
+                data: 'updated_at',
+                name: 'updated_at'
+            },
         ]
 
 
