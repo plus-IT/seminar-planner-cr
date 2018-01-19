@@ -1,6 +1,6 @@
-$.fn.dataTable.ext.order['dom-text'] = function (settings, col) {
+$.fn.dataTable.ext.order['dom-text-numeric'] = function (settings, col) {
     return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
-        return $('input', td).val();
+        return $('input', td).val() * 1;
     });
 }
 $(document).ready(function () {
@@ -97,8 +97,7 @@ function initAllocationTable() {
             {
                 data: 'seats',
                 name: 'seats',
-                orderDataType: 'dom-text',
-                type: 'string'
+                orderDataType: 'dom-text-numeric'
             },
             {
                 data: 'createdBy',
