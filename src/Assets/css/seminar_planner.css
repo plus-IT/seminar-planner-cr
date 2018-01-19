@@ -1,5 +1,3 @@
-
-
 /* Temp. applied to make blade visible*/
 
 .col_wrapper {
@@ -34,12 +32,14 @@
 
 ul.seat_map {
     padding: 0;
-	margin: 10px 1px 15px 1px;
+    margin: 10px 1px 15px 1px;
     -webkit-padding-start: 0px;
     display: flex !important; /*justify-content: space-between !important;*/
     flex-direction: row;
     flex-wrap: wrap;
-    position: relative
+    position: relative;
+    max-width: 100%;
+    min-width: 0%;
 }
 
 ul.with_bkgd {
@@ -67,6 +67,7 @@ ul.with_bkgd {
     height: 27px;
     padding: 50px 52px
 }
+
 .seat_map li.seat_free {
     background: url(../../images/seat_free.png) no-repeat center center;
     width: 35px;
@@ -246,28 +247,63 @@ li.seat_header {
 
 /*25 dec 2017*/
 
-ul.seat_map {border: 1px solid #fff;}
-ul.border_red {border: 1px solid #f30000 !important;}
-.portlet-title .btn {margin-bottom: 10px}
+ul.seat_map {
+    border: 1px solid #fff;
+}
 
+ul.border_red {
+    border: 1px solid #f30000 !important;
+}
 
+.portlet-title .btn {
+    margin-bottom: 10px
+}
 
 /*26 dec 2017*/
 
-.btn-white-rounded {    background: #ffffff;
+.btn-white-rounded {
+    background: #ffffff;
     border-radius: 50px;
-    border: 1px solid #d1d1d1;}
+    border: 1px solid #d1d1d1;
+}
 
-.btn-white-rounded:hover, .btn-white-rounded:focus, .btn-white-rounded:active, .btn-white-rounded.active {    background: #77b32b;
+.btn-white-rounded:hover, .btn-white-rounded:focus, .btn-white-rounded:active, .btn-white-rounded.active {
+    background: #77b32b;
     border-radius: 50px;
-    border: 1px solid #77b32b; color: #ffffff}
+    border: 1px solid #77b32b;
+    color: #ffffff
+}
 
-.dataTables_wrapper thead td {    background-color: #949494 !important;    border: 1px solid #ffffff !important;    color: #ffffff;}
-.pagination>li>a, .pagination>li>span {line-height: 1.1em !important;}
+.dataTables_wrapper thead td {
+    background-color: #949494 !important;
+    border: 1px solid #ffffff !important;
+    color: #ffffff;
+}
 
-select.newselectbox, .dataTables_length select, .maindashboard .dashboard-stat.blue-madison select {margin:5px}
+.pagination > li > a, .pagination > li > span {
+    line-height: 1.1em !important;
+}
 
+select.newselectbox, .dataTables_length select, .maindashboard .dashboard-stat.blue-madison select {
+    margin: 5px
+}
 
-@media screen and (max-width: 640px)	{
-.portlet.light { padding: 12px 0px 15px 0px;}
+/*18 Jan 2017*/
+select::-ms-expand {
+    display: none;
+}
+
+.dataTables_length select option {
+    font-size: 12px !important
+}
+
+ul.seat_map .seat_header.active-hr {
+    width: 100%;
+    background: none !important
+}
+
+@media screen and (max-width: 640px) {
+    .portlet.light {
+        padding: 12px 0px 15px 0px;
+    }
 }
