@@ -94,7 +94,7 @@
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <a href="javascript:;" class="btn default button-previous">
-                                                    <i class="m-icon-swapleft"></i> {!! Html::customTrans("seminarPlanner.back") !!}
+                                                    <i class="m-icon-white"></i> {!! Html::customTrans("seminarPlanner.back") !!}
                                                 </a>
                                                 <a href="javascript:;" class="btn blue button-next pull-right">
                                                     {!! Html::customTrans("seminarPlanner.continue") !!} <i
