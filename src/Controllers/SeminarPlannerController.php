@@ -729,6 +729,8 @@ class SeminarPlannerController extends Controller
 
     public function seminarAllocationData($event_id = 0)
     {
+//        echo "<pre>";
+//        print_r(Auth::user());exit;
 
         $allocation_data = $this->seminar_planning_repository->getAllotmentData($event_id);
 

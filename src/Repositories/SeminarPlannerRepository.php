@@ -1487,7 +1487,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         if (Auth::user()->levelID == '3') {
             $allocationdata->where('allocation_level_values.LevelValuesID', '=', Auth::user()->LevelValueID);
         } else {
-            $allocationdata->where('allocation_level_values.parent_id', '=', Auth::user()->levelID);
+            $allocationdata->where('allocation_level_values.parent_id', '=', Auth::user()->LevelValueID);
         }
         $allocation_data = $allocationdata->orderBy('allocation_level_values.LevelValuesID', 'ASC')
             ->get([
