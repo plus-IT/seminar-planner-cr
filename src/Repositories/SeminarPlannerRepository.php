@@ -357,13 +357,15 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         $plannedEvents->event_startdate = date('Y-m-d', strtotime($event_start_range->schedule_date));
         $plannedEvents->event_enddate = date('Y-m-d', strtotime($event_end_range->schedule_date));
         $plannedEvents->save();
-        $seat_allocation = new AllocationSettings();
-        $seat_allocation->modelLevel = Auth::user()->LevelValueID;
-        $seat_allocation->allocatedSeat = $plannedEvents->max_registration;
-        $seat_allocation->eventID = $plannedEvents->id;
-        $seat_allocation->parentID = 0;
-        $seat_allocation->createdBy = Auth::id();
-        $seat_allocation->save();
+        if(Auth::user()->LevelValueID!='') {
+            $seat_allocation = new AllocationSettings();
+            $seat_allocation->modelLevel = Auth::user()->LevelValueID;
+            $seat_allocation->allocatedSeat = $plannedEvents->max_registration;
+            $seat_allocation->eventID = $plannedEvents->id;
+            $seat_allocation->parentID = 0;
+            $seat_allocation->createdBy = Auth::id();
+            $seat_allocation->save();
+        }
         return $plannedEvents::where('id', $plannedEvents->id)->with(["eventSchedule.schedule", "eventSchedule.schedule.scheduleLocation"])->first();
 
 
