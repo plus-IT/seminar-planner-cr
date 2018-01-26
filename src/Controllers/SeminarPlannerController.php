@@ -771,7 +771,7 @@ class SeminarPlannerController extends Controller
         $level_allocated_seats = AllocationSettings::where('eventID', '=', $eventid)->where('modelLevel', '=', Auth::user()->LevelValueID)
             ->first();
         $already_allocated_seats = $already_allocated_seats + Input::get('allocatedSeat');
-        if ($already_allocated_seats > $level_allocated_seats) {
+        if ($already_allocated_seats > $level_allocated_seats->allocatedSeat) {
             return Response::json([
                 "type" => "error",
                 "message" => CustomFunction::customTrans("general.not_allowed_allocation_more_then_level_allowed")
