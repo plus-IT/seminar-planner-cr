@@ -12,6 +12,8 @@ $(document).ready(function () {
         var organization = $(this).attr('organization');
         var max_participants = parseFloat($(".max_participants").text());
         var sum = 0;
+        var old_val = $(this).attr('seatallocated');
+        var $me = $(this);
         $('.allocation_seat_total').each(function () {
             if ($(this).val() != '') {
                 sum += parseFloat($(this).val());  // Or this.innerHTML, this.innerText
@@ -20,7 +22,7 @@ $(document).ready(function () {
 
         if (sum > max_participants) {
             notify('error', ' you can not assign seats more then maximum seats allocated');
-            $(this).val($(this).attr('seatallocated'));
+            $(this).val(old_val);
             return 'false';
         }
         $.ajax({
@@ -39,6 +41,9 @@ $(document).ready(function () {
                 if (data.type == 'success') {
                     $(".still_available_seats").html(max_participants - sum);
                     getInitDataTable();
+                } else {
+                    $me.val(old_val);
+                    return 'false';
                 }
             }
         });
