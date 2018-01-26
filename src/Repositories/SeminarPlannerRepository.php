@@ -1501,7 +1501,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 
 
             ]);
-echo "<pre>";print_r($allocation_data);exit;
+//echo "<pre>";print_r($allocation_data);exit;
         return $allocation_data;
     }
 }
