@@ -4,6 +4,11 @@ $total_participant = !empty($allocation_settings[0]->allocatedSeat) ? $allocatio
 $already_assigned = !empty($allocation_settings[0]->getAttendees) ? $allocation_settings[0]->getAttendees->count() : '0';
 $remaining_seats = $total_participant - $allocated_seats;
 ?>
+<style>
+    .tabbable-custom {
+        overflow: visible;
+    }
+</style>
 <div class="control-group apply_table_operation">
     <div class="portlet light">
         <div class="portlet-title">
