@@ -773,7 +773,8 @@ class SeminarPlannerController extends Controller
         $level_allocated_seats = AllocationSettings::where('eventID', '=', $eventid)
             ->where('modelLevel', '=', Auth::user()->LevelValueID)
             ->first();
-        $child_allocated_seats = AllocationSettings::where('parentID', '=', $levelID)->sum('allocatedSeat');
+        $child_allocated_seats = AllocationSettings::where('parentID', '=', $levelID)->where('eventID', '=', $eventid)
+            ->sum('allocatedSeat');
 
         if (!empty($child_allocated_seats) && !empty($level_allocated_seats->allocatedSeat)) {
             if ($level_allocated_seats->allocatedSeat <= $child_allocated_seats) {
