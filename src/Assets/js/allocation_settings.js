@@ -11,15 +11,17 @@ $(document).ready(function () {
         var allocatedSeat = $(this).val();
         var organization = $(this).attr('organization');
         var max_participants = parseFloat($(".max_participants").text());
+        console.log("max participants",max_participants);
         var sum = 0;
         var old_val = $(this).attr('seatallocated');
         var $me = $(this);
         $('.allocation_seat_total').each(function () {
+            console.log("max participants",$(this).val());
             if ($(this).val() != '') {
                 sum += parseFloat($(this).val());  // Or this.innerHTML, this.innerText
             }
         });
-
+        console.log("sum sum",sum);
         if (sum > max_participants) {
             notify('error', ' you can not assign seats more then maximum seats allocated');
             $(this).val(old_val);
