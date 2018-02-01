@@ -26,7 +26,8 @@ $remaining_seats = $total_participant - $allocated_seats;
                     <label class="form-control">{!! Html::customTrans("event.already_registered") !!} <span
                                 class="already_registered">{!! $already_assigned !!}</span></label>
                     <label class="form-control">{!! Html::customTrans("event.still_available_seats") !!} <span
-                                class="still_available_seats">{!! $remaining_seats !!}</span> </label>
+                                class="still_available_seats">
+                            @if(Auth::user()->levelID!='3'){!! $remaining_seats !!} @else 0 @endif</span> </label>
                 </div>
             </div>
         </div>
