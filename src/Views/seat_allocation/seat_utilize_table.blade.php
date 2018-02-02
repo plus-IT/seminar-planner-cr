@@ -3,6 +3,7 @@
 $total_seats = !empty($allocation_data[0]->total_seats) ? $allocation_data[0]->total_seats : 0;
 $assigned_seats = 0;
 $remaining_Seats = 0;
+//echo "<pre>";print_r($allocation_data);exit;
 ?>
 <div class="col-md-12 seat_row">
     <p> My Region: <strong> {!! Auth::user()->roleName !!}</strong></p>
@@ -28,14 +29,15 @@ $remaining_Seats = 0;
                                     @foreach($allocation->children_rec as $key=>$child_seat)
                                         @if($child_seat->allocatedSeat !='')
                                             <?php
-                                            $total_attendees = !empty($child_seat->getAttendees) ? $child_seat->getAttendees->count() : 0;
+                                            $total_attendees = !empty($child_seat->getAttendees) ? $child_seat->getAttendees()->where('event_id','=',$eventId)->count() : 0;
                                             $assigned_to_child += $child_seat->allocatedSeat;
                                             ?>
                                             <ul class="seat_map with_bkgd devider frankfurt_btn"
                                                 style="margin-top: 45px;">
                                                 <li class="seat_header ">{!! $child_seat->name !!}</li>
+
                                                 @for($i=1;$i<=$child_seat->allocatedSeat;$i++)
-                                                    <?php  $total_attendees = !empty($child_seat->getAttendees) ? $child_seat->getAttendees->count() : 0 ?>
+                                                    <?php  $total_attendees = !empty($child_seat->getAttendees) ? $child_seat->getAttendees()->where('event_id','=',$eventId)->count() : 0 ?>
                                                     @if($i <= $total_attendees)
                                                         <li class="seat registered" id="{!! $total_attendees !!}"
                                                             alt="{!! $allocation->allocatedSeat !!}"></li>
