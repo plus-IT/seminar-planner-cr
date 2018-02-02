@@ -11,28 +11,38 @@ $(document).ready(function () {
         var allocatedSeat = $(this).val();
         var organization = $(this).attr('organization');
         var max_participants = parseFloat($(".max_participants").text());
-        console.log("max participants",max_participants);
+        var total_free_seats = parseFloat($(".total_free_seats").text());
+        var total_max_participants = max_participants + total_free_seats;
         var sum = 0;
+        var fee_seat_count=0;
         var old_val = $(this).attr('seatallocated');
         var $me = $(this);
+        var is_free_seat = 0;
+
         $('.allocation_seat_total').each(function () {
-            console.log("max participants",$(this).val());
+            console.log("max participants", $(this).val());
             if ($(this).val() != '') {
                 sum += parseFloat($(this).val());  // Or this.innerHTML, this.innerText
             }
         });
-        console.log("sum sum",sum);
-        if (sum > max_participants) {
+        console.log("sum sum", sum);
+        if (sum > total_max_participants) {
             notify('error', ' you can not assign seats more then maximum seats allocated');
             $(this).val(old_val);
             return 'false';
+        }
+        if (sum >= max_participants) {
+            is_free_seat = 1;
+            fee_seat_count=total_max_participants-max_participants;
         }
         $.ajax({
             url: base_url + 'seminar-planner/allocateSeat/details/' + eventID + '/' + levelID,
             method: 'post',
             data: {
                 'allocatedSeat': allocatedSeat,
-                'organization': organization
+                'organization': organization,
+                'is_free_seat': is_free_seat,
+                'fee_seat_count':fee_seat_count
             },
             beforeSend: function (data) {
                 blockUI('modal-body');

@@ -357,7 +357,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         $plannedEvents->event_startdate = date('Y-m-d', strtotime($event_start_range->schedule_date));
         $plannedEvents->event_enddate = date('Y-m-d', strtotime($event_end_range->schedule_date));
         $plannedEvents->save();
-        if(Auth::user()->LevelValueID!='') {
+        if (Auth::user()->LevelValueID != '') {
             $seat_allocation = new AllocationSettings();
             $seat_allocation->modelLevel = Auth::user()->LevelValueID;
             $seat_allocation->allocatedSeat = $plannedEvents->max_registration;
@@ -1468,8 +1468,6 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 
     public function getAllotmentData($eventId = 0)
     {
-
-
         $allocationdata = AllocationLevelValues::with([
             'getAttendees' => function ($query) use ($eventId) {
                 $query->where('event_attendees.event_id', '=', $eventId);
@@ -1504,4 +1502,6 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 //echo "<pre>";print_r($allocation_data);exit;
         return $allocation_data;
     }
+
+   
 }

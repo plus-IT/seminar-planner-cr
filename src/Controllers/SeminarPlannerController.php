@@ -816,6 +816,9 @@ class SeminarPlannerController extends Controller
                 "message" => CustomFunction::customTrans("general.error_message")
             ]);
         } else {
+            if (Input::get('is_free_seat') == 1) {
+                $this->allocated_seat_repository->useFreeSeatToParentLevel(Auth::user()->LevelValueID, $eventid, Input::get('fee_seat_count'));
+            }
             return Response::json([
                 "type" => "success",
                 "message" => CustomFunction::customTrans("events.save_allocation_successfully"),
