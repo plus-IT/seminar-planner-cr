@@ -775,7 +775,7 @@ class SeminarPlannerController extends Controller
         $level_allocated_seats = $this->seminar_planning_repository->getLevelValuesById($eventid, Auth::user()->LevelValueID);
         $child_allocated_seats = $this->seminar_planning_repository->childLevelSeatAllocatedValue($eventid, $levelID);
         $parent_allocated_seats = $this->seminar_planning_repository->getLevelValuesById($eventid, $levelID);
-        $get_free_seat=$this->allocated_seat_repository->getTotalFreeSeats($eventid);
+        $get_free_seat = $this->allocated_seat_repository->getTotalFreeSeats($eventid);
         if (!empty($child_allocated_seats) && !empty($parent_allocated_seats->allocatedSeat)) {
             if ($parent_allocated_seats->allocatedSeat <= $child_allocated_seats) {
                 return Response::json([
@@ -785,8 +785,9 @@ class SeminarPlannerController extends Controller
             }
         }
         $already_allocated_seats = $already_allocated_seats + Input::get('allocatedSeat');
+        $total_available_seats = $get_free_seat + $level_allocated_seats->allocatedSeat;
         if (!empty($level_allocated_seats->allocatedSeat)) {
-            if ($already_allocated_seats > $level_allocated_seats->allocatedSeat) {
+            if ($already_allocated_seats > $total_available_seats) {
                 return Response::json([
                     "type" => "error",
                     "message" => CustomFunction::customTrans("general.not_allowed_allocation_more_then_level_allowed")
