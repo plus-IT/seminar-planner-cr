@@ -766,18 +766,16 @@ class SeminarPlannerController extends Controller
                 "message" => CustomFunction::customTrans("general.participant_is_already_assigned_then_given_seat_number")
             ]);
         }
-        $organization_data = AllocationSettings::where('modelLevel', '=', $levelID)
-            ->where('eventID', '=', $eventid)->first();
+        $organization_data = $this->seminar_planning_repository->getLevelValuesById($eventid, $levelID);
+
         $already_allocated_seats = AllocationSettings::where('parentID', '=', Auth::user()->LevelValueID)
             ->where('eventID', '=', $eventid)
             ->where('modelLevel', '!=', $levelID)
             ->sum('allocatedSeat');
-        $level_allocated_seats = AllocationSettings::where('eventID', '=', $eventid)
-            ->where('modelLevel', '=', Auth::user()->LevelValueID)
-            ->first();
-        $child_allocated_seats = AllocationSettings::where('parentID', '=', $levelID)->where('eventID', '=', $eventid)
-            ->sum('allocatedSeat');
-        $parent_allocated_seats = AllocationSettings::where('modelLevel', '=', $levelID)->where('eventID', '=', $eventid)->first();
+        $level_allocated_seats = $this->seminar_planning_repository->getLevelValuesById($eventid, Auth::user()->LevelValueID);
+        $child_allocated_seats = $this->seminar_planning_repository->childLevelSeatAllocatedValue($eventid, $levelID);
+        $parent_allocated_seats = $this->seminar_planning_repository->getLevelValuesById($eventid, $levelID);
+        $get_free_seat=$this->allocated_seat_repository->getTotalFreeSeats($eventid);
         if (!empty($child_allocated_seats) && !empty($parent_allocated_seats->allocatedSeat)) {
             if ($parent_allocated_seats->allocatedSeat <= $child_allocated_seats) {
                 return Response::json([
