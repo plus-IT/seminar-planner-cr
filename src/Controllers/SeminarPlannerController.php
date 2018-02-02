@@ -818,6 +818,7 @@ class SeminarPlannerController extends Controller
         } else {
             if (Input::get('is_free_seat') == 1) {
                 $this->allocated_seat_repository->useFreeSeatToParentLevel(Auth::user()->LevelValueID, $eventid, Input::get('fee_seat_count'));
+                $this->allocated_seat_repository->resetFreeSeatsWhichUsed($eventid,Input::get('fee_seat_count'));
             }
             return Response::json([
                 "type" => "success",
