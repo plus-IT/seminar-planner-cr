@@ -1503,14 +1503,14 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         return $allocation_data;
     }
 
-    public function getLevelValuesById($levelId = 0, $eventId = 0)
+    public function getLevelValuesById($eventId = 0, $levelId = 0)
     {
         return AllocationSettings::where('eventID', '=', $eventId)
             ->where('modelLevel', '=', $levelId)
             ->first();
     }
 
-    public function childLevelSeatAllocatedValue($levelID = 0, $eventid = 0)
+    public function childLevelSeatAllocatedValue($eventid = 0, $levelID = 0)
     {
         return AllocationSettings::where('parentID', '=', $levelID)->where('eventID', '=', $eventid)
             ->sum('allocatedSeat');
