@@ -3,6 +3,7 @@
 $total_participant = !empty($allocation_settings[0]->allocatedSeat) ? $allocation_settings[0]->allocatedSeat : '0';
 $already_assigned = !empty($allocation_settings[0]->getAttendees) ? $allocation_settings[0]->getAttendees->count() : '0';
 $remaining_seats = $total_participant - $allocated_seats;
+$remaining_seats += $free_seats;
 ?>
 <style>
     .tabbable-custom {

@@ -71,11 +71,13 @@ class SeminarPlannerController extends Controller
         $allocation_settings = $this->seminar_planning_repository->seminarSeatAllocation($eventId);
         $allocated_seats = AllocationSettings::where('parentID', '=', Auth::user()->LevelValueID)
             ->where('eventID', '=', $eventId)->sum('allocatedSeat');
+        $free_seats = EventAvailableSeat::where('event_id', '=', $eventId)->sum('no_of_release_seat');
+        $free_seats = !empty($free_seats) ? $free_seats : 0;
 //        echo "<pre>";
 //        print_r($allocation_settings);
 //        print_r($allocated_seats);
 //        exit;
-        return view('seminar_planner.seat_allocation.seat_allocation_info', compact('allocation_settings', 'allocated_seats'));
+        return view('seminar_planner.seat_allocation.seat_allocation_info', compact('allocation_settings', 'allocated_seats', 'free_seats'));
     }
 
 
