@@ -753,7 +753,7 @@ class SeminarPlannerController extends Controller
 //        print_r($allocation_data);
 //        exit;
         $get_free_seat = EventAvailableSeat::where('event_id', '=', $eventId)->sum('no_of_release_seat');
-        return view('seminar_planner.seat_allocation.seat_utilize_table', compact('allocation_data', 'get_free_seat'));
+        return view('seminar_planner.seat_allocation.seat_utilize_table', compact('allocation_data', 'get_free_seat','eventId'));
     }
 
     public function saveSeatAllocation($eventid, $levelID)
