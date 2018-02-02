@@ -785,8 +785,9 @@ class SeminarPlannerController extends Controller
             }
         }
         $already_allocated_seats = $already_allocated_seats + Input::get('allocatedSeat');
-        $total_available_seats = $get_free_seat + $level_allocated_seats->allocatedSeat;
+
         if (!empty($level_allocated_seats->allocatedSeat)) {
+            $total_available_seats = $get_free_seat + $level_allocated_seats->allocatedSeat;
             if ($already_allocated_seats > $total_available_seats) {
                 return Response::json([
                     "type" => "error",
