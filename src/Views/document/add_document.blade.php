@@ -80,7 +80,7 @@
             </div>
 
             <div class="form-group form-md-line-input form-md-floating-label has-info">
-                <label class="control-label">{!! Html::customTrans("Assigned") !!}</label>
+                <label class="control-label">{!! Html::customTrans("general.AssignedToTrans") !!}</label>
                 <div class="md-radio-inline">
                     <div class="md-radio">
                         <input id="assignToMeDoc" checked type="radio" name="AssignedTo" class="assignedToMe required"
@@ -139,7 +139,7 @@
                 <div class="col-md-6">
                     <div class="form-group form-md-line-input form-md-floating-label required">
                         <input type="text" name="DocumentSizeMB" id="DocumentSizeMB" class="form-control" readonly
-                               value="@if(!empty($document_data->DocumentSizeMB)){!! $document_data->DocumentSizeMB !!}@endif">
+                               value="@if(!empty($document_data->DocumentSizeMB)){!! $document_data->DocumentSizeMB !!} MB @endif">
                         <label for="DocumentSizeMB">{!! Html::customTrans("general.size") !!} </label>
                     </div>
 
