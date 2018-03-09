@@ -630,7 +630,7 @@ $(document).ready(function () {
     });
 
 
-    $body.on('change', ".seminar-search-input", function (e) {
+    $body.on('keyup', ".seminar-search-input", function (e) {
         var Data = generateFilterURL();
         if (Data != '' && Data != false) {
 
