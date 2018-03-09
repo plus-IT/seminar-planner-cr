@@ -124,7 +124,7 @@ class SeminarPlannerController extends Controller
             ]);
         }
     }
-    public function updatePlannedMinMaxData($eventId)
+     public function updatePlannedMinMaxData($eventId)
     {
         $min_registration = Input::get('min_registration');
         $max_registration = Input::get('max_registration');
@@ -136,7 +136,6 @@ class SeminarPlannerController extends Controller
             ]);
            
     }
-
 
     public function deleteSeminarRevenue($event_id)
     {

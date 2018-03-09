@@ -61,7 +61,7 @@ Route::group(['prefix' => (env('APP_ENV') === 'testing' ? 'en' : LaravelLocaliza
                 Route::Resource('seminar-planner/document', 'Ptlyash\SeminarPlannerCR\Controllers\PlannedDocumentController');
 
                 Route::get('seminar-planner/seminar/revenue-list/{event_id}', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@seminarRevenueList');
-                Route::get('seminar-planner/updatePlannedMinMaxData/{event_id}','Ptlyash\SeminarPlanner\Controllers\SeminarPlannerController@updatePlannedMinMaxData');
+                Route::get('seminar-planner/seminar/updatePlannedMinMaxData/{event_id}','Ptlyash\SeminarPlanner\Controllers\SeminarPlannerController@updatePlannedMinMaxData');
             });
         });
     });
