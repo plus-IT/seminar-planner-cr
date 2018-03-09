@@ -1,4 +1,27 @@
 $(document).on("ready", function () {
+
+    // updating the dropzon file size
+    Dropzone.prototype.filesize = function(size) {
+      var string;
+      if (size >= 1024 * 1024 * 1024 * 1024 / 10) {
+        size = size / (1024 * 1024 * 1024 * 1024 / 10);
+        string = "TiB";
+      } else if (size >= 1024 * 1024 * 1024 / 10) {
+        size = size / (1024 * 1024 * 1024 / 10);
+        string = "GiB";
+      } else if (size >= 1024 * 1024 / 10) {
+        size = size / (1024 * 1024 / 10);
+        string = "MB"; // changing units from MiB to MB (not currect but ...)
+      } else if (size >= 1024 / 10) {
+        size = size / (1024 / 10);
+        string = "KB"; // changing units from KiB to KB (not currect but ...)
+      } else {
+        size = size * 10;
+        string = "b";
+      }
+      return "<strong>" + (Math.round(size) / 10) + "</strong> " + string;
+    };
+
     var $body = $("body");
     var $initDropZone;
     $body.on("click", ".document_row", function () {
