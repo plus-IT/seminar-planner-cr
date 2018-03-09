@@ -161,7 +161,13 @@
                                         @if(!empty($all_event_category))
                                             @foreach($all_event_category as $val)
                                                 <option value="{!! $val->id !!}"
-                                                >{!! $val->event_category_name !!}</option>
+                                                >
+                                                @if(LaravelLocalization::getCurrentLocale() == 'en')
+                                                {!! $val->event_category_name !!}
+                                                @else
+                                                {!! $val->event_category_name_de !!}
+                                                @endif
+                                            </option>
                                             @endforeach
                                         @endif
                                     </select>

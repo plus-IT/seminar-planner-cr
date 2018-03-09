@@ -41,7 +41,7 @@ $(document).on("ready", function () {
                 return {
                     results: $.map(data, function (item) {
                         return {
-                            text: item.event_name,
+                            text: item.event_name+' ('+formatJavascriptDate(item.event_startdate) +' - '+ formatJavascriptDate(item.event_enddate)+')',
                             slug: item.event_name,
                             id: item.id
                         }
