@@ -60,15 +60,16 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 
         }
 
+        $event->leftjoin('event_schedule', 'events.id', '=', 'event_schedule.event_id')
+            ->leftjoin('schedule', 'event_schedule.schedule_id', '=', 'schedule.id')
+            ->leftjoin('schedule_slot', 'schedule.id', '=', 'schedule_slot.schedule_slotID')->groupBy('event_schedule.event_id');
+            
         if (Input::has('seminarLocation')) {
             $locationId = explode(",", Input::get('seminarLocation'));
             $event->whereIn("schedule.LocationID", $locationId);
         }
 
         if (Input::has('trainerId')) {
-            $event->leftjoin('event_schedule', 'events.id', '=', 'event_schedule.event_id')
-                ->leftjoin('schedule', 'event_schedule.schedule_id', '=', 'schedule.id')
-                ->leftjoin('schedule_slot', 'schedule.id', '=', 'schedule_slot.schedule_slotID')->groupBy('event_schedule.event_id');
 
             $trainerId = explode(",", Input::get('trainerId'));
             $event->whereIn("schedule_slot.trainer", $trainerId);
