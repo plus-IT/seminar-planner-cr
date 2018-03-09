@@ -107,7 +107,7 @@ $(document).ready(function () {
         var className = $(this).attr('data-target');
         className = className.replace('#', '');
         $("#save_button_class").removeClass();
-        $("#save_button_class").addClass('btn default ' + className + '_save');
+        $("#save_button_class").addClass('green btn_simply_green btn default ' + className + '_save');
 
     });
     $body.on("click", "#is_deploy_internet", function (e) {
