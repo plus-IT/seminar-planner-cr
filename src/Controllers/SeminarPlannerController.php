@@ -124,6 +124,19 @@ class SeminarPlannerController extends Controller
             ]);
         }
     }
+    public function updatePlannedMinMaxData($eventId)
+    {
+        $min_registration = Input::get('min_registration');
+        $max_registration = Input::get('max_registration');
+        
+        PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
+            'max_registration' => $max_registration]);
+         return Response::json([
+                "type" => "success"
+            ]);
+           
+    }
+
 
     public function deleteSeminarRevenue($event_id)
     {

@@ -56,6 +56,21 @@
                         <label for="planned_location">{!! Html::customTrans("seminarPlanner.planned_location") !!} </label>
                     </div>
                 </div>
+                
+                <div class="">
+                    <div class="form-group form-md-line-input form-md-floating-label  required">
+                        <input type="number" placeholder="" name="min_registration" id="min_registration"
+                               class="form-control {!! (!empty($event_data->min_registration)) ? 'edited' :'' !!}"
+                               value="{!! isset($event_data) && !empty($event_data) ? $event_data->min_registration : "" !!}">
+                        <label for="min_registration">{!! Html::customTrans("seminarPlanner.min_registration") !!} </label>
+                    </div>
+                    <div class="form-group form-md-line-input form-md-floating-label  required">
+                        <input type="number" placeholder="" name="max_registration" id="max_registration"
+                               class="form-control {!! (!empty($event_data->max_registration)) ? 'edited' :'' !!}"
+                               value="{!! isset($event_data) && !empty($event_data) ? $event_data->max_registration : "" !!}">
+                        <label for="max_registration">{!! Html::customTrans("seminarPlanner.max_registration") !!} </label>
+                    </div>
+                </div>
                 @yield('cancellationDateSection')
                 <div class="">
                     <div class="form-group form-md-line-input form-md-floating-label edited required">

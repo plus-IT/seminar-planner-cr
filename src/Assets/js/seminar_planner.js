@@ -124,7 +124,28 @@ $(document).ready(function () {
         }
         e.start
     });
-
+    
+    $body.on("blur", "#max_registration , #min_registration", function (e) {
+        var eventID = $(".eventID").val();
+        var min_registration = $('#min_registration').val();
+        var max_registration = $('#max_registration').val();
+        if(parseInt(max_registration) < parseInt(min_registration)){
+            $(this).focus();
+            notify('error', minMaxErrorMsg);
+            return false;
+        }else{
+             $.ajax({
+                url: base_url + 'seminar-planner/updatePlannedMinMaxData/' + eventID+'?min_registration='+min_registration+'&max_registration='+max_registration,
+                type: 'get',
+                beforeSend: function (data) {
+                    blockUI(".modal-content");
+                },
+                success: function (data) {
+                   unBlockUI(".modal-content");
+                }
+            });
+        }
+     });
     $body.on("click", ".seminar_details_for_portal", function (e) {
 
         setTimeout(function () {
