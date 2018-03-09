@@ -265,7 +265,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="save_button_class" class="btn default  save_address_data"
+                <button type="button" id="save_button_class" class="green btn_simply_green btn default  save_address_data"
                 >{!! Html::customTrans("general.save") !!}</button>
                 <button type="button" class="btn default cancel-popup"
                         data-dismiss="modal">{!! Html::customTrans("general.cancel") !!}</button>
