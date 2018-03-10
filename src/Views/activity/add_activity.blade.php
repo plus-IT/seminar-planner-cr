@@ -80,7 +80,7 @@
             </div>
 
             <div class="form-group">
-                <label class="control-label">Assigned </label>
+                <label class="control-label">{!! Html::customTrans("general.Assigned") !!} </label>
                 <div class="md-radio-inline">
                     <div class="md-radio">
                         <input id="text12" checked type="radio" name="AssignedTo" class="assignedToMe required"
