@@ -42,7 +42,7 @@
                             @if(!empty($all_status))
                                 @foreach($all_status as $val)
                                     <option value="{!! $val->TaskStatusID !!}"
-                                            {!! (!empty($task_data->TaskStatusID) && $task_data->TaskStatusID == $val->TaskStatusID) ? "selected" : ($val->TaskStatusName == "not started" ? "selected" : "") !!} >{!! $val->TaskStatusName !!}</option>
+                                            {!! (!empty($task_data->TaskStatusID) && $task_data->TaskStatusID == $val->TaskStatusID) ? "selected" : ($val->TaskStatusName == "not started" ? "selected" : "") !!} >{!! (LaravelLocalization::getCurrentLocale() == 'en') ? $val->TaskStatusName : (!empty($val->TaskStatusNameDE) ? $val->TaskStatusNameDE : $val->TaskStatusName ) !!}</option>
                                 @endforeach
                             @endif
                             <option value="createJob">{!! Html::customTrans("general.createNedit") !!}</option>

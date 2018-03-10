@@ -50,7 +50,7 @@ class PlannedTaskController extends Controller
     {   
         $id = Auth::user()->UserID;
         if($task_id != 0){
-            $data = Task::findOrFail($task_id);
+            $data = PlannedTask::findOrFail($task_id);
             if($user->hasPermission('tasks.editOther') == false && $id != $data['AssignedToUser']){
                 return Response::json([
                     "type"    => "error",
