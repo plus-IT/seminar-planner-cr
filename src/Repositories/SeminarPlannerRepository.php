@@ -32,6 +32,7 @@ use App\Models\PlannedDocument;
 use App\Models\SeminarRevenue;
 use App\Models\SeminarActionsLog;
 use App\Library\CustomFunction;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use stdClass;
 use Log;
 
