@@ -153,15 +153,25 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 
     function getAllEventCategory()
     {
-        $search_cat = '';
+         $search_cat = '';
         if (Input::has('q'))
             $search_cat = Input::get('q');
-        return EventCategory::where(function ($query) use ($search_cat) {
-            $search_text = strtolower($search_cat);
-            if ($search_text != "") {
-                $query->orWhere('event_category.event_category_name', 'like', '%' . $search_cat . '%');
-            }
-        })->get(['id', 'event_category_name as text']);
+
+        if(LaravelLocalization::getCurrentLocale() == 'en'){
+            return EventCategory::where(function ($query) use ($search_cat) {
+                $search_text = strtolower($search_cat);
+                if ($search_text != "") {
+                    $query->orWhere('event_category.event_category_name', 'like', '%' . $search_cat . '%');
+                }
+            })->get(['id', 'event_category_name as text']);
+        }else{
+            return EventCategory::where(function ($query) use ($search_cat) {
+                $search_text = strtolower($search_cat);
+                if ($search_text != "") {
+                    $query->orWhere('event_category.event_category_name_de', 'like', '%' . $search_cat . '%');
+                }
+            })->get(['id', 'event_category_name_de as text']);
+        }
     }
 
     function getLocation()
