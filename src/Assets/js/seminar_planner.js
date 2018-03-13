@@ -1515,7 +1515,7 @@ $('#daysCalculationPopup').on('show.bs.modal', function () {
 
 function loadAutoCompleteCategoryList() {
     $("input#CompanyMainContactID").select2({
-        placeholder: "Select category",
+        placeholder: selectCategory,
         minimumInputLength: 3,
         delay: 250,
         tags: true,
@@ -1541,7 +1541,7 @@ function loadAutoCompleteCategoryList() {
 
 function loadAutoCompleteLocationList() {
     $("input#SeminarCategoryID").select2({
-        placeholder: "Select location",
+        placeholder: selectLocation,
         minimumInputLength: 3,
         delay: 250,
         tags: true,
@@ -1567,7 +1567,7 @@ function loadAutoCompleteLocationList() {
 
 function loadAutoCompleteTrainerList() {
     $("input#SeminarTrainerId").select2({
-        placeholder: "Select trainer",
+        placeholder: selectTrainer,
         minimumInputLength: 3,
         delay: 250,
         tags: true,
@@ -1593,7 +1593,7 @@ function loadAutoCompleteTrainerList() {
 
 function loadAutoCompleteSeminarPlannedList() {
     $("input#SeminarPlannedBy").select2({
-        placeholder: "Select seminar planned by",
+        placeholder: selected_seminar_planned,
         minimumInputLength: 3,
         delay: 250,
         tags: true,

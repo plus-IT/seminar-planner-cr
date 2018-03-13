@@ -11,7 +11,7 @@
     @foreach($selectedSeminars as $selected)
         <tr>
             <td>{!! $selected->event_name !!}</td>
-            <td>{!! $selected->EventCategory->event_category_name !!}</td>
+            <td>@if(LaravelLocalization::getCurrentLocale() == "en") {!! $selected->EventCategory->event_category_name !!} @else {!! $selected->EventCategory->event_category_name_de !!} @endif</td>
         </tr>
     @endforeach
     </tbody>
