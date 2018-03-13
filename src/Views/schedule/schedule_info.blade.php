@@ -25,7 +25,11 @@
                                         <span data-index='event_days'> {!! isset($schedule->schedule) && !empty($schedule->schedule) ? format_date($schedule->schedule->schedule_date) : '' !!} </span>
                                         <span data-index='location'> {!! isset($schedule->schedule) && isset($schedule->schedule->scheduleLocation) && !empty($schedule->schedule) && !empty($schedule->schedule->scheduleLocation) ?  $schedule->schedule->scheduleLocation->LocationName : '' !!} </span>
                                         <span data-index='slot_count'> {!! (!empty($schedule->schedule) ? Html::customTrans("events.slotsCount") . '(' . count($schedule->schedule->eventScheduleSlot) . ')' : '(0)') !!} </span>
-                                        <span data-index='start_time'> {!! (isset($schedule->schedule) && isset($schedule->schedule->eventScheduleSlot[0])  ? format_time($schedule->schedule->eventScheduleSlot[0]->start_time) . " " . Html::customTrans("events.onwards") : '') !!} </span>
+                                        <span data-index='start_time'>
+                                           @if(isset($schedule->schedule->eventScheduleSlot[0])) 
+                                            <?php $lastKey = count($schedule->schedule->eventScheduleSlot)-1; ?>
+                                           @endif
+                                         {!! (isset($schedule->schedule->eventScheduleSlot[0])  ? format_time($schedule->schedule->eventScheduleSlot[0]->start_time) . " - " . format_time($schedule->schedule->eventScheduleSlot[$lastKey]->end_time) : '') !!} </span>
                                     </a>
                                 </h4>
                             </div>

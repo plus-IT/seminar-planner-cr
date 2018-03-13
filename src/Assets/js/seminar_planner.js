@@ -1252,7 +1252,7 @@ function ajaxForAddScheduleWithValidation(url, method, additionalDataByPage, sch
                     $firstSlot = slotsArray.reduce(function (prev, curr) {
                         return prev.start < curr.start ? prev : curr;
                     });
-                    $clone_tr.find("[data-index='start_time']").html($firstSlot.start + " " + onwards);
+                    $clone_tr.find("[data-index='start_time']").html($firstSlot.start + " - " + slotsArray[slotsArray.length-1].end);
 
 
                     $clone_tr.addClass("schedule_panel_" + data.schedule_id);
