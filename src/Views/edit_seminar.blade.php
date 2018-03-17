@@ -16,6 +16,7 @@
                         {!! Html::customTrans("events.confirmSeminarChkBox") !!}
                     </label>
                 </div>
+                
                 <div class="">
                     <input type="checkbox" id="is_deploy_internet" class="seminar_details_for_portal md-check" value="1"
                            {!! !empty($event_data->is_deploy_internet)?'checked':'' !!}
@@ -27,7 +28,11 @@
                         {!! Html::customTrans("events.deployOnInternetChkBox") !!}
                     </label>
                 </div>
+                
+                @yield('seminarPlannerAdditionalFields')
                     <div class="if_deploy" style="{!! !empty($event_data->is_deploy_internet)?'display:block':'display:none' !!}">
+                        @yield('seminarPlannerBenderAdditionRoleFields')
+                        
                         <input type="checkbox" id="show_vacant_seats" class="seminar_details_for_portal md-check" value="{!! !empty($event_data->is_deploy_internet)?'1':'0' !!}"
                                {!! !empty($event_data->is_deploy_internet)?(!empty($event_data->show_vacant_seats)?'checked':'' ):'' !!}
                                name="show_vacant_seats">

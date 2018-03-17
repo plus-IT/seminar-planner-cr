@@ -40,7 +40,7 @@
 
 <?php echo '<script id="slotTemplate" type="text/x-jquery-tmpl">
     <li class="itemSlot dragableDropableItem ${trainerConflicted == 1 ? \'scheduleConflictWarning\' : \'\'}">
-        <div class="dd-handle"> ${start_time} - ${end_time}  {{if slot_room != null }} , ${slot_room.RoomName} {{/if}}</div>
+        <div class="dd-handle"> ${formatJavascriptTime(start_time)} - ${formatJavascriptTime(end_time)}  {{if slot_room != null }} , ${slot_room.RoomName} {{/if}}</div>
         {{if trainers != null}}
             ${( $data.trainersArray = trainers.split(",") ),\'\'}
         {{else}}
@@ -48,7 +48,9 @@
         {{/if}}
         {{each trainersArray }}
             ${( $data.traName = $value.split("-") ),\'\'}
-            <span class="slotTrainerBox" id="${traName[0]}"> ${traName[1]} <a class="cancelbtnclose">X</a></span>
+            
+                <span class="slotTrainerBox" id="${traName[0]}"> ${traName[1]}{{if traName[2] }}-${traName[2]} {{/if}} <a class="cancelbtnclose">X</a></span>
+            
         {{/each}}
         <div class="conflictBy">
         {{if trainerConflicted == 1 }}
@@ -66,7 +68,7 @@
             </ol>
         </div>
     </div>
-    <div class="col-md-9">
+    <div class="col-md-9" style="margin-top: 15px">
         <div class="topcalander">
             <a class="filterhideshow currentShowFilter">
                 <span class="hideStuff"><i class="fa fa-plus"></i> <span>{!! Html::customTrans("seminarPlanner.showFilter") !!}</span></span>
@@ -271,7 +273,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="save_button_class" class="green btn_simply_green btn default  save_address_data"
+                <button type="button" id="save_button_class" class="btn default  save_address_data green btn_simply_green"
                 >{!! Html::customTrans("general.save") !!}</button>
                 <button type="button" class="btn default cancel-popup"
                         data-dismiss="modal">{!! Html::customTrans("general.cancel") !!}</button>
@@ -438,7 +440,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="btnCancelSeminar" class="btn default btnMoveSeminar"
+                <button type="button" id="btnCancelSeminar" class="btn default btnMoveSeminar green btn_simply_green"
                 >{!! Html::customTrans("seminarPlanner.btnMoveSeminar") !!}</button>
                 <button type="button" class="btn default"
                         data-dismiss="modal">{!! Html::customTrans("general.cancel") !!}</button>

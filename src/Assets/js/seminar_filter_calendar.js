@@ -29,7 +29,7 @@ $(document).on("ready", function () {
          tags: true,
          tokenSeparators: [','],
          ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-             url: base_url + "event_list",
+             url: base_url + "event_list?sort_by=event_startdate&sort_order=asc",
              dataType: 'json',
              method: "GET",
              data: function (term, page) {

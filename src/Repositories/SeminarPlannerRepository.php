@@ -47,7 +47,6 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
     {
         $event = Event::query();
         $event->join('event_category', 'events.event_category_id', '=', 'event_category.id');
-
         $event->where(function ($query) use ($search_text) {
             $search_text = strtolower($search_text);
             if ($search_text != "") {
@@ -55,6 +54,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             }
         });
 
+        $event->where('status',1);
         if (Input::has('category_id')) {
             $category_id = explode(",", Input::get('category_id'));
             $event->whereIn('event_category_id', $category_id);
@@ -62,16 +62,16 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         }
 
         $event->leftjoin('event_schedule', 'events.id', '=', 'event_schedule.event_id')
-            ->leftjoin('schedule', 'event_schedule.schedule_id', '=', 'schedule.id')
-            ->leftjoin('schedule_slot', 'schedule.id', '=', 'schedule_slot.schedule_slotID')->groupBy('event_schedule.event_id');
-            
+                ->leftjoin('schedule', 'event_schedule.schedule_id', '=', 'schedule.id')
+                ->leftjoin('schedule_slot', 'schedule.id', '=', 'schedule_slot.schedule_slotID')->groupBy('event_schedule.event_id');
+
         if (Input::has('seminarLocation')) {
             $locationId = explode(",", Input::get('seminarLocation'));
-            $event->whereIn("schedule.LocationID", $locationId);
+            $event ->whereIn("schedule.LocationID", $locationId);
         }
 
         if (Input::has('trainerId')) {
-
+            
             $trainerId = explode(",", Input::get('trainerId'));
             $event->whereIn("schedule_slot.trainer", $trainerId);
         }
@@ -135,7 +135,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
                      (select sum(price) from planned_events where planned_events.blueprint_id=events.id  AND planned_events.event_startdate>="' . date("Y-m-d", strtotime(Input::get('start_date'))) . '" AND
                                 planned_events.event_enddate<= "' . date("Y-m-d", strtotime(Input::get('end_date'))) . '")as total_revenue';
         }
-        if ($sort_by == "event_category_id") {
+        if($sort_by == "event_category_id"){
             $sort_by = 'event_category_name';
         }
         if ($sort_by != "")
@@ -148,13 +148,13 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             ,events.created_at as final_date
             ,event_category.*' . $query
         );
-        //dd($event->paginate($limit));
+       //dd($event->paginate($limit));
         return $event->paginate($limit);
     }
 
     function getAllEventCategory()
     {
-         $search_cat = '';
+        $search_cat = '';
         if (Input::has('q'))
             $search_cat = Input::get('q');
 
@@ -260,11 +260,11 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         // Add event To planned event table
         $plannedEvents = new PlannedEvent();
         // Check if deploy to internet is on OR not
-        if (count($plannedEventSetting) > 0 && isset($plannedEventSetting->set_me_on_waiting_list) && isset($plannedEventSetting->automatic_register)) {
+        if(count($plannedEventSetting) > 0 && isset($plannedEventSetting->set_me_on_waiting_list) && isset($plannedEventSetting->automatic_register)){
             $plannedEvents->is_deploy_internet = isset($plannedEventSetting->display_seminar_online_portal) ? $plannedEventSetting->display_seminar_online_portal : 0;
             $plannedEvents->set_me_on_waiting_list = isset($plannedEventSetting->set_me_on_waiting_list) ? $plannedEventSetting->set_me_on_waiting_list : 0;
             $plannedEvents->automatic_register = isset($plannedEventSetting->automatic_register) ? $plannedEventSetting->automatic_register : 0;
-        } else {
+        }else{
             $plannedEvents->is_deploy_internet = isset($plannedEventSetting->display_seminar_online_portal) ? $plannedEventSetting->display_seminar_online_portal : 0;
         }
 
@@ -274,29 +274,33 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         $event->load('eventTask');
         $event->load('eventDocument');
         $event->load('eventRevenue');
+        
         foreach ($event->getRelations() as $relation => $items) {
             foreach ($items as $item) {
+
                 if ($relation == "eventSchedule") {
                     $scheduleDateIndex = array_search($item->schedule->id, array_column($inputData["schedules"], 'scheduleId'));
                     $newschedule = $item->schedule->replicate();
                     $newschedule->schedule_date = $inputData["schedules"][$scheduleDateIndex]['scheduleDate'];
 
                     $plannedSchedule = new PlannedSchedule();
+                    
                     $plannedSchedule->fill($newschedule->toArray())->save();
 
                     // check If schedule is conflicted with other event schedule
                     $conflictResult = $this->checkLocationConflict($plannedSchedule->LocationID, $plannedSchedule->id, $plannedSchedule->schedule_date, $plannedEvents->id);
                     if ($conflictResult['type'] == "danger") {
-                        $plannedSchedule->locationConflicted = 1;
+                        // Rupesh : commented as already handeled in checkLocationConflict
+                        //$plannedSchedule->locationConflicted = 1;
                         $plannedSchedule->detailLocationConflictMessage = $conflictResult["detailedMessage"];
-                        $plannedSchedule->conflictedScheduleIds = $conflictResult["conflictedScheduleIds"];
+                        //$plannedSchedule->conflictedScheduleIds = $conflictResult["conflictedScheduleIds"];
                         $plannedSchedule->save();
                     }
 
                     // Load schedule slots
                     $schedule = $item->schedule;
                     $schedule->load('eventScheduleSlot');
-
+                   
                     // duplicate schedule slots
                     foreach ($schedule->getRelations() as $scheduleRelation => $scheduleItems) {
                         foreach ($scheduleItems as $scheduleItem) {
@@ -325,10 +329,12 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 
                         }
                     }
-
+                    
+                    
                     $item->schedule_id = $plannedSchedule->id;
                     unset($item->id);
                     unset($item->schedule);
+
                 }
 
                 if ($relation == "eventTask") {
@@ -352,8 +358,21 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
                 if ($relation == "eventRevenue") {
                     unset($item->id);
                 }
+                
+                
+                
+                $item->event_id = $plannedEvents->id;
 
-                $plannedEvents->{$relation}()->create($item->toArray());
+               
+                // $plannedEvents->{$relation}()->create($item->toArray());
+                $builder = $plannedEvents->{$relation}();
+                    $arrayInsert = $item->toArray();
+                    // unsetting primary keys if any
+                    // To Do : find a better way to insert without primary keys
+                    unset($arrayInsert['revenue_item_id']); 
+                    $builder->insert(
+                        $arrayInsert
+                    );
             }
         }
 
@@ -493,14 +512,14 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         $calendarEvents = [];
         foreach ($eventList as $singleEvent) {
             foreach ($singleEvent->eventSchedule as $seminarDay) {
-                if (!isset($seminarDay->schedule) || $seminarDay->schedule == null) {
+                if(!isset($seminarDay->schedule) || $seminarDay->schedule == null){
                     continue;
                 }
-
+                
                 $color = $singleEvent->event_status == 'confirm' ? $seminarPlannerSetting->planned_calendar_background : ($singleEvent->event_status == 'cancel' ? $seminarPlannerSetting->cancel_seminars_background : (($seminarDay->schedule->locationConflicted == 1 || $seminarDay->schedule->trainerConflicted == 1) ? $seminarPlannerSetting->new_seminar_calendar_background : $seminarPlannerSetting->draft_calendar_background));
-
+                
                 $seminar = new stdClass();
-                $seminar->title = $singleEvent->event_name . " day - " . $seminarDay->schedule->event_days;
+                $seminar->title = $singleEvent->event_name . ' '.CustomFunction::customTrans("seminarPlanner.day")." - " . $seminarDay->schedule->event_days;
                 $seminar->event_name = $singleEvent->event_name;
                 $seminar->LocationName = isset($seminarDay->schedule->scheduleLocation) && !empty($seminarDay->schedule->scheduleLocation) ? $seminarDay->schedule->scheduleLocation->LocationName : "";
                 $seminar->start = $seminarDay->schedule->schedule_date;
@@ -539,19 +558,24 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         foreach ($plannedSeminar->eventSchedule as $seminarSchedule) {
             $scheduleDateIndex = array_search($seminarSchedule->schedule->id, array_column($inputData["schedules"], 'scheduleId'));
             $schedule = PlannedSchedule::with("eventScheduleSlot")->where('id', $seminarSchedule->schedule->id)->first();
+            $schedule->updateConflictedSchedulesBeforeDelete();
+            $schedule->locationConflicted = 0;
+            $schedule->detailLocationConflictMessage = "";
             $schedule->schedule_date = $inputData["schedules"][$scheduleDateIndex]['scheduleDate'];
+            
             $schedule->save();
 
             // Remove current schedule existing conflict and remove currnt schedule from its condlicting schedule as well
-            $this->clearLocationConflict($schedule->id);
+            // $this->clearLocationConflict($schedule->id);
 
             // Check If schedule location is conflicted or resolved with other
 
             $conflictResult = $this->checkLocationConflict($schedule->LocationID, $schedule->id, $schedule->schedule_date, $inputData['blueprintEventId']);
             if ($conflictResult['type'] == "danger") {
-                $schedule->locationConflicted = 1;
+                // commented as already handled in checkLocationConflict
+                //$schedule->locationConflicted = 1;
                 $schedule->detailLocationConflictMessage = $conflictResult["detailedMessage"];
-                $schedule->conflictedScheduleIds = $conflictResult["conflictedScheduleIds"];
+                //$schedule->conflictedScheduleIds = $conflictResult["conflictedScheduleIds"];
                 $schedule->save();
             } else {
                 $schedule->locationConflicted = 0;
@@ -632,7 +656,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
     function getScheduleSlotPlannedEvent($plannedEvent = 0)
     {
         $plannedSeminar = PlannedEvent::where('id', $plannedEvent)
-            ->with(["eventSchedule.schedule", "eventSchedule.schedule.scheduleLocation",
+            ->with(["eventSchedule.schedule" , "eventSchedule.schedule.scheduleLocation",
                 "eventSchedule.schedule.eventScheduleSlot" => function ($query) {
                     $query->get(["planned_schedule_slot.*",
                         DB::raw('(select group_concat(concat(PersonID, "-", TRIM(FirstName), " ", TRIM(LastName)) SEPARATOR ", ") as trainerName from person WHERE CONCAT(",", planned_schedule_slot.trainer ,"," ) LIKE CONCAT("%,", PersonID ,",%")) as trainers ')
@@ -648,6 +672,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
     {
         $eventId = Input::get("eventId");
         $schedule = PlannedSchedule::find($scheduleId);
+        $data = PlannedScheduleSlot::where('ScheduleID', $scheduleId)->update(['roomId' => 0]);
         if ($schedule->LocationID == $locationId) {
             $result["type"] = "error";
             $result["message"] = trans("seminarPlanner.locationAlreadyAssignToSchedule");
@@ -677,7 +702,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
                 }, "eventSchedule.schedule.eventScheduleSlot.slotRoom"
             ])
             ->first();
-
+       
         $result["plannedEvent"] = $plannedEvents;
         $result["conflictStatus"] = $conflictResult['type'];
         $result["message"] = $conflictResult['type'] == "danger" ? trans("seminarPlanner.assignLocationWithConflict") : trans("seminarPlanner.assignLocationSuccessFully");
@@ -805,30 +830,52 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         $conflictedScheduleIds = [];
         $conflictedSchedule = PlannedSchedule::with(["ScheduleEvent", "ScheduleEvent.event", "scheduleLocation"])->where("schedule_date", "=", date("Y-m-d", strtotime($scheduleDate)))
             ->where("LocationID", "=", $locationId)
-            ->where("planned_schedule.id", "!=", $scheduleId)
+            //->where("planned_schedule.id", "!=", $scheduleId) // removed as per new code1
             ->get()->toArray();
         if (count($conflictedSchedule) > 0) {
             $detailedMessage = "";
             foreach ($conflictedSchedule as $schedule) {
-                $detailedMessage .= trans("seminarPlanner.eventTextForConflictMessage") . " " . $schedule['schedule_event']['event']['event_name'] . " " . trans("seminarPlanner.locationConflictMessage") . " " . $schedule["schedule_location"]["LocationName"] . " " . trans("seminarPlanner.locationConflictMessageOnDate") . " " . format_date($scheduleDate) . " | ";
+                // new code1 : rupesh
+                // needed to refactor as conflicting states were invalid
+                // every schedule should have ids of all conflicting schedules exept own 
+                // add conflicts on each schedule exept it's own id
+                // this is being used in cleaning the data when event is deleted
+                // TO DO : do the same for trainer conflict logic
+
+                $ids = [];
+                foreach ($conflictedSchedule as $sc){
+                    if($sc['id'] != $schedule['id']){
+                       $ids[] = $sc['id']; 
+                    }
+                }
+                if(empty($ids)){
+                    continue;
+                }
+                // new code1 ends /////
+
+                $detailedMessage .= "#eventTextForConflictMessage#" . " " . $schedule['schedule_event']['event']['event_name'] . " " . "#locationConflictMessage#" . " " . $schedule["schedule_location"]["LocationName"] . " " . "#locationConflictMessageOnDate#" . " " . format_date($scheduleDate) . " | ";
                 array_push($conflictedScheduleIds, $schedule['id']);
                 // Updated conflicted schedule with current schedule details
                 $plannedSchedule = PlannedSchedule::find($schedule['id']);
-                $plannedSchedule->conflictedScheduleIds = $this->addConflictedScheduleSlotId($plannedSchedule->conflictedScheduleIds, $schedule['id']);
-                $plannedSchedule->detailLocationConflictMessage = "Seminar " . $event->event_name . " has already been on location " . $schedule["schedule_location"]["LocationName"] . " on date " . format_date($scheduleDate);
+                // commented as errornious : rupesh
+                //$plannedSchedule->conflictedScheduleIds = $this->addConflictedScheduleSlotId($plannedSchedule->conflictedScheduleIds, $schedule['id']);
+                
+                // updating as per new code1
+                $plannedSchedule->conflictedScheduleIds = implode(',',$ids);
+                $plannedSchedule->detailLocationConflictMessage = "#planned_seminar# " . $event->event_name . " #has_already_been_on_location# " . $schedule["schedule_location"]["LocationName"] . " #on_date# " . format_date($scheduleDate);
                 $plannedSchedule->locationConflicted = 1;
                 $plannedSchedule->save();
 
             }
             $result["type"] = "danger";
-            $result["message"] = trans("seminarPlanner.schedule_date_exist_on_locations");
+            $result["message"] = "#schedule_date_exist_on_locations#";
             $result["conflictedSchedule"] = $conflictedSchedule;
             $result["conflictedScheduleIds"] = implode(",", array_unique($conflictedScheduleIds));
-            $result["detailedMessage"] = substr($detailedMessage, 0, -2);
+            $result["detailedMessage"] = $detailedMessage;//substr($detailedMessage, 0, -2);
             return $result;
         } else {
             $result["type"] = "success";
-            $result["message"] = trans("seminarPlanner.location_assign_to_schedule");
+            $result["message"] = "#location_assign_to_schedule#";
 
         }
 
@@ -851,9 +898,9 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         // If multiplet trainer assign
         $trainers = explode(",", $trainerIds);
         for ($j = 0; $j < count($trainers); $j++) {
-            if (!empty($trainers[$j])) {
+            if(!empty($trainers[$j])) {
                 $person = Person::find($trainers[$j]);
-                if (count($person) > 0) {
+                if(count($person) > 0){
 //                dd($person->FirstName);
 
                     $conflictedSlot = PlannedSchedule::join("planned_schedule_slot", "planned_schedule_slot.ScheduleID", "=", "planned_schedule.id")
@@ -867,25 +914,26 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
                         ->get(["planned_schedule.*", "planned_schedule_slot.schedule_slotID"])->toArray();
 
                     foreach ($conflictedSlot as $singleSlot) {
-                        $detailedMessage .= trans("seminarPlanner.eventTextForConflictMessage") . " " . $singleSlot['schedule_event']['event']['event_name'] . " " . trans("seminarPlanner.alreadyBookTrainerToolTipText") . " " . $person->FirstName . " " . $person->LastName . " for slot " . $slot->start_time . " - " . $slot->end_time . " on date " . format_date($singleSlot['schedule_date']) . " | ";
+                        $detailedMessage .= "#eventTextForConflictMessage#" . " " . $singleSlot['schedule_event']['event']['event_name'] . " " . "#alreadyBookTrainerToolTipText#" . " " . $person->FirstName . " " . $person->LastName . " #for_slot# " . $slot->start_time . " - " . $slot->end_time . " #on_date# " . format_date($singleSlot['schedule_date']) . " | ";
                         array_push($conflictedSlotIds, $singleSlot['schedule_slotID']);
                         array_push($conflictedScheduleIds, $singleSlot['id']);
                         // Update the conflicted schedule Slot
                         $plannedScheduleSlot = PlannedScheduleSlot::find($singleSlot['schedule_slotID']);
-                        if (count($plannedScheduleSlot) > 0) {
+                        if(count($plannedScheduleSlot) > 0) {
                             $plannedScheduleSlot->conflictedSlotIds = $this->addConflictedScheduleSlotId($plannedScheduleSlot->conflictedSlotIds, $slot->schedule_slotID);
                             $plannedScheduleSlot->trainerConflicted = 1;
-                            $detailedMessageForConflictedSLot = trans("seminarPlanner.eventTextForConflictMessage") . " " . !empty($event) ? $event->event_name : '' . " " . trans("seminarPlanner.alreadyBookTrainerToolTipText") . " " . $person->FirstName . " " . $person->LastName . " for slot " . $slot->start_time . " - " . $slot->end_time . " on date " . format_date($singleSlot['schedule_date']);
+                            $detailedMessageForConflictedSLot = '#eventTextForConflictMessage#' . " " . !empty($event) ? $event->event_name : '' . " " . "#alreadyBookTrainerToolTipText#" . " " . $person->FirstName . " " . $person->LastName . " #for_slot# " . $slot->start_time . " - " . $slot->end_time . " #on_date# " . format_date($singleSlot['schedule_date']);
                             $plannedScheduleSlot->detailTrainerConflictMessage = $this->addConflictedScheduleSlotMessage($plannedScheduleSlot->detailTrainerConflictMessage, $detailedMessageForConflictedSLot);
                             $plannedScheduleSlot->save();
                         }
 
                         $plannedSchedule = PlannedSchedule::find($singleSlot['id']);
-                        if (count($plannedSchedule) > 0) {
+                        if(count($plannedSchedule) > 0) {
                             $plannedSchedule->conflictedSlotIds = $this->addConflictedScheduleSlotId($plannedSchedule->conflictedSlotIds, $slot->schedule_slotID);
-                            //                    $plannedSchedule->conflictedScheduleIds = $this->addConflictedScheduleSlotId($plannedSchedule->conflictedScheduleIds, $schedule->id);
+    //                      $plannedSchedule->conflictedScheduleIds = $this->addConflictedScheduleSlotId($plannedSchedule->conflictedScheduleIds, $schedule->id);
                             $plannedSchedule->trainerConflicted = 1;
-                            $plannedSchedule->detailTrainerConflictMessage = trans("seminarPlanner.trainerConflictedToolTips");
+                            // $plannedSchedule->detailTrainerConflictMessage = trans("seminarPlanner.trainerConflictedToolTips");
+                            $plannedSchedule->detailTrainerConflictMessage = '#trainerConflictedToolTips#';
                             $plannedSchedule->save();
                         }
 
@@ -1041,7 +1089,23 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
     public function deleteSeminar($eventId)
     {
         $seminar = PlannedEvent::find($eventId)->delete();
-        $scheduledSeminar = PlannedEventSchedule::where("event_id", "=", $eventId)->delete();
+        $schedules = PlannedEventSchedule::where("event_id", "=", $eventId)->get();
+        foreach($schedules as $ss){
+            $schedule = PlannedSchedule::find($ss->schedule_id);
+            $schedule->updateConflictedSchedulesBeforeDelete();
+            $schedule->delete();
+            /*if($ss->schedule){
+                $schedules = $ss->schedule->get();
+                foreach ($schedules as $key => $sched) {
+                  
+                   $sched->updateConflictedSchedulesBeforeDelete();
+                   $sched->delete();
+                }
+            }*/
+            //$ss->schedule->delete();
+            //$ss->delete();
+        }
+       
         if ($seminar) {
             $result["type"] = "success";
             $result["message"] = trans("seminarPlanner.deleteSeminarConfirmation");
@@ -1255,15 +1319,15 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             ]);
     }
 
-    public function getActivitiesByID($event_id = 0, $id, $param)
+    public function getActivitiesByID($event_id = 0,$id,$param)
     {
-        if ($param == true) {
+        if($param == true){
             return PlannedEvent::with(["eventTask.Task", "eventTask.task.priority", "eventTask.task.taskStatus", "eventTask.task.assignee"])->findOrFail($event_id);
-        } else {
-            return PlannedEvent::with(["eventTask" => function ($query) use ($id) {
-                $query->leftjoin("task", "planned_event_task.task_id", "=", "task.TaskID");
+        }else{
+            return PlannedEvent::with(["eventTask"  => function ($query) use($id) {
+                $query->leftjoin("task", "planned_event_task.task_id" , "=", "task.TaskID");
                 $query->where('task.AssignedToUser', '=', $id);
-            }, "eventTask.Task", "eventTask.task.priority", "eventTask.task.taskStatus", "eventTask.task.assignee"])->findOrFail($event_id);
+            },"eventTask.Task", "eventTask.task.priority", "eventTask.task.taskStatus", "eventTask.task.assignee"])->findOrFail($event_id);
         }
     }
 
@@ -1294,6 +1358,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             ]);
 
 
+
         $variable_revenue_calculate = PlannedSeminarRevenue::join('seminar_item', 'planned_seminar_revenue.item_id', '=', 'seminar_item.seminar_item_id')
             ->where("event_id", "=", $eventId)
             ->where("revenue_type", "=", 'variable')
@@ -1303,9 +1368,9 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             ]);
 
         $participantNo = PlannedEvent::where("id", "=", $eventId)->first();
-        $totalAttendance = EventAttendees::where('event_id', '=', $eventId)->count();
+        $totalAttendance=EventAttendees::where('event_id','=',$eventId)->count();
 
-        return compact('participantNo', 'revenue_calculate', 'totalAttendance', 'variable_revenue_calculate');
+        return compact('participantNo', 'revenue_calculate', 'totalAttendance','variable_revenue_calculate');
     }
 
     public function addPlannedParticipant($eventId)
@@ -1322,13 +1387,13 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
     public function getSchedulesByID($event_id = 0)
     {
 //        \DB::enableQueryLog();
-        return PlannedEvent::with(['eventSchedule' => function ($query) {
+        return  PlannedEvent::with(['eventSchedule' => function ($query) {
             $query->join('planned_schedule', 'planned_event_schedule.schedule_id', '=', 'planned_schedule.id');
             $query->orderBy('planned_schedule.schedule_date', 'ASC');
             $query->get([
                 'planned_event_schedule.*'
             ]);
-        }, "eventSchedule.schedule", "eventSchedule.schedule.scheduleLocation", 'eventSchedule.schedule.eventScheduleSlot'])
+        }, "eventSchedule.schedule" ,"eventSchedule.schedule.scheduleLocation", 'eventSchedule.schedule.eventScheduleSlot'])
             ->where('planned_events.id', $event_id)
             ->get(['planned_events.*']);
     }
@@ -1440,7 +1505,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             $plannedTask->save();
 
             $plannedSeminar->load("eventTask");
-            $plannedSeminar->eventTask()->create(['task_id' => $plannedTask->TaskID]);
+            $plannedSeminar->eventTask()->insert(['task_id' => $plannedTask->TaskID]);
         }
 
         if ($createTaskForLocation == 1) {
@@ -1454,7 +1519,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             $plannedTask->save();
 
             $plannedSeminar->load("eventTask");
-            $plannedSeminar->eventTask()->create(['task_id' => $plannedTask->TaskID]);
+            $plannedSeminar->eventTask()->insert(['task_id' => $plannedTask->TaskID]);
         }
 
         $result['type'] = "success";

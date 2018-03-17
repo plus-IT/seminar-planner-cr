@@ -64,8 +64,9 @@
                             <option value=""></option>
                             @if(!empty($all_priority))
                                 @foreach($all_priority as $val)
-                                    <option value="{!! $val->PriorityID !!}"   {!! (!empty($task_data->PriorityID) && $task_data->PriorityID == $val->PriorityID) ? "selected" : ($val->PriorityName == "normal" ? "selected" : "") !!}>{!! (LaravelLocalization::getCurrentLocale() == 'en') ? $val->PriorityName : (!empty($val->PriorityNameDE) ? $val->PriorityNameDE : $val->PriorityName ) !!}</option>
-                                    {{--@if(!empty($task_data->PriorityID) && $task_data->PriorityID == $val->PriorityID) selected @endif>{!! $val->PriorityName !!}</option>--}}
+                                    <option value="{!! $val->PriorityID !!}"   {!! (!empty($task_data->PriorityID) && $task_data->PriorityID == $val->PriorityID) ? "selected" : "" !!}>{!! (LaravelLocalization::getCurrentLocale() == 'en') ? $val->PriorityName : (!empty($val->PriorityNameDE) ? $val->PriorityNameDE : $val->PriorityName ) !!}
+                                    </option>
+                                    
                                 @endforeach
                             @endif
                             <option value="createJob">{!!Html::customTrans("general.createNedit")!!}</option>

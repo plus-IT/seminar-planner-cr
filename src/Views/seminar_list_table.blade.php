@@ -9,7 +9,14 @@ var limit ="<?php $limit ?>"
     <thead>
     <tr>
         <th>
-            <input type="checkbox" name="multicheck" class="multicheck">
+         <div class="md-checkbox" style="margin-top: -18px;">
+                <input type="checkbox" name="multicheck" id="multicheck" class="md-check multicheck" value="">
+                <label for="multicheck">
+                    <span></span>
+                    <span class="check"></span>
+                    <span class="box"></span>  </label>
+            </div>
+           <!--  <input type="checkbox" name="multicheck" class="multicheck"> -->
         </th>
         <th>
             {!! Html::customTrans("seminarPlanner.seminar_title") !!}
@@ -42,7 +49,14 @@ var limit ="<?php $limit ?>"
     @foreach($total_events as $events)
         <tr>
             <td>
-                <input type="checkbox" class="checked_item" value="{!! $events->event_id_final !!}">
+                <div class="md-checkbox">
+                    <input type="checkbox" id="{!! $events->event_id_final !!}" class="md-check checked_item" checked="" value="{!! $events->event_id_final !!}">
+                    <label for="{!! $events->event_id_final !!}">
+                        <span></span>
+                        <span class="check"></span>
+                        <span class="box"></span>  </label>
+                </div>
+                <!-- <input type="checkbox" class="checked_item" value="{!! $events->event_id_final !!}"> -->
             </td>
             <td>
                 {!! $events->event_name !!}

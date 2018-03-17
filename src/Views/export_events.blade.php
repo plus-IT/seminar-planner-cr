@@ -6,9 +6,9 @@
                     <label for="startOfDate">{!! Html::customTrans("seminarPlanner.startOfDate") !!}</label>
                 </div>
                 <div class="col-md-7 pull-right">
-                    <input class="form-control date-picker getPlanPeriod"
+                    <input class="form-control getPlanPeriod"
                            size="16" type="text"
-                           name="start_date" id="startOfDate"
+                           name="start_date" id="startOfDateExport"
                            value=""
                     />
                 </div>
@@ -18,9 +18,9 @@
                     <label for="endOfDate">{!! Html::customTrans("seminarPlanner.endOfDate") !!}</label>
                 </div>
                 <div class="col-md-7">
-                    <input class="form-control date-picker getPlanPeriod"
+                    <input class="form-control getPlanPeriod"
                            size="16" type="text"
-                           name="end_date" id="endOfDate"
+                           name="end_date" id="endOfDateExport"
                            value=""
                     />
                 </div>

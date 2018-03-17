@@ -232,6 +232,7 @@ $(document).on("ready", function () {
         $("#add_document_btn").hide();
         $(".close-btn-document").removeAttr('style')
         var href = $(this).data('id');
+        var _this = $(this);
         var filename = $(this).attr('filename');
         var filesize = $(this).attr('filesize');
         filesize = filesize * (1024 * 1024);
@@ -264,7 +265,8 @@ $(document).on("ready", function () {
                 myDropzone.emit("addedfile", mockFile);
                 myDropzone.emit("thumbnail", mockFile, asset_url + "/document_upload/" + filename);
                 myDropzone.emit('complete', mockFile);
-                myDropzone.files.push(mockFile)
+                myDropzone.files.push(mockFile);
+                $("#DocumentSizeMB").val( _this.attr('filesize')+' MB');
 
 
                 // $("#my-dropzone").dropzone({'url': base_url + 'document/' + href + "document",maxFiles: 1});
@@ -312,7 +314,7 @@ $(document).on("ready", function () {
 
     $body.on("click", ".document-blcok", function (e) {
         e.preventDefault();
-        var id=$(".edit_document").data('id');
+        var id = $(this).data('id');
         var href = base_url+'seminar-planner/download_document/'+id;
         //   alert(href);
 

@@ -80,29 +80,38 @@ class SeminarPlannerController extends Controller
         return view('seminar_planner.seat_allocation.seat_allocation_info', compact('allocation_settings', 'allocated_seats', 'free_seats'));
     }
 
-
-    public function savePlannedEvents($eventId)
-    {
-        $planed_obj = PlannedEvent::findOrFail($eventId);
-        $customField = [
+    public function savePlannedEvents($eventId){
+        $planed_obj=PlannedEvent::findOrFail($eventId);
+        $customField=[
             'event_status',
             'is_deploy_internet',
             'show_vacant_seats'
         ];
         $planed_obj->fill(Input::only($customField));
-        if ($planed_obj->save()) {
+        if($planed_obj->save()){
             // Attach trigger
-            if (Input::has("is_deploy_internet") && Input::has("is_deploy_internet")) {
+            if(Input::has("is_deploy_internet") && Input::has("is_deploy_internet")){
                 $data = PlannedEvent::getEventForSalesforceEntry($eventId);
                 EventManager::trigger("create-campaigns", $data);
             }
 
             return "true";
-        } else {
+        }else{
             return "false";
         }
     }
-
+    public function savePlannedRoleEvents($eventId){
+        if(Input::has("portal_roles")){
+            $planed_obj=PlannedEvent::where('id', $eventId)->update(['portal_roles' => Input::get('portal_roles')]);
+            if($planed_obj){
+                return "true";
+            }else{
+                return "false";
+            }
+        }else{
+            return false;
+        }
+    }
     public function getPlannedParticipant($eventId)
     {
         return $this->seminar_planning_repository->getNoOfPlannedParticipant($eventId);
@@ -124,7 +133,7 @@ class SeminarPlannerController extends Controller
             ]);
         }
     }
-     public function updatePlannedMinMaxData($eventId)
+    public function updatePlannedMinMaxData($eventId)
     {
         $min_registration = Input::get('min_registration');
         $max_registration = Input::get('max_registration');
@@ -169,22 +178,22 @@ class SeminarPlannerController extends Controller
         ];
         $seminar_data->fill(Input::only($custom_field));
         if ($seminar_id == '')
-            $msg = CustomFunction::customTrans("event." . Input::get('revenue_type') . "_add_message");
+            $msg = CustomFunction::customTrans("event.".Input::get('revenue_type')."_add_message");
         else
-            $msg = CustomFunction::customTrans("event.success_" . Input::get('revenue_type') . "_update_message");
+            $msg = CustomFunction::customTrans("event.success_".Input::get('revenue_type')."_update_message");
         if (!$seminar_data->save()) {
             return Response::json([
                 "type" => "error",
                 "message" => CustomFunction::customTrans("event.error_message")
             ]);
         } else {
-            $item = SeminaItem::where('seminar_item_id', '=', $seminar_data->item_id)->get();
+            $item = SeminaItem::where('seminar_item_id','=',$seminar_data->item_id)->get();
             $response = [
                 "type" => "success",
                 "message" => $msg,
                 "data" => $seminar_data
             ];
-            if (count($item) > 0) {
+            if(count($item) > 0){
                 $item = $item->first();
                 $response['data']['item_name'] = $item->itemName;
             }
@@ -241,11 +250,11 @@ class SeminarPlannerController extends Controller
         }
     }
 
-    public function getActivities($event_id = 0, User $user)
+    public function getActivities($event_id = 0,User $user)
     {
         $id = Auth::user()->UserID;
         if ($event_id != 0) {
-            $activity_data = $this->seminar_planning_repository->getActivitiesByID($event_id, $id, $user->hasPermission('tasks.viewOther'));
+            $activity_data = $this->seminar_planning_repository->getActivitiesByID($event_id,$id,$user->hasPermission('tasks.viewOther'));
             return view('seminar_planner.activity.activity_info', compact('activity_data'));
         } else {
             return view('seminar_planner.activity.activity_info');
@@ -285,7 +294,11 @@ class SeminarPlannerController extends Controller
         $all_system_user = User::where("UserID", "!=", Auth::user()->UserID)->get();
         $all_event_category = EventCategory::all();
         $currentDate = ($id == "") ? Carbon::today()->format('Y-m-d') : PlannedEvent::where('id', $id)->first()->event_startdate;
-        return view('seminar_planner.seminar_planner', compact('seminar_days_new', 'holidays', 'all_location', 'all_trainer', 'all_regions', 'all_event_category', 'all_system_user', 'id', 'currentDate'));
+        
+        // adding all translations of seminar planner
+        $translations = \Lang::get('seminarPlanner');
+        
+        return view('seminar_planner.seminar_planner', compact('seminar_days_new', 'holidays', 'all_location', 'all_trainer', 'all_regions', 'all_event_category', 'all_system_user', 'id', 'currentDate','translations'));
     }
 
     public function getSeminarTable()
@@ -443,38 +456,37 @@ class SeminarPlannerController extends Controller
         $row_date = strtotime($event_obj->event_startdate);
         $today = strtotime(date('Y-m-d'));
 
-        if ($row_date > $today) {
+        if($row_date > $today){
             $result = $this->seminar_planning_repository->cancelSeminar($eventId);
             if (isset($result) && !empty($result)) {
                 // // Attach trigger
                 $data = PlannedEvent::getEventForSalesforceEntry($eventId);
                 EventManager::trigger("delete-campaigns", $data);
             }
-        } else {
+        }else{
             $result["type"] = "error";
             $result["message"] = CustomFunction::customTrans("events.cancelError");
         }
         return Response::json($result);
     }
-
-    function deleteSeminar($eventId)
-    {
-        $event_obj = PlannedEvent::findOrfail($eventId);
+    
+    function deleteSeminar($eventId){
+       $event_obj = PlannedEvent::findOrfail($eventId);
         $row_date = strtotime($event_obj->event_startdate);
         $today = strtotime(date('Y-m-d'));
 
-        if ($row_date > $today) {
+        if($row_date > $today){
             $result = $this->seminar_planning_repository->deleteSeminar($eventId);
-            if (isset($result) && !empty($result)) {
+            if(isset($result) && !empty($result)){
                 // // Attach trigger
                 $data = PlannedEvent::getEventForSalesforceEntry($eventId);
                 EventManager::trigger("delete-campaigns", $data);
             }
-        } else {
-            $result["type"] = "error";
+        }else{
+           $result["type"] = "error";
             $result["message"] = CustomFunction::customTrans("events.deleteError");
         }
-        return Response::json($result);
+            return Response::json($result);
     }
 
     // Create task for trainer and location for the seminar

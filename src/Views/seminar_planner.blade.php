@@ -1,6 +1,7 @@
 <script>
     var weekendConsider = '<?php echo !empty($seminar_days_new->consider_seminar_days) ? $seminar_days_new->consider_seminar_days : "" ?>';
     var holidaysArray = '<?php echo !empty($holidays) ? json_encode($holidays) : ""; ?>';
+    var seminarPlannerTrans = <?php echo json_encode($translations);?>;
 </script>
 @extends("layouts.master")
 @push("styles")
@@ -83,7 +84,6 @@
                                             <div class="tab-pane active" id="tab1">
                                                 @include('seminar_planner.seminar_select')
                                             </div>
-                                            .
                                             <div class="tab-pane" id="tab2">
                                                 @include('seminar_planner.seminar_plan')
                                             </div>
@@ -93,12 +93,10 @@
                                     <div class="form-actions splanningperiodbottom">
                                         <div class="row">
                                             <div class="col-md-12">
-                                                <a href="javascript:;" class="btn default button-previous">
-                                                    <i class="m-icon-white m-icon-swapleft"></i> {!! Html::customTrans("seminarPlanner.back") !!}
-                                                </a>
+                                                <a href="javascript:;" class="btn default button-previous" style="float: right;">
+                                                    <i class="m-icon-swapleft m-icon-white" ></i> {!! Html::customTrans("seminarPlanner.back") !!}</a>
                                                 <a href="javascript:;" class="btn blue button-next pull-right">
-                                                    {!! Html::customTrans("seminarPlanner.continue") !!} <i
-                                                            class="m-icon-swapright m-icon-white"></i>
+                                                    {!! Html::customTrans("seminarPlanner.continue") !!} <i class="m-icon-swapright m-icon-white"></i>
                                                 </a>
                                                 {{--<a href="javascript:;" class="btn green button-submit">--}}
                                                 {{--Submit <i class="m-icon-swapright m-icon-white"></i>--}}

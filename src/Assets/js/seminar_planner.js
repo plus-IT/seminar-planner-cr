@@ -29,19 +29,29 @@ $(document).ready(function () {
     getDashboardTaskEvent();
     setHeightToScroller();
     $("#infinite_scroll").niceScroll();
-
+     var today_Date = moment().format(app_date_format_js.toUpperCase());
+     $('#startOfDate').val(today_Date);
+     $('#startOfDate').attr("placeholder", app_date_format_js);
+     $('#endOfDate').attr("placeholder", app_date_format_js);
     $('#startOfDate').datepicker({
         rtl: Metronic.isRTL(),
         orientation: "left",
         autoclose: true,
         format: app_date_format_js,
-        language: app_language
-    }).on('changeDate', function (selected) {
-        var minDate = new Date(selected.date.valueOf());
-
+        language: app_language,
+        defaultDate: today_Date
+    }).on('blur', function (selected) {
+        var minDate = $('#startOfDate').val();
         var start_of_date = moment($("#startOfDate").val().split(".").reverse().join("-")).format('YYYY-MM-DD');
         $(".currentDate").val(start_of_date);
         $('#endOfDate').datepicker('setStartDate', minDate);
+        $('#endOfDate').val(minDate);
+    }).on('change', function (selected) {
+        var minDate = $('#startOfDate').val();
+        var start_of_date = moment($("#startOfDate").val().split(".").reverse().join("-")).format('YYYY-MM-DD');
+        $(".currentDate").val(start_of_date);
+        $('#endOfDate').datepicker('setStartDate', minDate);
+        $('#endOfDate').val(minDate);
     });
     $('#endOfDate').datepicker({
         rtl: Metronic.isRTL(),
@@ -50,7 +60,9 @@ $(document).ready(function () {
         format: app_date_format_js,
         language: app_language,
         startDate: $('#startOfDate').datepicker('getDate'),
+        minDate: $('#startOfDate').datepicker('getDate'),
     });
+     
 
     // $('#startOfDate').datepicker({
     //     rtl: Metronic.isRTL(),
@@ -92,12 +104,14 @@ $(document).ready(function () {
 
     $(".seminar-search").off("click");
     $(".seminar-search").on("click", function () {
+
         url = base_url + "seminar-planner/getDetails";
         if (!$(this).hasClass("remove")) {
             url += "?search=" + $(".seminar-search-input").val();
         } else {
             $(".seminar-search-input").val("");
         }
+
         loadSeminars(url, "");
     });
 
@@ -124,8 +138,9 @@ $(document).ready(function () {
         }
         e.start
     });
+
     
-    $body.on("blur", "#max_registration , #min_registration", function (e) {
+     $body.on("blur", "#max_registration , #min_registration", function (e) {
         var eventID = $(".eventID").val();
         var min_registration = $('#min_registration').val();
         var max_registration = $('#max_registration').val();
@@ -146,6 +161,7 @@ $(document).ready(function () {
             });
         }
      });
+
     $body.on("click", ".seminar_details_for_portal", function (e) {
 
         setTimeout(function () {
@@ -206,6 +222,7 @@ $(document).ready(function () {
                 initEditors();
                 initDatePicker();
                 $("#edit_seminar").modal("show");
+                $(".tooltips").tooltip();
 
             }
         });
@@ -642,6 +659,7 @@ $(document).ready(function () {
     });
 
     $body.on('click', ".search-button", function (e) {
+        pageNo = 1;
         var Data = generateFilterURL();
         if (Data != '' && Data != false) {
 
@@ -652,6 +670,7 @@ $(document).ready(function () {
 
 
     $body.on('keyup', ".seminar-search-input", function (e) {
+        pageNo = 1;
         var Data = generateFilterURL();
         if (Data != '' && Data != false) {
 
@@ -689,6 +708,28 @@ $(document).ready(function () {
         });
         $(".seminarCategoryForExport").select2({
             allowClear: true
+        });
+        $('#startOfDateExport').datepicker({
+            rtl: Metronic.isRTL(),
+            orientation: "left",
+            autoclose: true,
+            format: app_date_format_js,
+            language: app_language
+        }).on('changeDate', function (selected) {
+            var minDate = new Date(selected.date.valueOf());
+
+            var start_of_date = moment($("#startOfDateExport").val().split(".").reverse().join("-")).format('YYYY-MM-DD');
+            $(".currentDate").val(start_of_date);
+            $('#endOfDateExport').datepicker('setStartDate', minDate);
+        });
+        $('#endOfDateExport').datepicker({
+            rtl: Metronic.isRTL(),
+            orientation: "left",
+            autoclose: true,
+            format: app_date_format_js,
+            language: app_language,
+            startDate: $('#startOfDateExport').datepicker('getDate'),
+            minDate: $('#startOfDateExport').datepicker('getDate'),
         });
     });
 
@@ -1137,6 +1178,7 @@ $(document).ready(function () {
             $trainers += $(this).find('div').text() + ', ';
         });
         $trainerName = $trainers.trim().slice(0, -1);
+        console.log('data>> '+$trainerName);
         $trainers = "";
         $slotDiv.find("[data-index='slot_time']").html($time_slot);
         $slotDiv.find("[data-index='slot_trainer']").html($trainerName);
@@ -1252,7 +1294,7 @@ function ajaxForAddScheduleWithValidation(url, method, additionalDataByPage, sch
                     $firstSlot = slotsArray.reduce(function (prev, curr) {
                         return prev.start < curr.start ? prev : curr;
                     });
-                    $clone_tr.find("[data-index='start_time']").html($firstSlot.start + " - " + slotsArray[slotsArray.length-1].end);
+                    $clone_tr.find("[data-index='start_time']").html($firstSlot.start + " " + onwards);
 
 
                     $clone_tr.addClass("schedule_panel_" + data.schedule_id);
@@ -1475,6 +1517,14 @@ function generateFilterURL(no_notice) {
     window.setTimeout(function () {
         currentFilterRequest = false;
     }, 2000);
+
+     if(selectedSeminarBluePrint){
+            $('.checked_item').removeAttr('checked');
+            $.each(selectedSeminarBluePrint, function (index, val) {
+                console.log(selectedSeminarBluePrint);
+                $('.checked_item[value='+val+']').attr("checked","checked");
+            });
+        }
     return additionalData;
 }
 
@@ -1499,9 +1549,9 @@ $('#event_startdate,#event_enddate').datepicker({
     pickTime: false
 });
 /*$body.on("click", ".get_filter_reset", function (e) {
- $("#SeminarCategoryID").select2("val", "");
- $("#CompanyMainContactID").select2("val", "");
- });*/
+    $("#SeminarCategoryID").select2("val", "");
+    $("#CompanyMainContactID").select2("val", "");
+});*/
 
 $('#daysCalculationPopup').on('show.bs.modal', function () {
     $('.recalculateDatePicker').datepicker({
@@ -1647,7 +1697,7 @@ function reinitialScrollLoad(pageNumNoUse, me, source, destination) {
         },
 
         start: function () {
-            $('<div class="loading"><img src="' + asset_url + '/global/img/loading-spinner-default.gif"/></div>').appendTo(this);
+           /* $('<div class="loading"><img src="' + asset_url + '/global/img/loading-spinner-default.gif"/></div>').appendTo(this);*/
             // you can add your effect before loading data
         },
 
@@ -1658,7 +1708,7 @@ function reinitialScrollLoad(pageNumNoUse, me, source, destination) {
             $(this).find(source).append(dataObj.find("tbody").html());
             pageNo = pageNo + 1;
             defaults.url = getPaginationUrl();
-            $('.loading').remove();
+            /*$('.loading').remove();*/
             setTimeout(function () {
                 $(me).niceScroll();
             }, 100);
@@ -1666,6 +1716,7 @@ function reinitialScrollLoad(pageNumNoUse, me, source, destination) {
 
         continueWhile: function (resp) {
             if ($(resp).find('tbody tr').length == 0) { // stops when number of 'li' reaches 100
+                notify('error',no_more_load);
                 return false;
             }
             return true;
@@ -2009,6 +2060,7 @@ function initCalendarForPlanning() {
             //console.log(dayCalculation, "calclulation");
             console.log(dateAdd, "Recalculates Days");
             //console.log(oldDates, "old Recalculates Days");
+            $('.recalculateDatePicker').attr('disabled','disabled');
 
 
         },
@@ -2029,6 +2081,10 @@ function initCalendarForPlanning() {
             // check for holidayss
             while (checkForHoliday(dDate) == true) {
                 dDate.setDate(dDate.getDate() + 1);
+            }
+            if(!originalDragDateObj.event_schedule[0]){
+                notify('error', plannerWithoutScheduleMsg);
+                return false;   
             }
             if(originalDragDateObj.event_schedule[0].schedule.weekdays.includes("0") == true && originalDragDateObj.event_schedule[0].schedule.weekdays.includes("6") == true){
 
@@ -2243,6 +2299,7 @@ function initCalendarForPlanning() {
             var message = "";
             message += event.detailTrainerConflictMessage != "" ? event.detailTrainerConflictMessage : '';
             message += event.detailLocationConflictMessage != "" ? " | " + event.detailLocationConflictMessage : '';
+            message = replaceTranslatables(message);
             element.find('.fc-content').append("<span class='location' style='display: block;'> " + eventLocation + " : " + event.LocationName + "</span>");
             element.find('.fc-title').attr('data-container', 'body').attr('data-original-title', message).addClass("tooltips");
             var highlightNewEvent = getHandler('seminarPlanner', 'highlightNewEvent');
@@ -3404,7 +3461,7 @@ function markSeminarAsCancel($eventId) {
                 trainerListForSeminar = data.trainers;
                 locationListForSeminar = data.locations;
                 $("#calendar").fullCalendar('refetchEvents');
-            } else {
+            }else{
                 notify("error", data.message);
             }
         }
@@ -3439,6 +3496,7 @@ function actionsAfterRecalculateDate() {
     });
 
     // Update the schedules on recalulation of the days
+    console.log(dateAdd);
     updatePlannedEvent(dateAdd, "drag-recalculate");
 }
 
@@ -3602,4 +3660,60 @@ function getDashboardTaskEvent() {
     }
 
 }
+
+
+var getFromBetween = {
+    results:[],
+    string:"",
+    getFromBetween:function (sub1,sub2) {
+        if(this.string.indexOf(sub1) < 0 || this.string.indexOf(sub2) < 0) return false;
+        var SP = this.string.indexOf(sub1)+sub1.length;
+        var string1 = this.string.substr(0,SP);
+        var string2 = this.string.substr(SP);
+        var TP = string1.length + string2.indexOf(sub2);
+        return this.string.substring(SP,TP);
+    },
+    removeFromBetween:function (sub1,sub2) {
+        if(this.string.indexOf(sub1) < 0 || this.string.indexOf(sub2) < 0) return false;
+        var removal = sub1+this.getFromBetween(sub1,sub2)+sub2;
+        this.string = this.string.replace(removal,"");
+    },
+    getAllResults:function (sub1,sub2) {
+        // first check to see if we do have both substrings
+        if(this.string.indexOf(sub1) < 0 || this.string.indexOf(sub2) < 0) return;
+
+        // find one result
+        var result = this.getFromBetween(sub1,sub2);
+        // push it to the results array
+        this.results.push(result);
+        // remove the most recently found one from the string
+        this.removeFromBetween(sub1,sub2);
+
+        // if there's more substrings
+        if(this.string.indexOf(sub1) > -1 && this.string.indexOf(sub2) > -1) {
+            this.getAllResults(sub1,sub2);
+        }
+        else return;
+    },
+    get:function (string,sub1,sub2) {
+        this.results = [];
+        this.string = string;
+        this.getAllResults(sub1,sub2);
+        return this.results;
+    }
+};
+
+
+function replaceTranslatables(message){
+    if(seminarPlannerTrans){
+        var vars = getFromBetween.get(message,'#','#');
+        for(i in vars){
+            if(seminarPlannerTrans[vars[i]]){
+                message = message.replace(new RegExp('#'+vars[i]+'#', 'g'), seminarPlannerTrans[vars[i]]);
+            }
+        }
+    }
+    return message;
+}
+
 

@@ -68,8 +68,10 @@
                                             $trainerIDs = explode(',', $schedule_slot->trainer);
                                             $trainerDataArray = $schedule_slot->personDataForSchedule($trainerIDs);
                                             ?>
+                                            <span>&nbsp;&nbsp;</span>
                                             <span class="span_capitalize">{!! $trainerDataArray['trainerName']  !!}</span>
-                                            <span class="slotDescription">{!! $schedule_slot->description !!} </span>
+                                            <span>&nbsp;&nbsp;</span>
+                                            <span class="slotDescription"> {!! $schedule_slot->description !!} </span>
                                         </div>
                                     @endforeach
                                 @endif
@@ -221,7 +223,7 @@
                                 $check_weekdays = explode(",", $allowed_days);
                             ?>
                             <div class="col-md-12 mydaylist {!! (isset($schedule_details[0]->schedule_type) ) ? ($schedule_details[0]->schedule_type == 1 ? "" : "hidden" ) : "hidden" !!}">
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <div class="form-group form-md-line-input required">
                                         <input class="form-control form-control-inline"
                                                type="text" name="duration_between_previous_day"
@@ -229,7 +231,7 @@
                                         <label>{!! Html::customTrans("event.duration_between_previous_day") !!}</label>
                                     </div>
                                 </div>
-                                <div class="col-md-9">
+                                <div class="col-md-8">
 
                                     <div class="md-checkbox-list ">
                                         <div class="md-checkbox" style="padding:0 12px 0 0;">
@@ -611,7 +613,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default save_schedule"
                             id="report_save_button">{!! Html::customTrans("general.save") !!}</button>
-                    <button type="button" class="btn btn-default close_schedule_modal"
+                    <button type="button" class="btn close_schedule_modal"
                             >{!! Html::customTrans("general.close") !!}</button>
                 </div>
             </div>
@@ -750,7 +752,9 @@
     </div>
     <div class="cloneSlotsListingWrapper clearfix" style="display: none">
         <span class="slotTiming"></span>
+        <span>&nbsp;&nbsp;</span>
         <span class="span_capitalize slotTrainer"></span>
+        <span>&nbsp;&nbsp;</span>
         <span class="slotDescription"></span>
     </div>
 
