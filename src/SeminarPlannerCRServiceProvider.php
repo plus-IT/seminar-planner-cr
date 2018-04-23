@@ -32,7 +32,7 @@ class SeminarPlannerCRServiceProvider extends ServiceProvider
 //            __DIR__ . '/Migrations' => base_path('database/migrations')
 //        ]);
         $this->publishes([
-            __DIR__ . '/Seeds' => base_path('database/seeds')
+            __DIR__ . '/Seeds' => base_path('database/smartSeeds')
         ]);
 
         // Publish the Migrations

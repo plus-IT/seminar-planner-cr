@@ -1,5 +1,7 @@
 <?php
+namespace App;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Seeder;
 
 class AllocationLevelTableSeeder extends Seeder
