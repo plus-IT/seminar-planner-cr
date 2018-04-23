@@ -140,22 +140,33 @@ $(document).ready(function () {
     });
 
     
-     $body.on("blur", "#max_registration , #min_registration", function (e) {
+     $body.on("blur", "#max_registration , #min_registration, .external_id_save", function (e) {
         var eventID = $(".eventID").val();
         var min_registration = $('#min_registration').val();
         var max_registration = $('#max_registration').val();
+        var external_id = $('.external_id_save').val();
+        var totalAttendees = $('#totalAttendees').val();
+        
+        if(parseInt(max_registration) < parseInt(totalAttendees) || parseInt(max_registration) == 0){
+           $('#max_registration').val(totalAttendees);
+           max_registration = $('#max_registration').val();
+        }
         if(parseInt(max_registration) < parseInt(min_registration)){
             $(this).focus();
             notify('error', minMaxErrorMsg);
             return false;
         }else{
              $.ajax({
-                url: base_url + 'seminar-planner/updatePlannedMinMaxData/' + eventID+'?min_registration='+min_registration+'&max_registration='+max_registration,
+                url: base_url + 'seminar-planner/updatePlannedMinMaxData/' + eventID+'?min_registration='+min_registration+'&max_registration='+max_registration+'&external_id='+external_id,
                 type: 'get',
                 beforeSend: function (data) {
                     blockUI(".modal-content");
                 },
                 success: function (data) {
+                    if(data.type == 'error'){
+                        notify(data.type, data.message);
+                        $('.external_id_save').val('').focus();
+                    }
                    unBlockUI(".modal-content");
                 }
             });

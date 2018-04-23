@@ -61,7 +61,8 @@
                         <label for="planned_location">{!! Html::customTrans("seminarPlanner.planned_location") !!} </label>
                     </div>
                 </div>
-                
+                  <input type="hidden" placeholder="" name="totalAttendees" id="totalAttendees"
+                       value="{!! isset($event_data) && !empty($event_data->totalAttendees) ? $event_data->totalAttendees : 1 !!}">
                 <div class="">
                     <div class="form-group form-md-line-input form-md-floating-label  required">
                         <input type="number" placeholder="" name="min_registration" id="min_registration"
@@ -76,6 +77,15 @@
                         <label for="max_registration">{!! Html::customTrans("seminarPlanner.max_registration") !!} </label>
                     </div>
                 </div>
+                @if(Auth::user()->is_super_admin)
+                        <div class="form-group form-md-line-input form-md-floating-label ">
+                            <input data-index="external_id" type="text" placeholder="" name="external_id" id="external_id"
+                                   class="form-control edited external_id_save"
+                                   value="@if(!empty($event_data->external_id )){!! $event_data->external_id !!}@endif">
+                            <label for="external_id">{!! Html::customTrans("lookupTable.external_id") !!}</label>
+
+                        </div>
+                    @endif
                 @yield('cancellationDateSection')
                 <div class="">
                     <div class="form-group form-md-line-input form-md-floating-label edited required">

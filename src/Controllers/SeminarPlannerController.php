@@ -133,18 +133,38 @@ class SeminarPlannerController extends Controller
             ]);
         }
     }
-    public function updatePlannedMinMaxData($eventId)
-    {
+    public function updatePlannedMinMaxData(Request $request,$eventId) {
         $min_registration = Input::get('min_registration');
         $max_registration = Input::get('max_registration');
+        $external_id = Input::get('external_id');
+        $modal = 'App\\Models\\PlannedEvent';
+        $primaryKey = App::make($modal)->getKeyName();
+        $validator = Validator::make($request::all(), [
+            'external_id' => 'unique:tenant.planned_events,external_id,' . $eventId .',' .$primaryKey
+        ]);
         
-        PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
+        if (!$validator->fails()) {
+            if(isset($external_id)){
+                PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
+            'max_registration' => $max_registration, 'external_id' => $external_id]);
+            } else {
+                PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
             'max_registration' => $max_registration]);
-         return Response::json([
+            }
+            
+            return Response::json([
                 "type" => "success"
             ]);
+        } else {
+             $validationMsg = CustomFunction::customTrans("general.uniqueMessagePreText") . " " . CustomFunction::customTrans("lookupTable.external_id") . " " . CustomFunction::customTrans("general.uniqueExternalId_general") ;
            
-    }
+            return Response::json([
+                    "type" => "error",
+                    "message" => $validationMsg
+             ]);
+        }
+       
+    }   
 
     public function deleteSeminarRevenue($event_id)
     {
