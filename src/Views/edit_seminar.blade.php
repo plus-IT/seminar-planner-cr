@@ -80,7 +80,7 @@
                 @if(Auth::user()->is_super_admin)
                         <div class="form-group form-md-line-input form-md-floating-label ">
                             <input data-index="external_id" type="text" placeholder="" name="external_id" id="external_id"
-                                   class="form-control edited external_id_save"
+                                   class="form-control @if(!empty($event_data->external_id )) edited @endif external_id_save"
                                    value="@if(!empty($event_data->external_id )){!! $event_data->external_id !!}@endif">
                             <label for="external_id">{!! Html::customTrans("lookupTable.external_id") !!}</label>
 
