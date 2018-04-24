@@ -62,7 +62,6 @@ $(document).ready(function () {
         startDate: $('#startOfDate').datepicker('getDate'),
         minDate: $('#startOfDate').datepicker('getDate'),
     });
-     
 
     // $('#startOfDate').datepicker({
     //     rtl: Metronic.isRTL(),

@@ -45,8 +45,20 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 
     public function search($search_text = "", $sort_by = "", $sort_order = "", $limit = "")
     {
+           $multi_cat_name = '';
         $event = Event::query();
-        $event->join('event_category', 'events.event_category_id', '=', 'event_category.id');
+        $is_enable = \App\Accessories\FTM::isEnabled('seminar-multicategory-support');
+        if ($is_enable) {
+            $event->leftjoin("event_category", function ($join) {
+                $join->on(\DB::raw('find_in_set(event_category.id,events.event_category_id)'), \DB::raw(''), \DB::raw(''));
+            });
+            $multi_cat_name = ' ,GROUP_CONCAT(DISTINCT (event_category.event_category_name) SEPARATOR ", ")as event_category_name,
+            GROUP_CONCAT(DISTINCT (event_category.event_category_name_de ) SEPARATOR ", ")as event_category_name_de';
+            $event->groupBy('events.id');
+        } else {
+            $event->leftjoin('event_category', 'events.event_category_id', '=', 'event_category.id');
+        }
+
         $event->where(function ($query) use ($search_text) {
             $search_text = strtolower($search_text);
             if ($search_text != "") {
@@ -54,11 +66,17 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             }
         });
 
-        $event->where('status',1);
+        $event->where('status', 1);
         if (Input::has('category_id')) {
-            $category_id = explode(",", Input::get('category_id'));
-            $event->whereIn('event_category_id', $category_id);
-
+            $is_enable = \App\Accessories\FTM::isEnabled('seminar-multicategory-support');
+            if ($is_enable) {
+                $category_id = str_replace(",", "|", Input::get('category_id'));
+                $event->whereRaw('events.event_category_id REGEXP "' . $category_id . '"');
+                //$event->whereRaw('FIND_SET_EQUALS(events.event_category_id, "' . Input::get('category_id') . '")');
+            } else {
+                $category_id = explode(",", Input::get('category_id'));
+                $event->whereIn('event_category_id', $category_id);
+            }
         }
 
         $event->leftjoin('event_schedule', 'events.id', '=', 'event_schedule.event_id')
@@ -67,19 +85,19 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 
         if (Input::has('seminarLocation')) {
             $locationId = explode(",", Input::get('seminarLocation'));
-            $event ->whereIn("schedule.LocationID", $locationId);
+            $event->whereIn("schedule.LocationID", $locationId);
         }
 
         if (Input::has('trainerId')) {
-            
+
             $trainerId = explode(",", Input::get('trainerId'));
             $event->whereIn("schedule_slot.trainer", $trainerId);
         }
         if (Input::has('planned_by')) {
             $event->whereIn('events.id', function ($query) {
                 $query->select('planned_events.blueprint_id')
-                    ->from('planned_events')
-                    ->where('planned_events.planned_by', '=', Input::get('planned_by'));
+                        ->from('planned_events')
+                        ->where('planned_events.planned_by', '=', Input::get('planned_by'));
             });
         }
 
@@ -87,12 +105,12 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             if (Input::get('is_planned') == 1) {
                 $event->whereIn('events.id', function ($query) {
                     $query->select('planned_events.blueprint_id')
-                        ->from('planned_events');
+                            ->from('planned_events');
                 });
             } else {
                 $event->whereNotIn('events.id', function ($query) {
                     $query->select('planned_events.blueprint_id')
-                        ->from('planned_events');
+                            ->from('planned_events');
                 });
             }
         }
@@ -135,7 +153,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
                      (select sum(price) from planned_events where planned_events.blueprint_id=events.id  AND planned_events.event_startdate>="' . date("Y-m-d", strtotime(Input::get('start_date'))) . '" AND
                                 planned_events.event_enddate<= "' . date("Y-m-d", strtotime(Input::get('end_date'))) . '")as total_revenue';
         }
-        if($sort_by == "event_category_id"){
+        if ($sort_by == "event_category_id") {
             $sort_by = 'event_category_name';
         }
         if ($sort_by != "")
@@ -144,11 +162,11 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             $event->orderBy("events.event_name");
 
         $event->selectRaw(
-            'events.*,events.id as event_id_final
+                'events.*,events.id as event_id_final
             ,events.created_at as final_date
-            ,event_category.*' . $query
+            ,event_category.*' . $multi_cat_name . $query
         );
-       //dd($event->paginate($limit));
+        //dd($event->paginate($limit));
         return $event->paginate($limit);
     }
 
