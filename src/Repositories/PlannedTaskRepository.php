@@ -18,6 +18,7 @@ use App\Models\TaskStatus;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class TaskRepository
