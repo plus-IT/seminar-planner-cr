@@ -32,8 +32,17 @@ class PlannedTaskRepository implements PlannedTaskRepositoryInterface
      */
     function getAllDetailsByID($task_id = 0)
     {
-        $task_data       = [];
-
+        $task_data=$assignedToOther=[];
+        
+        if ($task_id != 0) {
+            $task_data = $this->getDetailsByID($task_id);
+             $assignedToOther = User::where('UserID', $task_data->AssignedToUser)
+                ->get([
+                    'UserID as id',
+                    DB::raw('CONCAT(trim(FirstName), " ", trim(LastName)) as text')
+                ])->toArray();
+        }
+        
         if ($task_id != 0) {
             $task_data = $this->getDetailsByID($task_id);
         }
@@ -54,7 +63,7 @@ class PlannedTaskRepository implements PlannedTaskRepositoryInterface
             return User::where("UserID",'!=',Auth::id())->get();
         });
 
-        return compact("task_data", "all_status", "all_priority", 'all_agent');
+        return compact("task_data", "all_status", "all_priority", 'all_agent','assignedToOther');
     }
 
     /**
@@ -98,7 +107,7 @@ class PlannedTaskRepository implements PlannedTaskRepositoryInterface
             if ($other_assignee[0] == "team")
                 $task_obj->AssignedToTeam = $other_assignee[1];
             else
-                $task_obj->AssignedToUser = $other_assignee[1];
+                $task_obj->AssignedToUser = isset($other_assignee[1]) ? $other_assignee[1] : $other_assignee[0];
         } else {
             $task_obj->AssignedToUser = Auth::user()->UserID;
         }
