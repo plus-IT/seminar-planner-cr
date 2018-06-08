@@ -33,8 +33,8 @@ class PlannedTaskRepository implements PlannedTaskRepositoryInterface
      */
     function getAllDetailsByID($task_id = 0)
     {
-        $task_data=$assignedToOther=[];
-        
+        $task_data=$assignedToOther= [];
+
         if ($task_id != 0) {
             $task_data = $this->getDetailsByID($task_id);
              $assignedToOther = User::where('UserID', $task_data->AssignedToUser)
@@ -42,10 +42,6 @@ class PlannedTaskRepository implements PlannedTaskRepositoryInterface
                     'UserID as id',
                     DB::raw('CONCAT(trim(FirstName), " ", trim(LastName)) as text')
                 ])->toArray();
-        }
-        
-        if ($task_id != 0) {
-            $task_data = $this->getDetailsByID($task_id);
         }
         /*
          * Remove the client_id
@@ -60,9 +56,9 @@ class PlannedTaskRepository implements PlannedTaskRepositoryInterface
 //            return Auth::user()->Priority()->get();
         });
 
-        $all_agent = Cache::remember('all_agent', CACHE_TIMEOUT, function () {
-            return User::where("UserID",'!=',Auth::id())->get();
-        });
+        $all_agent =[];/*Cache::remember('all_agent', CACHE_TIMEOUT, function () {
+            return User::where('is_support_user','!=','1')->where("UserID",'!=',Auth::id())->get();
+        });*/
 
         return compact("task_data", "all_status", "all_priority", 'all_agent','assignedToOther');
     }
