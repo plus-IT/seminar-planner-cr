@@ -33,24 +33,29 @@ class PlannedDocumentRepository implements PlannedDocumentRepositoryInterface
      */
     function getAllDetailsByID($document_id = 0)
     {
-        $document_data = [];
+        $document_data = $assignedToOther=[];
         if ($document_id != 0) {
             $document_data = $this->getDocumentByID($document_id);
+              $assignedToOther = User::where('UserID', $document_data->AssignedToUser)
+                ->get([
+                    'UserID as id',
+                    DB::raw('CONCAT(trim(FirstName), " ", trim(LastName)) as text')
+                ])->toArray();
         }
         Cache::flush();
         $all_documentcategory = Cache::remember('all_documentcategory', CACHE_TIMEOUT, function () {
             return DocumentCategory::all();
 //            return Auth::user()->DocumentCategory()->get();
         });
-        $all_agent = Cache::remember('all_agent', CACHE_TIMEOUT, function () {
-            return User::where("UserID",'!=',Auth::id())->get();
-        });
+        $all_agent =[];/* Cache::remember('all_agent', CACHE_TIMEOUT, function () {
+            return User::where('is_support_user','!=','1')->where("UserID",'!=',Auth::id())->get();
+        });*/
         $all_team             = Cache::remember('all_team', CACHE_TIMEOUT, function () {
             return Team::all();
 //            return Auth::user()->Team()->get();
         });
 
-        return compact('document_data', 'all_documentcategory', 'all_agent', 'all_team');
+        return compact('document_data', 'all_documentcategory', 'all_agent', 'all_team','assignedToOther');
     }
 
     /**
@@ -80,7 +85,7 @@ class PlannedDocumentRepository implements PlannedDocumentRepositoryInterface
             'DocumentFileName',
             'DocumentCategoryID'
         ];
-
+       
         $document_obj->fill(Input::only($customer_fields));
         if (Input::get("DocumentFileName")) {
             $document_obj->DocumentExtension = explode(".", Input::get("DocumentFileName"));
