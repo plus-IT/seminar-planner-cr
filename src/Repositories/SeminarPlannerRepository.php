@@ -43,9 +43,8 @@ use Log;
 class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 {
 
-    public function search($search_text = "", $sort_by = "", $sort_order = "", $limit = "")
-    {
-           $multi_cat_name = '';
+     public function search($search_text = "", $sort_by = "", $sort_order = "", $limit = "") {
+        $multi_cat_name = '';
         $event = Event::query();
         $is_enable = \App\Accessories\FTM::isEnabled('seminar-multicategory-support');
         if ($is_enable) {
@@ -56,7 +55,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             GROUP_CONCAT(DISTINCT (event_category.event_category_name_de ) SEPARATOR ", ")as event_category_name_de';
             $event->groupBy('events.id');
         } else {
-            $event->leftjoin('event_category', 'events.event_category_id', '=', 'event_category.id');
+            $event->join('event_category', 'events.event_category_id', '=', 'event_category.id');
         }
 
         $event->where(function ($query) use ($search_text) {
@@ -70,8 +69,8 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         if (Input::has('category_id')) {
             $is_enable = \App\Accessories\FTM::isEnabled('seminar-multicategory-support');
             if ($is_enable) {
-                $category_id = str_replace(",", "|", Input::get('category_id'));
-                $event->whereRaw('events.event_category_id REGEXP "' . $category_id . '"');
+                $category_id = str_replace(",", ",|,", Input::get('category_id'));
+                $event->whereRaw('CONCAT(",",planned_events.event_category_id, ",") REGEXP ",' . $category_id . ',"');
                 //$event->whereRaw('FIND_SET_EQUALS(events.event_category_id, "' . Input::get('category_id') . '")');
             } else {
                 $category_id = explode(",", Input::get('category_id'));
@@ -79,9 +78,9 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             }
         }
 
-        $event->leftjoin('event_schedule', 'events.id', '=', 'event_schedule.event_id')
-                ->leftjoin('schedule', 'event_schedule.schedule_id', '=', 'schedule.id')
-                ->leftjoin('schedule_slot', 'schedule.id', '=', 'schedule_slot.schedule_slotID')->groupBy('event_schedule.event_id');
+        $event->join('event_schedule', 'events.id', '=', 'event_schedule.event_id')
+                ->join('schedule', 'event_schedule.schedule_id', '=', 'schedule.id')
+                ->join('schedule_slot', 'schedule.id', '=', 'schedule_slot.schedule_slotID')->groupBy('event_schedule.event_id');
 
         if (Input::has('seminarLocation')) {
             $locationId = explode(",", Input::get('seminarLocation'));
