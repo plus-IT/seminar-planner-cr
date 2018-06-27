@@ -83,6 +83,7 @@
                     <div id="tab_document" class="tab-pane">
 
                     </div>
+                    @endcan
                     @can('seminarPlanner.budget')
                     <div id="tab_seminar_budget" class="tab-pane">
 
