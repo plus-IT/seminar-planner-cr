@@ -432,10 +432,9 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 
     // Fetch seminars for calendar
 
-    function getPlannedSeminars($id = "")
+    function getPlannedSeminars($plannedSeminarId = null)
     {
-
-        $start_date = Input::get("start");
+  $start_date = Input::get("start");
         $end_date = Input::get("end");
 
         $seminarPlannerSetting = SeminarSettings::first();
@@ -453,7 +452,19 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 
         if (Input::get("event_id") != "null" && !empty(Input::get("event_id"))) {
             $eventID = explode(",", Input::get("event_id"));
-            $event->whereIn('planned_events.id', $eventID);
+            $event->whereIn('planned_events.blueprint_id', $eventID);
+        }
+
+        /*
+         * Filter to show only qualification events OR only planned events OR Both
+         */
+        if(Input::has('event_to_show')){
+            $eventToShow = Input::get('event_to_show');
+            if($eventToShow == 'qualificationEventsOnly'){
+                $event->whereNotNull('planned_qualification_id');
+            }elseif ($eventToShow == 'plannedEventsOnly'){
+                $event->whereNull('planned_qualification_id');
+            }
         }
 
         if (Input::get("conflict_event_id") != "" && Input::get("conflict_event_id") != 0) {
@@ -462,8 +473,14 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         }
 
         if (Input::get("event_category_id") != "null" && !empty(Input::get("event_category_id"))) {
-            $event_category_id = explode(",", Input::get("event_category_id"));
-            $event->whereIn('planned_events.event_category_id', $event_category_id);
+            $is_enable = \App\Accessories\FTM::isEnabled('seminar-multicategory-support');
+            if ($is_enable) {
+                $category_id = str_replace(",", "|", Input::get('event_category_id'));
+                $event->whereRaw('planned_events.event_category_id REGEXP "' . $category_id . '"');
+            } else {
+                $event_category_id = explode(",", Input::get("event_category_id"));
+                $event->whereIn('planned_events.event_category_id', $event_category_id);
+            }
         }
 
         if (Input::get("location_id") != "null" && !empty(Input::get("location_id"))) {
@@ -479,13 +496,11 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 //            $trainer_id = explode(",", Input::get("trainer_id"));
             $trainer_id = str_replace(",", "|", Input::get("trainer_id"));
             $event->whereRaw('CONCAT(",", `planned_schedule_slot`.`trainer`, ",") REGEXP ",' . $trainer_id . ',"');
-
         }
 
         if (Input::get("status") != "null" && !empty(Input::get("status"))) {
             $status = explode(",", Input::get("status"));
             $event->whereIn('event_status', $status);
-
         }
 
         if (Input::get("planned_by") != "null" && !empty(Input::get("planned_by"))) {
@@ -494,10 +509,9 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         }
 
         if (!Input::has("conflict_event_id")) {
-            $event->where(function ($query) use ($start_date, $end_date) {
-                $query->where('event_startdate', ">=", $start_date)
-                    ->orWhere('event_enddate', "<=", $end_date);
-            });
+            $event->whereRaw("(`event_startdate` >= DATE('" . $start_date ."') and `event_startdate` <= DATE('" . $end_date . "')
+                                OR `event_enddate` >= DATE('" . $start_date ."') and `event_enddate` <= DATE('" . $end_date . "')
+                               )");
         }
 
         // Check we need to show cancel seminars
@@ -506,38 +520,47 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         }
 
         $event->groupBy('planned_events.id');
-        if ($id != "")
-            $event->where('planned_events.id', '=', $id);
+
+        if ($plannedSeminarId != "")
+            $event->where('planned_events.id', '=', $plannedSeminarId);
+
+        $event->with(['plannedQualification' => function($qur){
+                $qur->select(['id', 'name', 'start_date', 'end_date']);
+        }]);
 
         $eventList = $event->get([
             'planned_events.id',
             'event_name',
             'event_status',
+            'blueprint_id',
             'event_startdate',
             DB::raw('DATE_ADD(event_enddate, INTERVAL 1 DAY)'),
             'min_registration',
             'max_registration',
-            DB::raw('GROUP_CONCAT(LocationName)'),
+            'LocationName',
             'status',
             'event_startdate',
             'event_enddate',
+            'planned_qualification_id',
             DB::raw('concat(FirstName," ", LastName) as trainer_name'),
             'event_category_name',
             DB::raw('(select count(event_attendees.event_id) from event_attendees where event_attendees.event_id=planned_events.id)as totalParticipant  ')
         ]);
+
         $calendarEvents = [];
         foreach ($eventList as $singleEvent) {
-            
             foreach ($singleEvent->eventSchedule as $seminarDay) {
-                if(!isset($seminarDay->schedule) || $seminarDay->schedule == null){
+                if (!isset($seminarDay->schedule) || $seminarDay->schedule == null) {
                     continue;
                 }
-                
+
                 $color = $singleEvent->event_status == 'confirm' ? $seminarPlannerSetting->planned_calendar_background : ($singleEvent->event_status == 'cancel' ? $seminarPlannerSetting->cancel_seminars_background : (($seminarDay->schedule->locationConflicted == 1 || $seminarDay->schedule->trainerConflicted == 1) ? $seminarPlannerSetting->new_seminar_calendar_background : $seminarPlannerSetting->draft_calendar_background));
-                
+
                 $seminar = new stdClass();
-                $seminar->title = $singleEvent->event_name . ' '.CustomFunction::customTrans("seminarPlanner.day")." - " . $seminarDay->schedule->event_days;
+                $seminar->title = $singleEvent->event_name . ' ' . CustomFunction::customTrans("seminarPlanner.day") . " - " . $seminarDay->schedule->event_days;
                 $seminar->event_name = $singleEvent->event_name;
+                $seminar->planned_qualification_id = $singleEvent->planned_qualification_id;
+                $seminar->qualification = $singleEvent->plannedQualification;
                 $seminar->LocationName = isset($seminarDay->schedule->scheduleLocation) && !empty($seminarDay->schedule->scheduleLocation) ? $seminarDay->schedule->scheduleLocation->LocationName : "";
                 $seminar->start = $seminarDay->schedule->schedule_date;
                 $seminar->end = $seminarDay->schedule->schedule_date;
@@ -545,8 +568,8 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
                 $seminar->allDay = True;
                 $seminar->id = $singleEvent->id . "-" . $seminarDay->schedule->id;
                 $seminar->event_id = $singleEvent->id;
+                $seminar->blueprint_id = $singleEvent->blueprint_id;
                 $seminar->className = "plannedSeminar_" . $singleEvent->id;
-                $seminar->event_schedule = $singleEvent->eventSchedule;
                 $seminar->event_days = $seminarDay->schedule->event_days;
                 $seminar->event_status = $singleEvent->event_status;
                 $seminar->locationConflicted = $seminarDay->schedule->locationConflicted;
@@ -555,7 +578,6 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
                 $seminar->detailLocationConflictMessage = $seminarDay->schedule->detailLocationConflictMessage;
 
                 array_push($calendarEvents, $seminar);
-
             }
         }
 
