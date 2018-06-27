@@ -20,7 +20,7 @@ $remaining_Seats = 0;
 
                         ?>
 
-                        @if(Auth::user()->LevelValueID==1 )
+                        @if(Auth::user()->levelID==1 )
                             <ul class="seat_map with_bkgd devider frankfurt_btn">
                                 @include('seminar_planner.seat_allocation.seat_popover')
                                 <li class="seat_header ">{!! $allocation->name !!}</li>
