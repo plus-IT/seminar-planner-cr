@@ -5,14 +5,13 @@
             <div class="tabbable-custom">
 
                 <ul class="nav nav-tabs custom-tabs new-custom-tabs nav-justified">
-                    @can('seminarPlanner.description')
+                   
                     <li class="active">
                         <a data-toggle="tabajax" data-target="#tab_description" href="#tab_detail">
                             <i class="fa fa-info"></i>
                             <p>{!! Html::customTrans("events.description") !!}</p>
                         </a>
                     </li>
-                    @endcan
                     @can('seminarPlanner.schedule')
                     <li class="">
                         <a data-toggle="tabajax"
@@ -66,11 +65,9 @@
 
                 </ul>
                 <div class="tab-content">
-                    @can('seminarPlanner.description')
                     <div id="tab_description" class="tab-pane active">
                         @include('seminar_planner.description_detail')
                     </div>
-                    @endcan
                     @can('seminarPlanner.schedule')
                     <div id="tab_schedule" class="tab-pane">
                     </div>
