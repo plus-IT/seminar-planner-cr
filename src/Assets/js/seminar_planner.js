@@ -21,6 +21,7 @@ $body = $("body");
 $(document).ready(function () {
 
     FormWizard.init();
+    loadSelect2WithMacro();
     $(".seminar-search-input").removeAttr('readonly');
     loadAutoCompleteCategoryList();
     loadAutoCompleteLocationList();
@@ -29,10 +30,10 @@ $(document).ready(function () {
     getDashboardTaskEvent();
     setHeightToScroller();
     $("#infinite_scroll").niceScroll();
-     var today_Date = moment().format(app_date_format_js.toUpperCase());
-     $('#startOfDate').val(today_Date);
-     $('#startOfDate').attr("placeholder", app_date_format_js);
-     $('#endOfDate').attr("placeholder", app_date_format_js);
+    var today_Date = moment().format(app_date_format_js.toUpperCase());
+    $('#startOfDate').val(today_Date);
+    $('#startOfDate').attr("placeholder", app_date_format_js);
+    $('#endOfDate').attr("placeholder", app_date_format_js);
     $('#startOfDate').datepicker({
         rtl: Metronic.isRTL(),
         orientation: "left",
@@ -120,7 +121,22 @@ $(document).ready(function () {
         var className = $(this).attr('data-target');
         className = className.replace('#', '');
         $("#save_button_class").removeClass();
-        $("#save_button_class").addClass('green btn_simply_green btn default ' + className + '_save');
+         console.log(className);
+        if(className == 'tab_description'){
+            $("#save_button_class").show();
+            $("#save_button_class").html(save_description);
+            $("#save_button_class").addClass('green btn_simply_green btn default ' + className + '_save');
+        }else if(className == 'tab_activity'){
+            $("#save_button_class").show();
+            $("#save_button_class").html(save_activity);
+            $("#save_button_class").addClass('green btn_simply_green btn default ' + className + '_save');
+        }else if(className == 'tab_document'){
+            $("#save_button_class").show();
+            $("#save_button_class").html(save_document);
+            $("#save_button_class").addClass('green btn_simply_green btn default ' + className + '_save');
+        }else{
+            $("#save_button_class").hide();
+        }
 
     });
     $body.on("click", "#is_deploy_internet", function (e) {
@@ -233,7 +249,7 @@ $(document).ready(function () {
                 initDatePicker();
                 $("#edit_seminar").modal("show");
                 $(".tooltips").tooltip();
-
+                $('[data-target=#tab_description]').trigger('click')
             }
         });
     });

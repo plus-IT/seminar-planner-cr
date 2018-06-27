@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Request;
 use App\Http\Requests\StorePersonPostRequest;
-
+use Illuminate\Support\Facades\Validator;
 use Ptlyash\SeminarPlannerCR\Interfaces\SeminarPlannerRepositoryInterface;
 use App\Models\Person;
 use App\Models\Location;
@@ -37,6 +37,7 @@ use App\Models\User;
 use App\WorkflowManager\EventManager;
 use Illuminate\Support\Facades\App;
 use Yajra\Datatables\Facades\Datatables;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 
 class SeminarPlannerController extends Controller
@@ -303,22 +304,19 @@ class SeminarPlannerController extends Controller
 
     public function index($id = "")
     {
-        //dd("In indexx");
         $all_data = $this->getAllDetails();
         $seminar_days_new = SeminarSettings::first(['seminar_new_until_days', 'consider_seminar_days', 'draft_calendar_background', 'planned_calendar_background', 'new_seminar_calendar_background', 'cancel_seminars_background']);
         $holidays = HolidayModal::all();
-        // Fetch all the requried details for the filter on second setp
-        $all_location = Location::all();
-        $all_trainer = Person::where('is_trainer', "=", '1')->get(['PersonID', DB::raw("concat(FirstName,' ',LastName) as PersonName")]);
         $all_regions = Region::all();
-        $all_system_user = User::where("UserID", "!=", Auth::user()->UserID)->get();
-        $all_event_category = EventCategory::all();
+        $all_trainer = [];//Person::where('is_trainer', "=", '1')->get(['PersonID', DB::raw("concat(FirstName,' ',LastName) as PersonName")]);
+        $all_system_user_obj = [];//User::where("UserID", "!=", Auth::user()->UserID);
+        $all_event_category = [];
         $currentDate = ($id == "") ? Carbon::today()->format('Y-m-d') : PlannedEvent::where('id', $id)->first()->event_startdate;
-        
+
         // adding all translations of seminar planner
         $translations = \Lang::get('seminarPlanner');
-        
-        return view('seminar_planner.seminar_planner', compact('seminar_days_new', 'holidays', 'all_location', 'all_trainer', 'all_regions', 'all_event_category', 'all_system_user', 'id', 'currentDate','translations'));
+
+        return view('seminar_planner.seminar_planner', compact('seminar_days_new', 'holidays', 'all_trainer', 'all_regions', 'all_event_category', 'all_system_user', 'id', 'currentDate', 'translations'));
     }
 
     public function getSeminarTable()
@@ -870,5 +868,79 @@ class SeminarPlannerController extends Controller
 
             ]);
         }
+    }
+     public function getTrainerList() {
+
+        $search_cat = '';
+        if (Input::has('q'))
+            $search_cat = strtolower(Input::get('q'));
+        $trainers = Person::where("is_trainer", "1")
+                ->where(function ($query) use ($search_cat) {
+                    $query->orWhere('person.FirstName', 'like', '%' . $search_cat . '%')
+                    ->orWhere('person.LastName', 'like', '%' . $search_cat . '%')
+                    ->orWhereRaw('CONCAT_WS(" ",trim(person.FirstName),trim(person.LastName))  like "%' . $search_cat . '%"')
+                    ->orWhereRaw('CONCAT_WS(" ",trim(person.LastName),trim(person.FirstName))  like "%' . $search_cat . '%"');
+                })
+                ->get([
+            'PersonID',
+            'is_trainer',
+            'is_free_lancer',
+            'is_participant',
+            'FirstName',
+            'LastName',
+            'Email',
+            'Birthdate',
+            'Age'
+        ]);
+        return $trainers;
+    }
+
+    public function getLocationList() {
+
+        $search_cat = '';
+        if (Input::has('q'))
+            $search_cat = strtolower(Input::get('q'));
+        $locations = Location::with([
+                    'locationRoom',
+                    'locationRoom.room'
+                ])->where(function ($query) use ($search_cat) {
+                    $query->where("location.LocationName", "like", "%" . $search_cat . "%")
+                            ->orWhere("location.Zip", "like", "%" . $search_cat . "%")
+                            ->orWhere("location.City", "like", "%" . $search_cat . "%");
+                })->get([
+            'LocationID',
+            'LocationName',
+            'Street',
+            'Zip',
+            'City',
+            'Phone',
+            'Email',
+            'CountryID',
+            'RegionID'
+        ]);
+        return $locations;
+    }
+
+    public function getAllCategory() {
+        $get_current_local = LaravelLocalization::getCurrentLocale();
+        $categoryName = ($get_current_local == 'en') ? 'event_category_name' : 'event_category_name_de';
+        $eventCategoryObj = EventCategory::whereNotNull($categoryName)->select([
+                    'id',
+                    DB::raw($categoryName . ' as text')
+        ]);
+
+        $event_category_data = $eventCategoryObj->paginate(10);
+        return response()->json(['items' => $event_category_data->toArray()['data'], 'pagination' => $event_category_data->nextPageUrl() ? true : false]);
+    }
+     public function getAllAgents(){
+       $user_data= User::where('is_support_user','!=','1')
+               ->where("UserID",'!=',Auth::id())
+               ->orderBy('FirstName','ASC')
+               ->select([
+                  'UserID as id',
+                   DB::raw('CONCAT(FirstName," ",LastName)as text')
+               ])
+               ->paginate(10);
+       return response()->json(['items' => $user_data->toArray()['data'], 'pagination' => $user_data->nextPageUrl() ? true : false]);
     }
 }

@@ -349,7 +349,8 @@ var FormWizard = function () {
                         });
 
                         // select2 initialization for the filter
-                        $(".filterselect").select2();
+                        $("[name='event_status']").select2();
+
 
                     }
                 }

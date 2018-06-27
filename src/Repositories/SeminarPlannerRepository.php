@@ -518,7 +518,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             DB::raw('DATE_ADD(event_enddate, INTERVAL 1 DAY)'),
             'min_registration',
             'max_registration',
-            'LocationName',
+            DB::raw('GROUP_CONCAT(LocationName)'),
             'status',
             'event_startdate',
             'event_enddate',
@@ -526,9 +526,9 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             'event_category_name',
             DB::raw('(select count(event_attendees.event_id) from event_attendees where event_attendees.event_id=planned_events.id)as totalParticipant  ')
         ]);
-
         $calendarEvents = [];
         foreach ($eventList as $singleEvent) {
+            
             foreach ($singleEvent->eventSchedule as $seminarDay) {
                 if(!isset($seminarDay->schedule) || $seminarDay->schedule == null){
                     continue;

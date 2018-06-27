@@ -12,6 +12,10 @@ Route::group(['prefix' => (env('APP_ENV') === 'testing' ? 'en' : LaravelLocaliza
             Route::group(['middleware' => 'auth'], function () {
                 Route::post('seminar-planner/export', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@exportToXml');
                 Route::get('seminar-planner/exportlist', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@exportList');
+                Route::get('seminar-planner/getTrainerList', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@getTrainerList');
+                Route::get('seminar/getAllCategory', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@getAllCategory');
+                Route::get('filter/getAllAgents', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@getAllAgents');
+                Route::get('seminar-planner/getLocationList', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@getLocationList');
                 Route::post('seminar-planner/event/savePlannedParticipant/{eventid}', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@savePlannedParticipantDetail');
                 Route::post('seminar-planner/event/revenueCalculate/{eventid}', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@storeRevenueCalculate');
                 Route::put('seminar-planner/event/addPlannedParticipant/{eventid}', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@addPlannedParticipant');
@@ -61,7 +65,7 @@ Route::group(['prefix' => (env('APP_ENV') === 'testing' ? 'en' : LaravelLocaliza
                 Route::Resource('seminar-planner/document', 'Ptlyash\SeminarPlannerCR\Controllers\PlannedDocumentController');
 
                 Route::get('seminar-planner/seminar/revenue-list/{event_id}', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@seminarRevenueList');
-                Route::get('seminar-planner/seminar/updatePlannedMinMaxData/{event_id}','Ptlyash\SeminarPlanner\Controllers\SeminarPlannerController@updatePlannedMinMaxData');
+                Route::get('seminar-planner/updatePlannedMinMaxData/{event_id}','Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@updatePlannedMinMaxData');
             });
         });
     });
