@@ -192,7 +192,10 @@ function changeSeatingStatus(seat_status, event_id, thisButton) {
             thisButton.parents('.seat_allocation_status').css('display', 'none');
             if (seat_status == '1') {
                 $(".show_allocation_settings").removeAttr('style');
-
+            } else {
+                $('[data-target="#tab_seminar_seat_allocation"]').attr('disabled', 'disabled');
+                $('[data-target="#tab_seminar_seat_allocation"]').parents('li').toggleClass('active').addClass('disabled');
+                $('[data-target="#tab_description"]').trigger('click');
             }
         }
 
