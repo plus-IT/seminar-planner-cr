@@ -144,14 +144,12 @@ class SeminarPlannerController extends Controller {
         ]);
 
         if (!$validator->fails()) {
-            if (isset($external_id)) {
-                PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
-                    'max_registration' => $max_registration, 'external_id' => $external_id]);
-            } else {
-                PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
-                    'max_registration' => $max_registration]);
-            }
-
+            $inputs = [
+                'min_registration' => $min_registration,
+                'max_registration' => $max_registration,
+                'external_id' => !empty($external_id) ? $external_id : null
+            ];
+            PlannedEvent::where('id', '=', $eventId)->update($inputs);
             return Response::json([
                         "type" => "success"
             ]);
