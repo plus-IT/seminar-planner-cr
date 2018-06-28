@@ -14,7 +14,7 @@ $(document).ready(function () {
         var total_free_seats = parseFloat($(".total_free_seats").text());
         var total_max_participants = max_participants + total_free_seats;
         var sum = 0;
-        var fee_seat_count=0;
+        var fee_seat_count = 0;
         var old_val = $(this).attr('seatallocated');
         var $me = $(this);
         var is_free_seat = 0;
@@ -33,7 +33,7 @@ $(document).ready(function () {
         }
         if (sum >= max_participants) {
             is_free_seat = 1;
-            fee_seat_count=total_max_participants-max_participants;
+            fee_seat_count = total_max_participants - max_participants;
         }
         $.ajax({
             url: base_url + 'seminar-planner/allocateSeat/details/' + eventID + '/' + levelID,
@@ -42,7 +42,7 @@ $(document).ready(function () {
                 'allocatedSeat': allocatedSeat,
                 'organization': organization,
                 'is_free_seat': is_free_seat,
-                'fee_seat_count':fee_seat_count
+                'fee_seat_count': fee_seat_count
             },
             beforeSend: function (data) {
                 blockUI('modal-body');
@@ -65,6 +65,56 @@ $(document).ready(function () {
         $('.seatAllocationDataPlace').removeAttr('style');
 
         $(".seatUtilizationDataPlace").slideUp('slow');
+    });
+    $body.on('click', '.start_allocation', function (e) {
+        e.preventDefault();
+        var seat_status = $(this).data('seatstatus');
+        var event_id = $(".eventID").val();
+        var me = $(this);
+        bootbox.confirm({
+            message: allocation_start,
+            buttons: {
+                'cancel': {
+                    label: cancel_button,
+                    className: 'btn-default pull-right'
+                },
+                'confirm': {
+                    label: ok_button,
+                    className: 'btn-primary pull-right'
+                }
+            },
+            callback: function (response) {
+                if (response == true) {
+                    changeSeatingStatus(seat_status, event_id, me);
+                }
+            }
+        });
+
+    });
+    $body.on('click', '.free_all_seats', function (e) {
+        e.preventDefault();
+        var seat_status = $(this).data('seatstatus');
+        var event_id = $(".eventID").val();
+        var me = $(this);
+        bootbox.confirm({
+            message: all_seat_will_free,
+            buttons: {
+                'cancel': {
+                    label: cancel_button,
+                    className: 'btn-default pull-right'
+                },
+                'confirm': {
+                    label: ok_button,
+                    className: 'btn-primary pull-right'
+                }
+            },
+            callback: function (response) {
+                if (response == true) {
+                    changeSeatingStatus(seat_status, event_id, me);
+                }
+            }
+        });
+
     });
     $body.on('click', ".btn-utilization", function (e) {
         e.preventDefault();
@@ -128,4 +178,23 @@ function initAllocationTable() {
 
 
     });
+}
+function changeSeatingStatus(seat_status, event_id, thisButton) {
+    $.ajax({
+        url: base_url + 'seminar_planned/seat_status/' + seat_status + '/' + event_id,
+        method: 'get',
+        beforeSend: function () {
+            blockUI('.modal-body');
+        },
+        success: function (data) {
+            unBlockUI('.modal-body');
+            notify(data.type, data.message);
+            thisButton.parents('.seat_allocation_status').css('display', 'none');
+            if (seat_status == '1') {
+                $(".show_allocation_settings").removeAttr('style');
+
+            }
+        }
+
+    })
 }

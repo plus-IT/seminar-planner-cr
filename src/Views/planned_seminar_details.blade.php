@@ -53,8 +53,9 @@
                     </li>
                     @endcan
                     @if(Auth::user()->LevelValueID!='')
-                    <li class="">
-                        <a data-toggle="tabajax"
+                    <li class="{!! !empty($event_data->is_seats_allocated) && $event_data->is_seats_allocated==2? 'disabled':'' !!}">
+                        <a data-toggle="tabajax" 
+                           {!! !empty($event_data->is_seats_allocated) && $event_data->is_seats_allocated==2? 'disabled':'' !!}
                            href="{!!url(LaravelLocalization::getCurrentLocale() . "/" .'seminar-planner/seminar_seat_allocation/'. $event_data->id)!!}"
                            data-target="#tab_seminar_seat_allocation">
                            <i class="fa fa-photo"></i>
