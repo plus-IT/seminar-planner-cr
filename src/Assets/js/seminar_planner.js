@@ -1278,6 +1278,49 @@ $(document).ready(function () {
     $(document).click(function () {
         $(".seminarCategoryForExport").select2("close");
     });
+    
+    $body.on('keyup', '[name="search_trainer"]', function (e) {
+        var search_trainer = $(this).val();
+        $.ajax({
+            url: base_url + 'seminar-planner/getTrainerList?q=' + search_trainer,
+            method: 'get',
+            beforeSend: function () {
+                blockUI(".modal-content");
+
+            },
+            success: function (data) {
+                unBlockUI(".modal-content");
+                $(".trainerList").html("");
+                $("#trainerListTemplate")
+                        .tmpl(data)
+                        .appendTo(".trainerList");
+                reassignDragDropEvent();
+                $(".scheduleListWrapper,.SlotListWrapper").css('height', $(".trainerlLocationListWrapper").height());
+            }
+
+        });
+    });
+    $body.on('keyup', '[name="search_location"]', function (e) {
+        var search_trainer = $(this).val();
+        $.ajax({
+            url: base_url + 'seminar-planner/getLocationList?q=' + search_trainer,
+            method: 'get',
+            beforeSend: function () {
+                blockUI(".modal-content");
+
+            },
+            success: function (data) {
+                unBlockUI(".modal-content");
+                $(".locationList").html("");
+                $("#LocationListTemplate")
+                        .tmpl(data)
+                        .appendTo(".locationList");
+                reassignDragDropEvent();
+                $(".scheduleListWrapper,.SlotListWrapper").css('height', $(".trainerlLocationListWrapper").height());
+            }
+
+        });
+    });
 
 
 });
