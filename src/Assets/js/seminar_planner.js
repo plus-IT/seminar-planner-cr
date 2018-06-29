@@ -694,15 +694,17 @@ $(document).ready(function () {
         }
     });
 
-
+    var timeout = null;
     $body.on('keyup', ".seminar-search-input", function (e) {
-        pageNo = 1;
-        var Data = generateFilterURL();
-        if (Data != '' && Data != false) {
-
-            url = base_url + "seminar-planner/getDetails" + Data;
-            loadSeminars(url, "");
-        }
+        clearTimeout(timeout)
+        timeout = setTimeout(function() {
+            pageNo = 1;
+            var Data = generateFilterURL();
+            if (Data != '' && Data != false) {
+                url = base_url + "seminar-planner/getDetails" + Data;
+                loadSeminars(url, "");
+            }
+        }, 500)
     });
 
 

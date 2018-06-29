@@ -493,7 +493,7 @@ class SeminarPlannerController extends Controller
         $row_date = strtotime($event_obj->event_startdate);
         $today = strtotime(date('Y-m-d'));
 
-        if($row_date > $today){
+        if($row_date > $today || $event_obj->event_status != 'confirm'){
             $result = $this->seminar_planning_repository->deleteSeminar($eventId);
             if(isset($result) && !empty($result)){
                 // // Attach trigger
