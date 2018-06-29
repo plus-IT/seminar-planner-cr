@@ -12,6 +12,7 @@ Route::group(['prefix' => (env('APP_ENV') === 'testing' ? 'en' : LaravelLocaliza
             Route::group(['middleware' => 'auth'], function () {
                 Route::post('seminar-planner/export', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@exportToXml');
                 Route::get('seminar-planner/exportlist', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@exportList');
+                Route::get('seminar_planned/seat_status/{seat_status}/{event_id}', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@changeSeatingMethod');
                 Route::get('seminar-planner/getTrainerList', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@getTrainerList');
                 Route::get('seminar/getAllCategory', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@getAllCategory');
                 Route::get('filter/getAllAgents', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@getAllAgents');

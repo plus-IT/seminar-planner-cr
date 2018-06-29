@@ -72,6 +72,7 @@
                     </div>
                     <div class="form-group form-md-line-input form-md-floating-label  required">
                         <input type="number" placeholder="" name="max_registration" id="max_registration"
+                               {!! !empty($event_data->is_seats_allocated)? ($event_data->is_seats_allocated!=0 ? 'readonly':'') :'' !!}
                                class="form-control {!! (!empty($event_data->max_registration)) ? 'edited' :'' !!}"
                                value="{!! isset($event_data) && !empty($event_data) ? $event_data->max_registration : "" !!}">
                         <label for="max_registration">{!! Html::customTrans("seminarPlanner.max_registration") !!} </label>

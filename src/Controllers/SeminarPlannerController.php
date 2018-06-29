@@ -39,153 +39,147 @@ use Illuminate\Support\Facades\App;
 use Yajra\Datatables\Facades\Datatables;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
+class SeminarPlannerController extends Controller {
 
-class SeminarPlannerController extends Controller
-{
     /**
      * @var PersonRepositoryInterface
      */
     protected $seminar_planning_repository;
     protected $allocated_seat_repository;
 
-
     /**
      * initializes variable with EventRepository
      * @param EventRepositoryInterface $event_repository
      */
-    public function __construct(SeminarPlannerRepositoryInterface $seminar_planning_repository, AllocationSeatRepository $allocated_seat_repository)
-    {
+    public function __construct(SeminarPlannerRepositoryInterface $seminar_planning_repository, AllocationSeatRepository $allocated_seat_repository) {
         $this->middleware('acl:seminarPlanner.view', ['only' => ['index']]);
         $this->middleware('acl:seminarPlanner.deleteSeminar', ['only' => ['deleteSeminar']]);
         $this->seminar_planning_repository = $seminar_planning_repository;
         $this->allocated_seat_repository = $allocated_seat_repository;
     }
 
-    public function getSeminarBudget($eventId = 0)
-    {
+    public function getSeminarBudget($eventId = 0) {
         $revenueData = $this->seminar_planning_repository->getNoOfPlannedParticipant($eventId);
         return view('event.seminar_budget.budget_detail', $revenueData);
     }
 
-    public function seminarSeatAllocation($eventId = 0)
-    {
+    public function seminarSeatAllocation($eventId = 0) {
         $allocation_settings = $this->seminar_planning_repository->seminarSeatAllocation($eventId);
         $allocated_seats = AllocationSettings::where('parentID', '=', Auth::user()->LevelValueID)
-            ->where('eventID', '=', $eventId)->sum('allocatedSeat');
+                        ->where('eventID', '=', $eventId)->sum('allocatedSeat');
         $free_seats = EventAvailableSeat::where('event_id', '=', $eventId)->sum('no_of_release_seat');
         $free_seats = !empty($free_seats) ? $free_seats : 0;
+        $plannedEventObj = PlannedEvent::where('id', $eventId)->first([
+            'is_seats_allocated'
+        ]);
 //        echo "<pre>";
 //        print_r($allocation_settings);
 //        print_r($allocated_seats);
 //        exit;
-        return view('seminar_planner.seat_allocation.seat_allocation_info', compact('allocation_settings', 'allocated_seats', 'free_seats'));
+        return view('seminar_planner.seat_allocation.seat_allocation_info', compact('allocation_settings', 'allocated_seats', 'free_seats', 'plannedEventObj'));
     }
 
-    public function savePlannedEvents($eventId){
-        $planed_obj=PlannedEvent::findOrFail($eventId);
-        $customField=[
+    public function savePlannedEvents($eventId) {
+        $planed_obj = PlannedEvent::findOrFail($eventId);
+        $customField = [
             'event_status',
             'is_deploy_internet',
             'show_vacant_seats'
         ];
         $planed_obj->fill(Input::only($customField));
-        if($planed_obj->save()){
+        if ($planed_obj->save()) {
             // Attach trigger
-            if(Input::has("is_deploy_internet") && Input::has("is_deploy_internet")){
+            if (Input::has("is_deploy_internet") && Input::has("is_deploy_internet")) {
                 $data = PlannedEvent::getEventForSalesforceEntry($eventId);
                 EventManager::trigger("create-campaigns", $data);
             }
 
             return "true";
-        }else{
+        } else {
             return "false";
         }
     }
-    public function savePlannedRoleEvents($eventId){
-        if(Input::has("portal_roles")){
-            $planed_obj=PlannedEvent::where('id', $eventId)->update(['portal_roles' => Input::get('portal_roles')]);
-            if($planed_obj){
+
+    public function savePlannedRoleEvents($eventId) {
+        if (Input::has("portal_roles")) {
+            $planed_obj = PlannedEvent::where('id', $eventId)->update(['portal_roles' => Input::get('portal_roles')]);
+            if ($planed_obj) {
                 return "true";
-            }else{
+            } else {
                 return "false";
             }
-        }else{
+        } else {
             return false;
         }
     }
-    public function getPlannedParticipant($eventId)
-    {
+
+    public function getPlannedParticipant($eventId) {
         return $this->seminar_planning_repository->getNoOfPlannedParticipant($eventId);
     }
 
-    public function savePlannedParticipantDetail($eventId)
-    {
+    public function savePlannedParticipantDetail($eventId) {
         $success = $this->seminar_planning_repository->savePlannedParticipantDetail($eventId);
         if (empty($success)) {
             return Response::json([
-                "type" => "error",
-                "message" => CustomFunction::customTrans("general.error_message")
+                        "type" => "error",
+                        "message" => CustomFunction::customTrans("general.error_message")
             ]);
         } else {
             return Response::json([
-                "type" => "success",
-                "message" => CustomFunction::customTrans("events.save_participant"),
-                "data" => $this->getPlannedParticipant($eventId)
+                        "type" => "success",
+                        "message" => CustomFunction::customTrans("events.save_participant"),
+                        "data" => $this->getPlannedParticipant($eventId)
             ]);
         }
     }
-    public function updatePlannedMinMaxData(Request $request,$eventId) {
+
+    public function updatePlannedMinMaxData(Request $request, $eventId) {
         $min_registration = Input::get('min_registration');
         $max_registration = Input::get('max_registration');
         $external_id = Input::get('external_id');
         $modal = 'App\\Models\\PlannedEvent';
         $primaryKey = App::make($modal)->getKeyName();
         $validator = Validator::make($request::all(), [
-            'external_id' => 'unique:tenant.planned_events,external_id,' . $eventId .',' .$primaryKey
+                    'external_id' => 'unique:tenant.planned_events,external_id,' . $eventId . ',' . $primaryKey
         ]);
-        
-        if (!$validator->fails()) {
-            if(isset($external_id)){
-                PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
-            'max_registration' => $max_registration, 'external_id' => $external_id]);
-            } else {
-                PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
-            'max_registration' => $max_registration]);
-            }
-            
-            return Response::json([
-                "type" => "success"
-            ]);
-        } else {
-             $validationMsg = CustomFunction::customTrans("general.uniqueMessagePreText") . " " . CustomFunction::customTrans("lookupTable.external_id") . " " . CustomFunction::customTrans("general.uniqueExternalId_general") ;
-           
-            return Response::json([
-                    "type" => "error",
-                    "message" => $validationMsg
-             ]);
-        }
-       
-    }   
 
-    public function deleteSeminarRevenue($event_id)
-    {
-        $seminar_id = Input::get('seminar_id');
-        if (!PlannedSeminarRevenue::where('revenue_item_id', "=", $seminar_id)->where('event_id', '=', $event_id)->delete()) {
+        if (!$validator->fails()) {
+            $inputs = [
+                'min_registration' => $min_registration,
+                'max_registration' => $max_registration,
+                'external_id' => !empty($external_id) ? $external_id : null
+            ];
+            PlannedEvent::where('id', '=', $eventId)->update($inputs);
             return Response::json([
-                "type" => "error",
-                "message" => CustomFunction::customTrans("general.error_message")
+                        "type" => "success"
             ]);
         } else {
-            $messageKey = Input::get('revenue_type') == 'fix' ? 'event.fix_delete_message' : 'event.variable_delete_message';
+            $validationMsg = CustomFunction::customTrans("general.uniqueMessagePreText") . " " . CustomFunction::customTrans("lookupTable.external_id") . " " . CustomFunction::customTrans("general.uniqueExternalId_general");
+
             return Response::json([
-                "type" => "success",
-                "message" => CustomFunction::customTrans($messageKey)
+                        "type" => "error",
+                        "message" => $validationMsg
             ]);
         }
     }
 
-    public function storeRevenueCalculate()
-    {
+    public function deleteSeminarRevenue($event_id) {
+        $seminar_id = Input::get('seminar_id');
+        if (!PlannedSeminarRevenue::where('revenue_item_id', "=", $seminar_id)->where('event_id', '=', $event_id)->delete()) {
+            return Response::json([
+                        "type" => "error",
+                        "message" => CustomFunction::customTrans("general.error_message")
+            ]);
+        } else {
+            $messageKey = Input::get('revenue_type') == 'fix' ? 'event.fix_delete_message' : 'event.variable_delete_message';
+            return Response::json([
+                        "type" => "success",
+                        "message" => CustomFunction::customTrans($messageKey)
+            ]);
+        }
+    }
+
+    public function storeRevenueCalculate() {
         $seminar_id = Input::get('seminar_type_id');
         $seminar_data = ($seminar_id != '') ? PlannedSeminarRevenue::findOrFail($seminar_id) : new PlannedSeminarRevenue();
         $custom_field = [
@@ -199,32 +193,30 @@ class SeminarPlannerController extends Controller
         ];
         $seminar_data->fill(Input::only($custom_field));
         if ($seminar_id == '')
-            $msg = CustomFunction::customTrans("event.".Input::get('revenue_type')."_add_message");
+            $msg = CustomFunction::customTrans("event." . Input::get('revenue_type') . "_add_message");
         else
-            $msg = CustomFunction::customTrans("event.success_".Input::get('revenue_type')."_update_message");
+            $msg = CustomFunction::customTrans("event.success_" . Input::get('revenue_type') . "_update_message");
         if (!$seminar_data->save()) {
             return Response::json([
-                "type" => "error",
-                "message" => CustomFunction::customTrans("event.error_message")
+                        "type" => "error",
+                        "message" => CustomFunction::customTrans("event.error_message")
             ]);
         } else {
-            $item = SeminaItem::where('seminar_item_id','=',$seminar_data->item_id)->get();
+            $item = SeminaItem::where('seminar_item_id', '=', $seminar_data->item_id)->get();
             $response = [
                 "type" => "success",
                 "message" => $msg,
                 "data" => $seminar_data
             ];
-            if(count($item) > 0){
+            if (count($item) > 0) {
                 $item = $item->first();
                 $response['data']['item_name'] = $item->itemName;
             }
             return Response::json($response);
         }
-
     }
 
-    public function seminarRevenueList($revenue_id)
-    {
+    public function seminarRevenueList($revenue_id) {
         $lines = PlannedSeminarRevenue::where('revenue_item_id', '=', $revenue_id)->get();
         if (count($lines) > 0) {
             $lines = $lines->first()->toArray();
@@ -238,8 +230,7 @@ class SeminarPlannerController extends Controller
         return Response::json($lines);
     }
 
-    public function revenueCalculate()
-    {
+    public function revenueCalculate() {
         $revenue_type = '';
         if (Input::has('revenue_type'))
             $revenue_type = Input::get('revenue_type');
@@ -253,37 +244,33 @@ class SeminarPlannerController extends Controller
         }
     }
 
-    public function addPlannedParticipant($eventId)
-    {
+    public function addPlannedParticipant($eventId) {
         $event_task = $this->seminar_planning_repository->addPlannedParticipant($eventId);
         if (!empty($event_task)) {
             return Response::json([
-
-                "type" => "success",
-                "message" => CustomFunction::customTrans("event.updated_planned_participant"),
-                "data" => $event_task
+                        "type" => "success",
+                        "message" => CustomFunction::customTrans("event.updated_planned_participant"),
+                        "data" => $event_task
             ]);
         } else {
             return Response::json([
-                "type" => "error",
-                "message" => CustomFunction::customTrans("general.error_message")
+                        "type" => "error",
+                        "message" => CustomFunction::customTrans("general.error_message")
             ]);
         }
     }
 
-    public function getActivities($event_id = 0,User $user)
-    {
+    public function getActivities($event_id = 0, User $user) {
         $id = Auth::user()->UserID;
         if ($event_id != 0) {
-            $activity_data = $this->seminar_planning_repository->getActivitiesByID($event_id,$id,$user->hasPermission('tasks.viewOther'));
+            $activity_data = $this->seminar_planning_repository->getActivitiesByID($event_id, $id, $user->hasPermission('tasks.viewOther'));
             return view('seminar_planner.activity.activity_info', compact('activity_data'));
         } else {
             return view('seminar_planner.activity.activity_info');
         }
     }
 
-    public function getAllDetails()
-    {
+    public function getAllDetails() {
         Cache::flush();
         $search_text = Input::get('search');
         $sort_by = Input::get('sortby');
@@ -302,14 +289,13 @@ class SeminarPlannerController extends Controller
         return compact('total_events', 'seminar_days_new', 'event_category', 'limit');
     }
 
-    public function index($id = "")
-    {
+    public function index($id = "") {
         $all_data = $this->getAllDetails();
         $seminar_days_new = SeminarSettings::first(['seminar_new_until_days', 'consider_seminar_days', 'draft_calendar_background', 'planned_calendar_background', 'new_seminar_calendar_background', 'cancel_seminars_background']);
         $holidays = HolidayModal::all();
         $all_regions = Region::all();
-        $all_trainer = [];//Person::where('is_trainer', "=", '1')->get(['PersonID', DB::raw("concat(FirstName,' ',LastName) as PersonName")]);
-        $all_system_user_obj = [];//User::where("UserID", "!=", Auth::user()->UserID);
+        $all_trainer = []; //Person::where('is_trainer', "=", '1')->get(['PersonID', DB::raw("concat(FirstName,' ',LastName) as PersonName")]);
+        $all_system_user_obj = []; //User::where("UserID", "!=", Auth::user()->UserID);
         $all_event_category = [];
         $currentDate = ($id == "") ? Carbon::today()->format('Y-m-d') : PlannedEvent::where('id', $id)->first()->event_startdate;
 
@@ -319,89 +305,78 @@ class SeminarPlannerController extends Controller
         return view('seminar_planner.seminar_planner', compact('seminar_days_new', 'holidays', 'all_trainer', 'all_regions', 'all_event_category', 'all_system_user', 'id', 'currentDate', 'translations'));
     }
 
-    public function getSeminarTable()
-    {
+    public function getSeminarTable() {
 
         $all_data = $this->getAllDetails();
         return view('seminar_planner.seminar_list_table', $all_data);
     }
 
-    public function getSeminarCategory()
-    {
+    public function getSeminarCategory() {
         return $this->seminar_planning_repository->getAllEventCategory();
     }
 
-    function getLocation()
-    {
+    function getLocation() {
         return $this->seminar_planning_repository->getLocation();
     }
 
-    function getTrainer()
-    {
+    function getTrainer() {
         return $this->seminar_planning_repository->getTrainer();
     }
 
-    function getSeminarPlannedBy()
-    {
+    function getSeminarPlannedBy() {
         return $this->seminar_planning_repository->getSeminarPlannedBy();
     }
 
-    function getSelectedSeminar()
-    {
+    function getSelectedSeminar() {
         $selectedSeminars = $this->seminar_planning_repository->getSelectedSeminar();
 
         return view('seminar_planner.selected_seminar_list', compact('selectedSeminars'));
     }
 
-    function getSeminarBluePrints()
-    {
+    function getSeminarBluePrints() {
         $bluePrintSeminars = $this->seminar_planning_repository->getSeminarBluePrints();
 
         return Response::json([
-            "type" => "success",
-            "message" => CustomFunction::customTrans("general.success_message"),
-            "bluePrintSeminars" => $bluePrintSeminars
+                    "type" => "success",
+                    "message" => CustomFunction::customTrans("general.success_message"),
+                    "bluePrintSeminars" => $bluePrintSeminars
         ]);
     }
 
-    function insertBlueprintAsDraftEvent()
-    {
+    function insertBlueprintAsDraftEvent() {
         $bluePrintSeminars = $this->seminar_planning_repository->insertBlueprintAsDraftEvent();
         if (!$bluePrintSeminars) {
             return Response::json([
-                "type" => "error",
-                "message" => CustomFunction::customTrans("seminarPlanner.seminar_schedule_not_exist")
+                        "type" => "error",
+                        "message" => CustomFunction::customTrans("seminarPlanner.seminar_schedule_not_exist")
             ]);
         } else {
             return Response::json([
-                "type" => "success",
-                "message" => CustomFunction::customTrans("general.success_message"),
-                "bluePrintSeminars" => $bluePrintSeminars
+                        "type" => "success",
+                        "message" => CustomFunction::customTrans("general.success_message"),
+                        "bluePrintSeminars" => $bluePrintSeminars
             ]);
         }
     }
 
-    function getPlannedSeminarById($id)
-    {
+    function getPlannedSeminarById($id) {
 
         return view('seminar_planner.edit_seminar');
 //        $plannedSeminars = $this->seminar_planning_repository->getPlannedSeminarById($id);
 //        return Response::json($plannedSeminars);
     }
 
-    function getPlannedSeminars($id = "")
-    {
+    function getPlannedSeminars($id = "") {
         $bluePrintSeminars = $this->seminar_planning_repository->getPlannedSeminars($id);
         return Response::json($bluePrintSeminars);
     }
 
-    function updatePlannedSeminarsSchedule()
-    {
+    function updatePlannedSeminarsSchedule() {
         $bluePrintSeminar = $this->seminar_planning_repository->updatePlannedSeminarsSchedule();
         if (!$bluePrintSeminar) {
             return Response::json([
-                "type" => "error",
-                "message" => CustomFunction::customTrans("general.error_message")
+                        "type" => "error",
+                        "message" => CustomFunction::customTrans("general.error_message")
             ]);
         } else {
             // Attach trigger
@@ -411,119 +386,109 @@ class SeminarPlannerController extends Controller
             }
 
             $participants = EventAttendees::with(["person" => function ($query) {
-                $query->get(["PersonID", "Email", DB::Raw("CONCAT(FirstName, ' ', LastName) as displayName")]);
-            }])->where('event_id', $bluePrintSeminar->id)->where("ContactStatusID", 1)->get(["event_id", "person_id", "ContactStatusID"]);
+                            $query->get(["PersonID", "Email", DB::Raw("CONCAT(FirstName, ' ', LastName) as displayName")]);
+                        }])->where('event_id', $bluePrintSeminar->id)->where("ContactStatusID", 1)->get(["event_id", "person_id", "ContactStatusID"]);
             return Response::json([
-                "type" => "success",
-                "message" => CustomFunction::customTrans("general.success_message"),
-                "bluePrintSeminars" => $bluePrintSeminar,
-                "participants" => $participants
+                        "type" => "success",
+                        "message" => CustomFunction::customTrans("general.success_message"),
+                        "bluePrintSeminars" => $bluePrintSeminar,
+                        "participants" => $participants
             ]);
         }
     }
 
     // Get schedules and slots of planned events to assign location and trainnes
-    function getScheduleSlotPlannedEvent($plannedEvent = 0)
-    {
+    function getScheduleSlotPlannedEvent($plannedEvent = 0) {
         $plannedEvent = $this->seminar_planning_repository->getScheduleSlotPlannedEvent($plannedEvent);
         $trainers = Person::where("is_trainer", "1")->get(['PersonID', 'is_trainer', 'is_free_lancer', 'is_participant', 'FirstName', 'LastName', 'Email', 'Birthdate', 'Age']);
         $locations = Location::with(['locationRoom', 'locationRoom.room'])->get(['LocationID', 'LocationName', 'Street', 'Zip', 'City', 'Phone', 'Email', 'CountryID', 'RegionID']);
         if (!$plannedEvent) {
             return Response::json([
-                "type" => "error",
-                "message" => CustomFunction::customTrans("general.error_message")
+                        "type" => "error",
+                        "message" => CustomFunction::customTrans("general.error_message")
             ]);
         } else {
             return Response::json([
-                "type" => "success",
-                "message" => CustomFunction::customTrans("general.success_message"),
-                "plannedEvent" => $plannedEvent,
-                "trainers" => $trainers,
-                "locations" => $locations
+                        "type" => "success",
+                        "message" => CustomFunction::customTrans("general.success_message"),
+                        "plannedEvent" => $plannedEvent,
+                        "trainers" => $trainers,
+                        "locations" => $locations
             ]);
         }
     }
 
-    function assignLocationToSchedule($locationId, $scheduleId, $scheduleDate)
-    {
+    function assignLocationToSchedule($locationId, $scheduleId, $scheduleDate) {
         $result = $this->seminar_planning_repository->assignLocationToSchedule($locationId, $scheduleId, $scheduleDate);
         return Response::json($result);
     }
 
-    function assignTrainerToSlot($slotId, $scheduleId, $trainerId)
-    {
+    function assignTrainerToSlot($slotId, $scheduleId, $trainerId) {
         $result = $this->seminar_planning_repository->assignTrainerToSlot($slotId, $scheduleId, $trainerId);
         return Response::json($result);
     }
 
-    function assignRoomToSlot($slotId, $scheduleId, $roomId)
-    {
+    function assignRoomToSlot($slotId, $scheduleId, $roomId) {
         $result = $this->seminar_planning_repository->assignRoomToSlot($slotId, $scheduleId, $roomId);
         return Response::json($result);
     }
 
-    function confirmSeminar($eventId)
-    {
+    function confirmSeminar($eventId) {
         $result = $this->seminar_planning_repository->confirmSeminar($eventId);
         return Response::json($result);
     }
 
-    function cancelSeminar($eventId)
-    {
+    function cancelSeminar($eventId) {
         $event_obj = PlannedEvent::findOrfail($eventId);
         $row_date = strtotime($event_obj->event_startdate);
         $today = strtotime(date('Y-m-d'));
 
-        if($row_date > $today){
+        if ($row_date > $today) {
             $result = $this->seminar_planning_repository->cancelSeminar($eventId);
             if (isset($result) && !empty($result)) {
                 // // Attach trigger
                 $data = PlannedEvent::getEventForSalesforceEntry($eventId);
                 EventManager::trigger("delete-campaigns", $data);
             }
-        }else{
+        } else {
             $result["type"] = "error";
             $result["message"] = CustomFunction::customTrans("events.cancelError");
         }
         return Response::json($result);
     }
-    
-    function deleteSeminar($eventId){
-       $event_obj = PlannedEvent::findOrfail($eventId);
+
+    function deleteSeminar($eventId) {
+        $event_obj = PlannedEvent::findOrfail($eventId);
         $row_date = strtotime($event_obj->event_startdate);
         $today = strtotime(date('Y-m-d'));
 
         if($row_date > $today || $event_obj->event_status != 'confirm'){
+
             $result = $this->seminar_planning_repository->deleteSeminar($eventId);
-            if(isset($result) && !empty($result)){
+            if (isset($result) && !empty($result)) {
                 // // Attach trigger
                 $data = PlannedEvent::getEventForSalesforceEntry($eventId);
                 EventManager::trigger("delete-campaigns", $data);
             }
-        }else{
-           $result["type"] = "error";
+        } else {
+            $result["type"] = "error";
             $result["message"] = CustomFunction::customTrans("events.deleteError");
         }
-            return Response::json($result);
+        return Response::json($result);
     }
 
     // Create task for trainer and location for the seminar
-    function createTaskForTrainerLocation($seminarId, $createTaskForTrainer, $createTaskForLocation, $action)
-    {
+    function createTaskForTrainerLocation($seminarId, $createTaskForTrainer, $createTaskForLocation, $action) {
         $result = $this->seminar_planning_repository->createTaskForTrainerLocation($seminarId, $createTaskForTrainer, $createTaskForLocation, $action);
         return Response::json($result);
     }
 
-
-    function removeTrainer($scheduleId, $slotId, $trainerId)
-    {
+    function removeTrainer($scheduleId, $slotId, $trainerId) {
         $result = $this->seminar_planning_repository->removeTrainer($scheduleId, $slotId, $trainerId);
         return Response::json($result);
     }
 
-
-    function getDetailForm($event_id)
-    {
+    function getDetailForm($event_id) {
         $plannedEvent = PlannedEvent::query();
 
         $plannedEvent->where('id', $event_id);
@@ -559,7 +524,7 @@ class SeminarPlannerController extends Controller
                         ';
 
         $plannedEvent->selectRaw(
-            'planned_events.*,' . $query
+                'planned_events.*,' . $query
         );
         $event_data = $plannedEvent->first();
         $app = App::getFacadeRoot();
@@ -570,8 +535,7 @@ class SeminarPlannerController extends Controller
         return View($viewName, $data);
     }
 
-    public function savedescription($event_id = 0)
-    {
+    public function savedescription($event_id = 0) {
         $event_obj = PlannedEvent::findOrfail($event_id);
         $event_obj->target_group = Input::get('target_group');
         $event_obj->requirements = Input::get('requirements');
@@ -579,21 +543,18 @@ class SeminarPlannerController extends Controller
         $event_obj->overview = Input::get('overview');
         if (!$event_obj->save()) {
             return Response::json([
-                "type" => "error",
-                "message" => CustomFunction::customTrans("events.event_error"),
-
+                        "type" => "error",
+                        "message" => CustomFunction::customTrans("events.event_error"),
             ]);
         } else {
             return Response::json([
-                "type" => "success",
-                "message" => CustomFunction::customTrans("events.event_update_description_success"),
-
+                        "type" => "success",
+                        "message" => CustomFunction::customTrans("events.event_update_description_success"),
             ]);
         }
     }
 
-    public function getSchedules($event_id = 0)
-    {
+    public function getSchedules($event_id = 0) {
         $all_location = $this->seminar_planning_repository->getAllLocation();
         $allowed_days = SeminarSettings::first()->seminar_days;
         if ($event_id != 0) {
@@ -604,43 +565,35 @@ class SeminarPlannerController extends Controller
             $day = 1;
             return view('seminar_planner.schedule.schedule_info', compact('all_location', 'all_event', 'day', 'allowed_days'));
         }
-
     }
 
-    public function validateScheduleDate()
-    {
+    public function validateScheduleDate() {
         $result = $this->seminar_planning_repository->validateScheduleDate();
         return Response::json($result);
     }
 
-    public function validateSchedule($schedule_id = 0)
-    {
+    public function validateSchedule($schedule_id = 0) {
 
         $result = $this->seminar_planning_repository->validateSchedule($schedule_id);
         return Response::json($result);
     }
 
-    public function deleteScheduleSlot($slotId)
-    {
+    public function deleteScheduleSlot($slotId) {
         $result = $this->seminar_planning_repository->deleteScheduleSlot($slotId);
         if ($result) {
             return Response::json([
-                "type" => "success",
-                "message" => CustomFunction::customTrans("events.scheduleSlotDelete"),
-
+                        "type" => "success",
+                        "message" => CustomFunction::customTrans("events.scheduleSlotDelete"),
             ]);
         } else {
             return Response::json([
-                "type" => "error",
-                "message" => CustomFunction::customTrans("events.scheduleSlotNotDelete"),
-
+                        "type" => "error",
+                        "message" => CustomFunction::customTrans("events.scheduleSlotNotDelete"),
             ]);
         }
-
     }
 
-    public function getDocuments($event_id = 0)
-    {
+    public function getDocuments($event_id = 0) {
         if ($event_id != 0) {
             $document_data = $this->seminar_planning_repository->getDocumentsByID($event_id);
             return view('seminar_planner.document.document_info', compact('document_data'));
@@ -649,8 +602,7 @@ class SeminarPlannerController extends Controller
         }
     }
 
-    public function exportList()
-    {
+    public function exportList() {
         $export_array = [
             'event_name' => 'event_name',
             'event_category' => 'EventCategory->event_category_name',
@@ -663,15 +615,13 @@ class SeminarPlannerController extends Controller
 //            'event_startdate' => 'event_startdate',
 //            'event_enddate' => 'event_enddate',
             'event_price' => 'event_price',
-
         ];
 
         $all_event_category = EventCategory::all();
         return view('seminar_planner.export_events', compact('export_array', 'all_event_category'));
     }
 
-    public function exportToXml()
-    {
+    public function exportToXml() {
         $columnTagNameForXML = [
             'event_name' => 'SeminarName',
             'EventCategory->event_category_name' => 'SeminarCategory',
@@ -684,7 +634,6 @@ class SeminarPlannerController extends Controller
 //            'event_startdate' => 'SeminarStartdate',
 ////            'event_enddate' => 'SeminarEnddate',
             'event_price' => 'SeminarPrice',
-
         ];
         $required_field = Input::get('single_check');
         $required_field[] = 'event_category_id';
@@ -694,9 +643,9 @@ class SeminarPlannerController extends Controller
         $plannerEventsObject = PlannedEvent::query();
 
         $plannerEventsObject->with(['EventCategory', 'eventSchedule.schedule.scheduleLocation', 'eventSchedule.schedule.eventScheduleSlot'])
-            ->where('event_startdate', '>=', date("Y-m-d", strtotime(Input::get("start_date"))))
-            ->where('event_enddate', '<=', date("Y-m-d", strtotime(Input::get("end_date"))))
-            ->where('event_status', 'confirm');
+                ->where('event_startdate', '>=', date("Y-m-d", strtotime(Input::get("start_date"))))
+                ->where('event_enddate', '<=', date("Y-m-d", strtotime(Input::get("end_date"))))
+                ->where('event_status', 'confirm');
 
         if (!empty(Input::get("event_category"))) {
             $plannerEventsObject->whereIn('event_category_id', Input::get("event_category"));
@@ -764,56 +713,53 @@ class SeminarPlannerController extends Controller
         $xml->flush();
 
         return Response::json([
-            "type" => "success",
-            "message" => CustomFunction::customTrans("seminarPlanner.export_scueess"),
-            "file_path" => $file_path,
-            "file_name" => $file_name
+                    "type" => "success",
+                    "message" => CustomFunction::customTrans("seminarPlanner.export_scueess"),
+                    "file_path" => $file_path,
+                    "file_name" => $file_name
         ]);
     }
 
-    public function seminarAllocationData($event_id = 0)
-    {
+    public function seminarAllocationData($event_id = 0) {
 //        echo "<pre>";
 //        print_r(Auth::user());exit;
 
         $allocation_data = $this->seminar_planning_repository->getAllotmentData($event_id);
 
         return Datatables::of($allocation_data)
-            ->addColumn('seats', function ($allocation_data) {
-                return "<input type='number' name='allocation_seat_total[]' organization='" . $allocation_data->meta_value . "' class='allocation_seat_total' id='" . $allocation_data->LevelValuesID . "' value='" . $allocation_data->allocatedSeat . "' seatAllocated='" . $allocation_data->allocatedSeat . "'>";
-            })
-            ->addColumn('createdBy', function ($allocation_data) {
-                return $allocation_data->FirstName . " " . $allocation_data->LastName;
-            })
-            ->make(true);
+                        ->addColumn('seats', function ($allocation_data) {
+                            return "<input type='number' name='allocation_seat_total[]' organization='" . $allocation_data->meta_value . "' class='allocation_seat_total' id='" . $allocation_data->LevelValuesID . "' value='" . $allocation_data->allocatedSeat . "' seatAllocated='" . $allocation_data->allocatedSeat . "'>";
+                        })
+                        ->addColumn('createdBy', function ($allocation_data) {
+                            return $allocation_data->FirstName . " " . $allocation_data->LastName;
+                        })
+                        ->make(true);
     }
 
-    public function seminarUtilizationData($eventId = 0)
-    {
+    public function seminarUtilizationData($eventId = 0) {
         $allocation_data = $this->seminar_planning_repository->getAllotmentData($eventId);
 //        echo "<pre>";
 //        print_r($allocation_data);
 //        exit;
         $get_free_seat = EventAvailableSeat::where('event_id', '=', $eventId)->sum('no_of_release_seat');
-        return view('seminar_planner.seat_allocation.seat_utilize_table', compact('allocation_data', 'get_free_seat','eventId'));
+        return view('seminar_planner.seat_allocation.seat_utilize_table', compact('allocation_data', 'get_free_seat', 'eventId'));
     }
 
-    public function saveSeatAllocation($eventid, $levelID)
-    {
+    public function saveSeatAllocation($eventid, $levelID) {
         $event_attendees = EventAttendees::where('LevelValuesID', '=', $levelID)
-            ->where('event_id', '=', $eventid)->count();
+                        ->where('event_id', '=', $eventid)->count();
         if ($event_attendees > Input::get('allocatedSeat')) {
             return Response::json([
-                "type" => "error",
-                "message" => CustomFunction::customTrans("general.participant_is_already_assigned_then_given_seat_number")
+                        "type" => "error",
+                        "message" => CustomFunction::customTrans("general.participant_is_already_assigned_then_given_seat_number")
             ]);
         }
         $organization_data = $this->seminar_planning_repository->getLevelValuesById($eventid, $levelID);
 
         $already_allocated_seats = AllocationSettings::where('parentID', '=', Auth::user()->LevelValueID)
-            ->where('eventID', '=', $eventid)
-            ->where('modelLevel', '!=', $levelID)
-            ->sum('allocatedSeat');
+                ->where('eventID', '=', $eventid)
+                ->where('modelLevel', '!=', $levelID)
+                ->sum('allocatedSeat');
         $level_allocated_seats = $this->seminar_planning_repository->getLevelValuesById($eventid, Auth::user()->LevelValueID);
         $child_allocated_seats = $this->seminar_planning_repository->childLevelSeatAllocatedValue($eventid, $levelID);
         $parent_allocated_seats = $this->seminar_planning_repository->getLevelValuesById($eventid, $levelID);
@@ -821,8 +767,8 @@ class SeminarPlannerController extends Controller
         if (!empty($child_allocated_seats) && !empty($parent_allocated_seats->allocatedSeat)) {
             if ($parent_allocated_seats->allocatedSeat <= $child_allocated_seats) {
                 return Response::json([
-                    "type" => "error",
-                    "message" => CustomFunction::customTrans("general.seats_are_allocated_to_child")
+                            "type" => "error",
+                            "message" => CustomFunction::customTrans("general.seats_are_allocated_to_child")
                 ]);
             }
         }
@@ -832,14 +778,14 @@ class SeminarPlannerController extends Controller
             $total_available_seats = $get_free_seat + $level_allocated_seats->allocatedSeat;
             if ($already_allocated_seats > $total_available_seats) {
                 return Response::json([
-                    "type" => "error",
-                    "message" => CustomFunction::customTrans("general.not_allowed_allocation_more_then_level_allowed")
+                            "type" => "error",
+                            "message" => CustomFunction::customTrans("general.not_allowed_allocation_more_then_level_allowed")
                 ]);
             }
         } else {
             return Response::json([
-                "type" => "error",
-                "message" => CustomFunction::customTrans("general.seat_is_not_allocated")
+                        "type" => "error",
+                        "message" => CustomFunction::customTrans("general.seat_is_not_allocated")
             ]);
         }
         if (empty($organization_data->AllocationID)) {
@@ -854,22 +800,22 @@ class SeminarPlannerController extends Controller
         $organization_data->modelLevel = $levelID;
         if (!$organization_data->save()) {
             return Response::json([
-                "type" => "error",
-                "message" => CustomFunction::customTrans("general.error_message")
+                        "type" => "error",
+                        "message" => CustomFunction::customTrans("general.error_message")
             ]);
         } else {
             if (Input::get('is_free_seat') == 1) {
                 $this->allocated_seat_repository->useFreeSeatToParentLevel(Auth::user()->LevelValueID, $eventid, Input::get('fee_seat_count'));
-                $this->allocated_seat_repository->resetFreeSeatsWhichUsed($eventid,Input::get('fee_seat_count'));
+                $this->allocated_seat_repository->resetFreeSeatsWhichUsed($eventid, Input::get('fee_seat_count'));
             }
             return Response::json([
-                "type" => "success",
-                "message" => CustomFunction::customTrans("events.save_allocation_successfully"),
-
+                        "type" => "success",
+                        "message" => CustomFunction::customTrans("events.save_allocation_successfully"),
             ]);
         }
     }
-     public function getTrainerList() {
+
+    public function getTrainerList() {
 
         $search_cat = '';
         if (Input::has('q'))
@@ -925,22 +871,40 @@ class SeminarPlannerController extends Controller
         $get_current_local = LaravelLocalization::getCurrentLocale();
         $categoryName = ($get_current_local == 'en') ? 'event_category_name' : 'event_category_name_de';
         $eventCategoryObj = EventCategory::whereNotNull($categoryName)->select([
-                    'id',
-                    DB::raw($categoryName . ' as text')
+            'id',
+            DB::raw($categoryName . ' as text')
         ]);
 
         $event_category_data = $eventCategoryObj->paginate(10);
         return response()->json(['items' => $event_category_data->toArray()['data'], 'pagination' => $event_category_data->nextPageUrl() ? true : false]);
     }
-     public function getAllAgents(){
-       $user_data= User::where('is_support_user','!=','1')
-               ->where("UserID",'!=',Auth::id())
-               ->orderBy('FirstName','ASC')
-               ->select([
-                  'UserID as id',
-                   DB::raw('CONCAT(FirstName," ",LastName)as text')
-               ])
-               ->paginate(10);
-       return response()->json(['items' => $user_data->toArray()['data'], 'pagination' => $user_data->nextPageUrl() ? true : false]);
+
+    public function getAllAgents() {
+        $user_data = User::where('is_support_user', '!=', '1')
+                ->where("UserID", '!=', Auth::id())
+                ->orderBy('FirstName', 'ASC')
+                ->select([
+                    'UserID as id',
+                    DB::raw('CONCAT(FirstName," ",LastName)as text')
+                ])
+                ->paginate(10);
+        return response()->json(['items' => $user_data->toArray()['data'], 'pagination' => $user_data->nextPageUrl() ? true : false]);
     }
+
+    public function changeSeatingMethod($seat_status, $eventId) {
+        $success = $this->seminar_planning_repository->changeSeatingMethod($seat_status, $eventId);
+        if ($success) {
+            $message = ($seat_status == 1) ? CustomFunction::customTrans("events.seat_allocation_started") : CustomFunction::customTrans("events.all_seat_free");
+            return Response::json([
+                        "type" => "success",
+                        "message" => $message,
+            ]);
+        } else {
+            return Response::json([
+                        "type" => "error",
+                        "message" => CustomFunction::customTrans("general.error_message")
+            ]);
+        }
+    }
+
 }

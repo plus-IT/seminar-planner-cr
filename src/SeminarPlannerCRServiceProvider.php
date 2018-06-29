@@ -27,6 +27,7 @@ class SeminarPlannerCRServiceProvider extends ServiceProvider
 
         ]);
 
+        
         // Publish the Migrations
 //        $this->publishes([
 //            __DIR__ . '/Migrations' => base_path('database/migrations')

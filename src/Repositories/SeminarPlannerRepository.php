@@ -14,12 +14,10 @@ use App\Models\User;
 use App\Models\EventAttendees;
 use Illuminate\Support\Facades\DB;
 use Ptlyash\SeminarPlannerCR\Interfaces\SeminarPlannerRepositoryInterface;
-
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Input;
-
 use Config;
 use App\Models\EventSchedule;
 use App\Models\PlannedEvent;
@@ -40,10 +38,9 @@ use Log;
  * Class EventRepository
  * @package App\Repositories
  */
-class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
-{
+class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface {
 
-     public function search($search_text = "", $sort_by = "", $sort_order = "", $limit = "") {
+    public function search($search_text = "", $sort_by = "", $sort_order = "", $limit = "") {
         $multi_cat_name = '';
         $event = Event::query();
         $is_enable = \App\Accessories\FTM::isEnabled('seminar-multicategory-support');
@@ -169,99 +166,88 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         return $event->paginate($limit);
     }
 
-    function getAllEventCategory()
-    {
+    function getAllEventCategory() {
         $search_cat = '';
         if (Input::has('q'))
             $search_cat = Input::get('q');
 
-        if(LaravelLocalization::getCurrentLocale() == 'en'){
+        if (LaravelLocalization::getCurrentLocale() == 'en') {
             return EventCategory::where(function ($query) use ($search_cat) {
-                $search_text = strtolower($search_cat);
-                if ($search_text != "") {
-                    $query->orWhere('event_category.event_category_name', 'like', '%' . $search_cat . '%');
-                }
-            })->get(['id', 'event_category_name as text']);
-        }else{
+                        $search_text = strtolower($search_cat);
+                        if ($search_text != "") {
+                            $query->orWhere('event_category.event_category_name', 'like', '%' . $search_cat . '%');
+                        }
+                    })->get(['id', 'event_category_name as text']);
+        } else {
             return EventCategory::where(function ($query) use ($search_cat) {
-                $search_text = strtolower($search_cat);
-                if ($search_text != "") {
-                    $query->orWhere('event_category.event_category_name_de', 'like', '%' . $search_cat . '%');
-                }
-            })->get(['id', 'event_category_name_de as text']);
+                        $search_text = strtolower($search_cat);
+                        if ($search_text != "") {
+                            $query->orWhere('event_category.event_category_name_de', 'like', '%' . $search_cat . '%');
+                        }
+                    })->get(['id', 'event_category_name_de as text']);
         }
     }
 
-    function getLocation()
-    {
+    function getLocation() {
         $search_cat = '';
         if (Input::has('q'))
             $search_cat = Input::get('q');
         return Location::where(function ($query) use ($search_cat) {
-            $search_text = strtolower($search_cat);
-            if ($search_text != "") {
-                $query->orWhere('location.LocationName', 'like', '%' . $search_cat . '%');
-            }
-        })->get([
-            'LocationID as id',
-            'LocationName as text',
-
+                    $search_text = strtolower($search_cat);
+                    if ($search_text != "") {
+                        $query->orWhere('location.LocationName', 'like', '%' . $search_cat . '%');
+                    }
+                })->get([
+                    'LocationID as id',
+                    'LocationName as text',
         ]);
     }
 
-    function getTrainer()
-    {
+    function getTrainer() {
         $search_cat = '';
         if (Input::has('q'))
             $search_cat = Input::get('q');
         return Person::where(function ($query) use ($search_cat) {
-            $search_text = strtolower($search_cat);
-            if ($search_text != "") {
-                $query->orWhere('person.FirstName', 'like', '%' . $search_cat . '%')
-                    ->orWhere('person.LastName', 'like', '%' . $search_cat . '%');
-            }
-        })->get([
-            'PersonID as id',
-            DB::raw('CONCAT(FirstName," ",LastName) as text'),
+                    $search_text = strtolower($search_cat);
+                    if ($search_text != "") {
+                        $query->orWhere('person.FirstName', 'like', '%' . $search_cat . '%')
+                                ->orWhere('person.LastName', 'like', '%' . $search_cat . '%');
+                    }
+                })->get([
+                    'PersonID as id',
+                    DB::raw('CONCAT(FirstName," ",LastName) as text'),
         ]);
     }
 
-    function getSeminarPlannedBy()
-    {
+    function getSeminarPlannedBy() {
         $search_cat = '';
         if (Input::has('q'))
             $search_cat = Input::get('q');
         return User::where(function ($query) use ($search_cat) {
-            $search_text = strtolower($search_cat);
-            if ($search_text != "") {
-                $query->orWhere('user.FirstName', 'like', '%' . $search_cat . '%')
-                    ->orWhere('user.LastName', 'like', '%' . $search_cat . '%');
-
-            }
-        })->get([
-            'UserID as id',
-            DB::raw('CONCAT(FirstName," ",LastName) as text'),
+                    $search_text = strtolower($search_cat);
+                    if ($search_text != "") {
+                        $query->orWhere('user.FirstName', 'like', '%' . $search_cat . '%')
+                                ->orWhere('user.LastName', 'like', '%' . $search_cat . '%');
+                    }
+                })->get([
+                    'UserID as id',
+                    DB::raw('CONCAT(FirstName," ",LastName) as text'),
         ]);
     }
 
-    function getSelectedSeminar()
-    {
+    function getSelectedSeminar() {
         $seminar_id = explode(",", Input::get('seminarId'));
 
         return Event::with('EventCategory')->whereIn("events.id", $seminar_id)->get();
-
     }
 
-    function getSeminarBluePrints()
-    {
+    function getSeminarBluePrints() {
         $bluePrintIds = explode(",", Input::get("bluePrintsId"));
         $bluePrintSeminars = Event::whereIn('id', $bluePrintIds)->with('eventSchedule.schedule')->get();
         return $bluePrintSeminars;
-
     }
 
-    function insertBlueprintAsDraftEvent()
-    {
+    function insertBlueprintAsDraftEvent() {
         $inputData = Input::all();
         // Planned event setting
         $plannedEventSetting = SeminarSettings::first();
@@ -277,11 +263,11 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         // Add event To planned event table
         $plannedEvents = new PlannedEvent();
         // Check if deploy to internet is on OR not
-        if(count($plannedEventSetting) > 0 && isset($plannedEventSetting->set_me_on_waiting_list) && isset($plannedEventSetting->automatic_register)){
+        if (count($plannedEventSetting) > 0 && isset($plannedEventSetting->set_me_on_waiting_list) && isset($plannedEventSetting->automatic_register)) {
             $plannedEvents->is_deploy_internet = isset($plannedEventSetting->display_seminar_online_portal) ? $plannedEventSetting->display_seminar_online_portal : 0;
             $plannedEvents->set_me_on_waiting_list = isset($plannedEventSetting->set_me_on_waiting_list) ? $plannedEventSetting->set_me_on_waiting_list : 0;
             $plannedEvents->automatic_register = isset($plannedEventSetting->automatic_register) ? $plannedEventSetting->automatic_register : 0;
-        }else{
+        } else {
             $plannedEvents->is_deploy_internet = isset($plannedEventSetting->display_seminar_online_portal) ? $plannedEventSetting->display_seminar_online_portal : 0;
         }
 
@@ -291,7 +277,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         $event->load('eventTask');
         $event->load('eventDocument');
         $event->load('eventRevenue');
-        
+
         foreach ($event->getRelations() as $relation => $items) {
             foreach ($items as $item) {
 
@@ -301,7 +287,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
                     $newschedule->schedule_date = $inputData["schedules"][$scheduleDateIndex]['scheduleDate'];
 
                     $plannedSchedule = new PlannedSchedule();
-                    
+
                     $plannedSchedule->fill($newschedule->toArray())->save();
 
                     // check If schedule is conflicted with other event schedule
@@ -317,7 +303,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
                     // Load schedule slots
                     $schedule = $item->schedule;
                     $schedule->load('eventScheduleSlot');
-                   
+
                     // duplicate schedule slots
                     foreach ($schedule->getRelations() as $scheduleRelation => $scheduleItems) {
                         foreach ($scheduleItems as $scheduleItem) {
@@ -343,15 +329,13 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
                                 $slot->save();
                             }
                             // Remove - once test : $plannedSchedule->eventScheduleSlot->create($scheduleItem->toArray());
-
                         }
                     }
-                    
-                    
+
+
                     $item->schedule_id = $plannedSchedule->id;
                     unset($item->id);
                     unset($item->schedule);
-
                 }
 
                 if ($relation == "eventTask") {
@@ -375,32 +359,32 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
                 if ($relation == "eventRevenue") {
                     unset($item->id);
                 }
-                
-                
-                
+
+
+
                 $item->event_id = $plannedEvents->id;
 
-               
+
                 // $plannedEvents->{$relation}()->create($item->toArray());
                 $builder = $plannedEvents->{$relation}();
-                    $arrayInsert = $item->toArray();
-                    // unsetting primary keys if any
-                    // To Do : find a better way to insert without primary keys
-                    unset($arrayInsert['revenue_item_id']); 
-                    $builder->insert(
+                $arrayInsert = $item->toArray();
+                // unsetting primary keys if any
+                // To Do : find a better way to insert without primary keys
+                unset($arrayInsert['revenue_item_id']);
+                $builder->insert(
                         $arrayInsert
-                    );
+                );
             }
         }
 
         // Update start and End date of the new draft event
         $event_start_range = PlannedEventSchedule::where("event_id", $plannedEvents->id)->leftjoin("planned_schedule", function ($join) {
-            $join->on("planned_event_schedule.schedule_id", "=", "planned_schedule.id");
-        })->orderBy('planned_schedule.schedule_date', 'asc')->first();
+                    $join->on("planned_event_schedule.schedule_id", "=", "planned_schedule.id");
+                })->orderBy('planned_schedule.schedule_date', 'asc')->first();
 
         $event_end_range = PlannedEventSchedule::where("event_id", $plannedEvents->id)->leftjoin("planned_schedule", function ($join) {
-            $join->on("planned_event_schedule.schedule_id", "=", "planned_schedule.id");
-        })->orderBy('planned_schedule.schedule_date', 'desc')->first();
+                    $join->on("planned_event_schedule.schedule_id", "=", "planned_schedule.id");
+                })->orderBy('planned_schedule.schedule_date', 'desc')->first();
 
         $plannedEvents->event_startdate = date('Y-m-d', strtotime($event_start_range->schedule_date));
         $plannedEvents->event_enddate = date('Y-m-d', strtotime($event_end_range->schedule_date));
@@ -415,26 +399,22 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             $seat_allocation->save();
         }
         return $plannedEvents::where('id', $plannedEvents->id)->with(["eventSchedule.schedule", "eventSchedule.schedule.scheduleLocation"])->first();
-
-
     }
 
-    function getPlannedSeminarById($id)
-    {
+    function getPlannedSeminarById($id) {
         return PlannedEvent::where('id', $id)
-            ->with([
-                'eventSchedule.schedule.scheduleLocation',
-                'eventDocument',
-                'eventTask'
-            ])
-            ->first();
+                        ->with([
+                            'eventSchedule.schedule.scheduleLocation',
+                            'eventDocument',
+                            'eventTask'
+                        ])
+                        ->first();
     }
 
     // Fetch seminars for calendar
 
-    function getPlannedSeminars($plannedSeminarId = null)
-    {
-  $start_date = Input::get("start");
+    function getPlannedSeminars($plannedSeminarId = null) {
+        $start_date = Input::get("start");
         $end_date = Input::get("end");
 
         $seminarPlannerSetting = SeminarSettings::first();
@@ -444,11 +424,11 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         $event->with(["eventSchedule.schedule", "eventSchedule.schedule.scheduleLocation"]);
 
         $event->leftjoin("planned_event_schedule", "planned_event_schedule.event_id", "=", "planned_events.id")
-            ->leftjoin("planned_schedule", "planned_schedule.id", "=", "planned_event_schedule.schedule_id")
-            ->leftjoin("planned_schedule_slot", "planned_schedule_slot.ScheduleID", "=", "planned_schedule.id")
-            ->leftjoin("location", "planned_schedule.LocationID", "=", "location.LocationID")
-            ->leftjoin("person", "planned_events.preferred_trainers_id", "=", "person.PersonID")
-            ->leftjoin("event_category", "planned_events.event_category_id", "=", "event_category.id");
+                ->leftjoin("planned_schedule", "planned_schedule.id", "=", "planned_event_schedule.schedule_id")
+                ->leftjoin("planned_schedule_slot", "planned_schedule_slot.ScheduleID", "=", "planned_schedule.id")
+                ->leftjoin("location", "planned_schedule.LocationID", "=", "location.LocationID")
+                ->leftjoin("person", "planned_events.preferred_trainers_id", "=", "person.PersonID")
+                ->leftjoin("event_category", "planned_events.event_category_id", "=", "event_category.id");
 
         if (Input::get("event_id") != "null" && !empty(Input::get("event_id"))) {
             $eventID = explode(",", Input::get("event_id"));
@@ -458,11 +438,11 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         /*
          * Filter to show only qualification events OR only planned events OR Both
          */
-        if(Input::has('event_to_show')){
+        if (Input::has('event_to_show')) {
             $eventToShow = Input::get('event_to_show');
-            if($eventToShow == 'qualificationEventsOnly'){
+            if ($eventToShow == 'qualificationEventsOnly') {
                 $event->whereNotNull('planned_qualification_id');
-            }elseif ($eventToShow == 'plannedEventsOnly'){
+            } elseif ($eventToShow == 'plannedEventsOnly') {
                 $event->whereNull('planned_qualification_id');
             }
         }
@@ -486,8 +466,8 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         if (Input::get("location_id") != "null" && !empty(Input::get("location_id"))) {
             $locationId = explode(",", Input::get("location_id"));
             $schedule = PlannedSchedule::leftjoin("planned_event_schedule", "planned_schedule.id", "=", "planned_event_schedule.schedule_id")
-                ->whereIn("planned_schedule.LocationID", $locationId)
-                ->get([DB::raw("group_concat(planned_event_schedule.event_id SEPARATOR ', ') as event_id")]);
+                    ->whereIn("planned_schedule.LocationID", $locationId)
+                    ->get([DB::raw("group_concat(planned_event_schedule.event_id SEPARATOR ', ') as event_id")]);
             $eventId = explode(",", $schedule[0]->event_id);
             $event->whereIn('planned_events.id', array_unique($eventId));
         }
@@ -509,8 +489,8 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         }
 
         if (!Input::has("conflict_event_id")) {
-            $event->whereRaw("(`event_startdate` >= DATE('" . $start_date ."') and `event_startdate` <= DATE('" . $end_date . "')
-                                OR `event_enddate` >= DATE('" . $start_date ."') and `event_enddate` <= DATE('" . $end_date . "')
+            $event->whereRaw("(`event_startdate` >= DATE('" . $start_date . "') and `event_startdate` <= DATE('" . $end_date . "')
+                                OR `event_enddate` >= DATE('" . $start_date . "') and `event_enddate` <= DATE('" . $end_date . "')
                                )");
         }
 
@@ -524,9 +504,9 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         if ($plannedSeminarId != "")
             $event->where('planned_events.id', '=', $plannedSeminarId);
 
-        $event->with(['plannedQualification' => function($qur){
+        $event->with(['plannedQualification' => function($qur) {
                 $qur->select(['id', 'name', 'start_date', 'end_date']);
-        }]);
+            }]);
 
         $eventList = $event->get([
             'planned_events.id',
@@ -582,13 +562,11 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         }
 
         return $calendarEvents;
-
     }
 
     // Update schedule dates if changes on dates
 
-    function updatePlannedSeminarsSchedule()
-    {
+    function updatePlannedSeminarsSchedule() {
         $inputData = Input::all();
         $plannedSeminar = PlannedEvent::where('id', $inputData['blueprintEventId'])->with("eventSchedule.schedule")->first();
         $seminarStartDateBeforeMove = $plannedSeminar->event_startdate;
@@ -601,12 +579,11 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             $schedule->locationConflicted = 0;
             $schedule->detailLocationConflictMessage = "";
             $schedule->schedule_date = $inputData["schedules"][$scheduleDateIndex]['scheduleDate'];
-            
+
             $schedule->save();
 
             // Remove current schedule existing conflict and remove currnt schedule from its condlicting schedule as well
             // $this->clearLocationConflict($schedule->id);
-
             // Check If schedule location is conflicted or resolved with other
 
             $conflictResult = $this->checkLocationConflict($schedule->LocationID, $schedule->id, $schedule->schedule_date, $inputData['blueprintEventId']);
@@ -647,7 +624,6 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
                     $slot->trainerConflicted = 0;
                     $slot->detailTrainerConflictMessage = "";
                     $slot->save();
-
                 }
             }
 
@@ -668,12 +644,12 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 
         // Update start and End date of the new draft event
         $event_start_range = PlannedEventSchedule::where("event_id", $plannedSeminar->id)->leftjoin("planned_schedule", function ($join) {
-            $join->on("planned_event_schedule.schedule_id", "=", "planned_schedule.id");
-        })->orderBy('planned_schedule.schedule_date', 'asc')->first();
+                    $join->on("planned_event_schedule.schedule_id", "=", "planned_schedule.id");
+                })->orderBy('planned_schedule.schedule_date', 'asc')->first();
 
         $event_end_range = PlannedEventSchedule::where("event_id", $plannedSeminar->id)->leftjoin("planned_schedule", function ($join) {
-            $join->on("planned_event_schedule.schedule_id", "=", "planned_schedule.id");
-        })->orderBy('planned_schedule.schedule_date', 'desc')->first();
+                    $join->on("planned_event_schedule.schedule_id", "=", "planned_schedule.id");
+                })->orderBy('planned_schedule.schedule_date', 'desc')->first();
 
         $plannedSeminar->event_startdate = date('Y-m-d', strtotime($event_start_range->schedule_date));
         $plannedSeminar->event_enddate = date('Y-m-d', strtotime($event_end_range->schedule_date));
@@ -692,23 +668,21 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
     }
 
     // Get schedules and slots of planned events to assign location and trainnes
-    function getScheduleSlotPlannedEvent($plannedEvent = 0)
-    {
+    function getScheduleSlotPlannedEvent($plannedEvent = 0) {
         $plannedSeminar = PlannedEvent::where('id', $plannedEvent)
-            ->with(["eventSchedule.schedule" , "eventSchedule.schedule.scheduleLocation",
-                "eventSchedule.schedule.eventScheduleSlot" => function ($query) {
-                    $query->get(["planned_schedule_slot.*",
-                        DB::raw('(select group_concat(concat(PersonID, "-", TRIM(FirstName), " ", TRIM(LastName)) SEPARATOR ", ") as trainerName from person WHERE CONCAT(",", planned_schedule_slot.trainer ,"," ) LIKE CONCAT("%,", PersonID ,",%")) as trainers ')
-                    ]);
-                }, "eventSchedule.schedule.eventScheduleSlot.slotRoom"
-            ])
-            ->first();
+                ->with(["eventSchedule.schedule", "eventSchedule.schedule.scheduleLocation",
+                    "eventSchedule.schedule.eventScheduleSlot" => function ($query) {
+                        $query->get(["planned_schedule_slot.*",
+                            DB::raw('(select group_concat(concat(PersonID, "-", TRIM(FirstName), " ", TRIM(LastName)) SEPARATOR ", ") as trainerName from person WHERE CONCAT(",", planned_schedule_slot.trainer ,"," ) LIKE CONCAT("%,", PersonID ,",%")) as trainers ')
+                        ]);
+                    }, "eventSchedule.schedule.eventScheduleSlot.slotRoom"
+                ])
+                ->first();
         return $plannedSeminar;
     }
 
     // Assign location to schedule
-    function assignLocationToSchedule($locationId, $scheduleId, $scheduleDate)
-    {
+    function assignLocationToSchedule($locationId, $scheduleId, $scheduleDate) {
         $eventId = Input::get("eventId");
         $schedule = PlannedSchedule::find($scheduleId);
         $data = PlannedScheduleSlot::where('ScheduleID', $scheduleId)->update(['roomId' => 0]);
@@ -733,15 +707,15 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             $schedule->save();
         }
         $plannedEvents = PlannedEvent::where('id', $eventId)
-            ->with(["eventSchedule.schedule", "eventSchedule.schedule.scheduleLocation",
-                "eventSchedule.schedule.eventScheduleSlot" => function ($query) {
-                    $query->get(["planned_schedule_slot.*",
-                        DB::raw('(select group_concat(concat(PersonID, "-", TRIM(FirstName), " ", TRIM(LastName)) SEPARATOR ", ") as trainerName from person WHERE CONCAT(",", planned_schedule_slot.trainer ,"," ) LIKE CONCAT("%,", PersonID ,",%")) as trainers ')
-                    ]);
-                }, "eventSchedule.schedule.eventScheduleSlot.slotRoom"
-            ])
-            ->first();
-       
+                ->with(["eventSchedule.schedule", "eventSchedule.schedule.scheduleLocation",
+                    "eventSchedule.schedule.eventScheduleSlot" => function ($query) {
+                        $query->get(["planned_schedule_slot.*",
+                            DB::raw('(select group_concat(concat(PersonID, "-", TRIM(FirstName), " ", TRIM(LastName)) SEPARATOR ", ") as trainerName from person WHERE CONCAT(",", planned_schedule_slot.trainer ,"," ) LIKE CONCAT("%,", PersonID ,",%")) as trainers ')
+                        ]);
+                    }, "eventSchedule.schedule.eventScheduleSlot.slotRoom"
+                ])
+                ->first();
+
         $result["plannedEvent"] = $plannedEvents;
         $result["conflictStatus"] = $conflictResult['type'];
         $result["message"] = $conflictResult['type'] == "danger" ? trans("seminarPlanner.assignLocationWithConflict") : trans("seminarPlanner.assignLocationSuccessFully");
@@ -751,8 +725,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
     }
 
     // Assign trainer to slot
-    function assignTrainerToSlot($slotId, $scheduleId, $trainerId)
-    {
+    function assignTrainerToSlot($slotId, $scheduleId, $trainerId) {
         $eventId = Input::get("eventId");
         $schedule = PlannedSchedule::find($scheduleId);
         $slot = PlannedScheduleSlot::find($slotId);
@@ -760,7 +733,8 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         $slotTrainers = explode(",", $slot->trainer);
         if (in_array($trainerId, $slotTrainers)) {
             $result["type"] = "error";
-            $result["message"] = trans("seminarPlanner.trainerAlreadyAssignToSlot");;
+            $result["message"] = trans("seminarPlanner.trainerAlreadyAssignToSlot");
+            ;
             return $result;
         } else {
             array_push($slotTrainers, $trainerId);
@@ -792,7 +766,6 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             $slotObj->detailTrainerConflictMessage = "";
             $slotObj->trainer = $trainerId;
             $slotObj->save();
-
         }
 
         // Check if all conflicted slots are clear or not
@@ -801,29 +774,26 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             $schedule->trainerConflicted = 0;
             $schedule->detailTrainerConflictMessage = "";
             $schedule->save();
-
         }
 
         $plannedEvents = PlannedEvent::where('id', $eventId)
-            ->with(["eventSchedule.schedule", "eventSchedule.schedule.scheduleLocation",
-                "eventSchedule.schedule.eventScheduleSlot" => function ($query) {
-                    $query->get(["planned_schedule_slot.*",
-                        DB::raw('(select group_concat(concat(PersonID, "-", TRIM(FirstName), " ", TRIM(LastName)) SEPARATOR ", ") as trainerName from person WHERE CONCAT(",", planned_schedule_slot.trainer ,"," ) LIKE CONCAT("%,", PersonID ,",%")) as trainers ')
-                    ]);
-                }, "eventSchedule.schedule.eventScheduleSlot.slotRoom"
-            ])
-            ->first();
+                ->with(["eventSchedule.schedule", "eventSchedule.schedule.scheduleLocation",
+                    "eventSchedule.schedule.eventScheduleSlot" => function ($query) {
+                        $query->get(["planned_schedule_slot.*",
+                            DB::raw('(select group_concat(concat(PersonID, "-", TRIM(FirstName), " ", TRIM(LastName)) SEPARATOR ", ") as trainerName from person WHERE CONCAT(",", planned_schedule_slot.trainer ,"," ) LIKE CONCAT("%,", PersonID ,",%")) as trainers ')
+                        ]);
+                    }, "eventSchedule.schedule.eventScheduleSlot.slotRoom"
+                ])
+                ->first();
 
         $result["plannedEvent"] = $plannedEvents;
         $result["conflictStatus"] = $conflictResult['type'];
         $result["message"] = $conflictResult['type'] == "danger" ? trans("seminarPlanner.assignTrainerWithConflict") : trans("seminarPlanner.assignTrainerSuccessFully");
         $result["type"] = "success";
         return $result;
-
     }
 
-    function assignRoomToSlot($slotId, $scheduleId, $roomId)
-    {
+    function assignRoomToSlot($slotId, $scheduleId, $roomId) {
         $eventId = Input::get("eventId");
         $schedule = PlannedSchedule::find($scheduleId);
         $slot = PlannedScheduleSlot::find($slotId);
@@ -841,14 +811,14 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         }
 
         $plannedEvents = PlannedEvent::where('id', $eventId)
-            ->with(["eventSchedule.schedule", "eventSchedule.schedule.scheduleLocation",
-                "eventSchedule.schedule.eventScheduleSlot" => function ($query) {
-                    $query->get(["planned_schedule_slot.*",
-                        DB::raw('(select group_concat(concat(PersonID, "-", TRIM(FirstName), " ", TRIM(LastName)) SEPARATOR ", ") as trainerName from person WHERE CONCAT(",", planned_schedule_slot.trainer ,"," ) LIKE CONCAT("%,", PersonID ,",%")) as trainers ')
-                    ]);
-                }, "eventSchedule.schedule.eventScheduleSlot.slotRoom"
-            ])
-            ->first();
+                ->with(["eventSchedule.schedule", "eventSchedule.schedule.scheduleLocation",
+                    "eventSchedule.schedule.eventScheduleSlot" => function ($query) {
+                        $query->get(["planned_schedule_slot.*",
+                            DB::raw('(select group_concat(concat(PersonID, "-", TRIM(FirstName), " ", TRIM(LastName)) SEPARATOR ", ") as trainerName from person WHERE CONCAT(",", planned_schedule_slot.trainer ,"," ) LIKE CONCAT("%,", PersonID ,",%")) as trainers ')
+                        ]);
+                    }, "eventSchedule.schedule.eventScheduleSlot.slotRoom"
+                ])
+                ->first();
 
         $result["plannedEvent"] = $plannedEvents;
         $result["message"] = trans("seminarPlanner.assignRoomSuccessFully");
@@ -859,18 +829,16 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         return $result;
     }
 
-
     // check if location is conflict with other schedule
-    function checkLocationConflict($locationId, $scheduleId, $scheduleDate, $event = 0)
-    {
+    function checkLocationConflict($locationId, $scheduleId, $scheduleDate, $event = 0) {
         if ($event != 0)
             $event = PlannedEvent::find($event);
         $schedule = PlannedSchedule::find($scheduleId);
         $conflictedScheduleIds = [];
         $conflictedSchedule = PlannedSchedule::with(["ScheduleEvent", "ScheduleEvent.event", "scheduleLocation"])->where("schedule_date", "=", date("Y-m-d", strtotime($scheduleDate)))
-            ->where("LocationID", "=", $locationId)
-            //->where("planned_schedule.id", "!=", $scheduleId) // removed as per new code1
-            ->get()->toArray();
+                        ->where("LocationID", "=", $locationId)
+                        //->where("planned_schedule.id", "!=", $scheduleId) // removed as per new code1
+                        ->get()->toArray();
         if (count($conflictedSchedule) > 0) {
             $detailedMessage = "";
             foreach ($conflictedSchedule as $schedule) {
@@ -882,12 +850,12 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
                 // TO DO : do the same for trainer conflict logic
 
                 $ids = [];
-                foreach ($conflictedSchedule as $sc){
-                    if($sc['id'] != $schedule['id']){
-                       $ids[] = $sc['id']; 
+                foreach ($conflictedSchedule as $sc) {
+                    if ($sc['id'] != $schedule['id']) {
+                        $ids[] = $sc['id'];
                     }
                 }
-                if(empty($ids)){
+                if (empty($ids)) {
                     continue;
                 }
                 // new code1 ends /////
@@ -898,32 +866,28 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
                 $plannedSchedule = PlannedSchedule::find($schedule['id']);
                 // commented as errornious : rupesh
                 //$plannedSchedule->conflictedScheduleIds = $this->addConflictedScheduleSlotId($plannedSchedule->conflictedScheduleIds, $schedule['id']);
-                
                 // updating as per new code1
-                $plannedSchedule->conflictedScheduleIds = implode(',',$ids);
+                $plannedSchedule->conflictedScheduleIds = implode(',', $ids);
                 $plannedSchedule->detailLocationConflictMessage = "#planned_seminar# " . $event->event_name . " #has_already_been_on_location# " . $schedule["schedule_location"]["LocationName"] . " #on_date# " . format_date($scheduleDate);
                 $plannedSchedule->locationConflicted = 1;
                 $plannedSchedule->save();
-
             }
             $result["type"] = "danger";
             $result["message"] = "#schedule_date_exist_on_locations#";
             $result["conflictedSchedule"] = $conflictedSchedule;
             $result["conflictedScheduleIds"] = implode(",", array_unique($conflictedScheduleIds));
-            $result["detailedMessage"] = $detailedMessage;//substr($detailedMessage, 0, -2);
+            $result["detailedMessage"] = $detailedMessage; //substr($detailedMessage, 0, -2);
             return $result;
         } else {
             $result["type"] = "success";
             $result["message"] = "#location_assign_to_schedule#";
-
         }
 
         return $result;
     }
 
     // check if Trainer is conflict with other schedule slots
-    function checkTrainerConflict($slotId, $scheduleId, $trainerIds, $eventId = 0)
-    {
+    function checkTrainerConflict($slotId, $scheduleId, $trainerIds, $eventId = 0) {
         if ($eventId != 0)
             $event = PlannedEvent::find($eventId);
         $slot = PlannedScheduleSlot::find($slotId);
@@ -937,20 +901,20 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         // If multiplet trainer assign
         $trainers = explode(",", $trainerIds);
         for ($j = 0; $j < count($trainers); $j++) {
-            if(!empty($trainers[$j])) {
+            if (!empty($trainers[$j])) {
                 $person = Person::find($trainers[$j]);
-                if(count($person) > 0){
+                if (count($person) > 0) {
 //                dd($person->FirstName);
 
                     $conflictedSlot = PlannedSchedule::join("planned_schedule_slot", "planned_schedule_slot.ScheduleID", "=", "planned_schedule.id")
-                        ->whereRaw("FIND_IN_SET(" . $trainers[$j] . ",planned_schedule_slot.trainer)")
-                        ->where("planned_schedule_slot.start_time", "=", $slot->start_time)
-                        ->where("planned_schedule_slot.end_time", "=", $slot->end_time)
-                        ->where("schedule_date", "=", $schedule->schedule_date)
-                        ->where("planned_schedule.id", "!=", $scheduleId)
-                        ->groupBy("planned_schedule.id")
-                        ->with(["ScheduleEvent", "ScheduleEvent.event"])
-                        ->get(["planned_schedule.*", "planned_schedule_slot.schedule_slotID"])->toArray();
+                                    ->whereRaw("FIND_IN_SET(" . $trainers[$j] . ",planned_schedule_slot.trainer)")
+                                    ->where("planned_schedule_slot.start_time", "=", $slot->start_time)
+                                    ->where("planned_schedule_slot.end_time", "=", $slot->end_time)
+                                    ->where("schedule_date", "=", $schedule->schedule_date)
+                                    ->where("planned_schedule.id", "!=", $scheduleId)
+                                    ->groupBy("planned_schedule.id")
+                                    ->with(["ScheduleEvent", "ScheduleEvent.event"])
+                                    ->get(["planned_schedule.*", "planned_schedule_slot.schedule_slotID"])->toArray();
 
                     foreach ($conflictedSlot as $singleSlot) {
                         $detailedMessage .= "#eventTextForConflictMessage#" . " " . $singleSlot['schedule_event']['event']['event_name'] . " " . "#alreadyBookTrainerToolTipText#" . " " . $person->FirstName . " " . $person->LastName . " #for_slot# " . $slot->start_time . " - " . $slot->end_time . " #on_date# " . format_date($singleSlot['schedule_date']) . " | ";
@@ -958,7 +922,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
                         array_push($conflictedScheduleIds, $singleSlot['id']);
                         // Update the conflicted schedule Slot
                         $plannedScheduleSlot = PlannedScheduleSlot::find($singleSlot['schedule_slotID']);
-                        if(count($plannedScheduleSlot) > 0) {
+                        if (count($plannedScheduleSlot) > 0) {
                             $plannedScheduleSlot->conflictedSlotIds = $this->addConflictedScheduleSlotId($plannedScheduleSlot->conflictedSlotIds, $slot->schedule_slotID);
                             $plannedScheduleSlot->trainerConflicted = 1;
                             $detailedMessageForConflictedSLot = '#eventTextForConflictMessage#' . " " . !empty($event) ? $event->event_name : '' . " " . "#alreadyBookTrainerToolTipText#" . " " . $person->FirstName . " " . $person->LastName . " #for_slot# " . $slot->start_time . " - " . $slot->end_time . " #on_date# " . format_date($singleSlot['schedule_date']);
@@ -967,16 +931,14 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
                         }
 
                         $plannedSchedule = PlannedSchedule::find($singleSlot['id']);
-                        if(count($plannedSchedule) > 0) {
+                        if (count($plannedSchedule) > 0) {
                             $plannedSchedule->conflictedSlotIds = $this->addConflictedScheduleSlotId($plannedSchedule->conflictedSlotIds, $slot->schedule_slotID);
-    //                      $plannedSchedule->conflictedScheduleIds = $this->addConflictedScheduleSlotId($plannedSchedule->conflictedScheduleIds, $schedule->id);
+                            //                      $plannedSchedule->conflictedScheduleIds = $this->addConflictedScheduleSlotId($plannedSchedule->conflictedScheduleIds, $schedule->id);
                             $plannedSchedule->trainerConflicted = 1;
                             // $plannedSchedule->detailTrainerConflictMessage = trans("seminarPlanner.trainerConflictedToolTips");
                             $plannedSchedule->detailTrainerConflictMessage = '#trainerConflictedToolTips#';
                             $plannedSchedule->save();
                         }
-
-
                     }
 
                     if (count($conflictedSlot) > 0) {
@@ -998,29 +960,27 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         } else {
             $result["type"] = "success";
             $result["message"] = trans("seminarPlanner.tainer_assign_to_slot");
-
         }
 
         return $result;
     }
 
     //clearLocationConflict
-    function clearLocationConflict($scheduleId)
-    {
+    function clearLocationConflict($scheduleId) {
         $plannedSchedule = PlannedSchedule::find($scheduleId);
         $conflictedId = explode(",", $plannedSchedule->conflictedScheduleIds);
 
         /*
           clear current conflicted ids for schedule
-        */
+         */
 
         $plannedSchedule->conflictedScheduleIds = "";
         $plannedSchedule->locationConflicted = 0;
         $plannedSchedule->save();
 
         /*
-            remove current schedule from conflicted schedules
-        */
+          remove current schedule from conflicted schedules
+         */
         foreach ($conflictedId as $ids) {
             $currentSchedule = Array($plannedSchedule->id);
             $schedule = PlannedSchedule::find($ids);
@@ -1036,12 +996,10 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         }
 
         return true;
-
     }
 
     //clearLocationConflict
-    function clearSlotConflict($SlotId)
-    {
+    function clearSlotConflict($SlotId) {
         $plannedScheduleSlot = PlannedScheduleSlot::find($SlotId);
         if ($plannedScheduleSlot) {
             $plannedSchedule = PlannedSchedule::find($plannedScheduleSlot->ScheduleID);
@@ -1050,7 +1008,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 
             /*
               clear current conflicted ids for schedule
-            */
+             */
 
             $plannedScheduleSlot->conflictedSlotIds = "";
             $plannedScheduleSlot->trainerConflicted = 0;
@@ -1062,8 +1020,8 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             $plannedSchedule->save();
 
             /*
-                remove current schedule from conflicted schedules
-            */
+              remove current schedule from conflicted schedules
+             */
             foreach ($conflictedId as $ids) {
                 $slot = PlannedScheduleSlot::find($ids);
                 if (count($slot) > 0) {
@@ -1088,13 +1046,10 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         }
 
         return true;
-
     }
 
-
     // add new item into comma seperated sting column
-    function addConflictedScheduleSlotId($alreadyConflictedIds, $slotIdArray)
-    {
+    function addConflictedScheduleSlotId($alreadyConflictedIds, $slotIdArray) {
         $slotIds = explode(",", $slotIdArray);
         foreach ($slotIds as $slotId) {
             $conflictedIds = array_filter(explode(",", $alreadyConflictedIds));
@@ -1106,8 +1061,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
     }
 
     // add new item into comma seperated sting column
-    function addConflictedScheduleSlotMessage($alreadyConflictedMessages, $slotMessage)
-    {
+    function addConflictedScheduleSlotMessage($alreadyConflictedMessages, $slotMessage) {
         $conflictedMessages = explode("|", $alreadyConflictedMessages);
         if (!in_array($slotMessage, $conflictedMessages))
             array_push($conflictedMessages, $slotMessage);
@@ -1116,8 +1070,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
     }
 
     // remove new item into comma seperated sting column
-    function removeConflictedScheduleSlotId($alreadyConflictedIds, $toBeDeletedId)
-    {
+    function removeConflictedScheduleSlotId($alreadyConflictedIds, $toBeDeletedId) {
         $currentId = explode(",", $toBeDeletedId);
         $removeCurrentScheduleId = array_diff(str_getcsv($alreadyConflictedIds), $currentId);
         $conflictedSlotIds = implode(',', $removeCurrentScheduleId);
@@ -1125,26 +1078,25 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
     }
 
     //  Confirm seminar
-    public function deleteSeminar($eventId)
-    {
+    public function deleteSeminar($eventId) {
         $seminar = PlannedEvent::find($eventId)->delete();
         $schedules = PlannedEventSchedule::where("event_id", "=", $eventId)->get();
-        foreach($schedules as $ss){
+        foreach ($schedules as $ss) {
             $schedule = PlannedSchedule::find($ss->schedule_id);
             $schedule->updateConflictedSchedulesBeforeDelete();
             $schedule->delete();
-            /*if($ss->schedule){
-                $schedules = $ss->schedule->get();
-                foreach ($schedules as $key => $sched) {
-                  
-                   $sched->updateConflictedSchedulesBeforeDelete();
-                   $sched->delete();
-                }
-            }*/
+            /* if($ss->schedule){
+              $schedules = $ss->schedule->get();
+              foreach ($schedules as $key => $sched) {
+
+              $sched->updateConflictedSchedulesBeforeDelete();
+              $sched->delete();
+              }
+              } */
             //$ss->schedule->delete();
             //$ss->delete();
         }
-       
+
         if ($seminar) {
             $result["type"] = "success";
             $result["message"] = trans("seminarPlanner.deleteSeminarConfirmation");
@@ -1155,8 +1107,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         return $result;
     }
 
-    public function confirmSeminar($eventId)
-    {
+    public function confirmSeminar($eventId) {
         $seminar = PlannedEvent::find($eventId);
         $seminar->event_status = "confirm";
         $seminar->confirm_by = Auth::user()->UserID;
@@ -1215,8 +1166,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
     }
 
     //  Confirm seminar
-    public function cancelSeminar($eventId)
-    {
+    public function cancelSeminar($eventId) {
         $inputData = Input::all();
         $seminar = PlannedEvent::find($eventId);
         $seminar->event_status = "cancel";
@@ -1228,22 +1178,22 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         } else {
             // Check if there is participant register
             $participants = EventAttendees::with(["person" => function ($query) {
-                $query->get(["PersonID", "Email", "FirstName", "LastName"]);
-            }])->where('event_id', $eventId)->where("ContactStatusID", 1)->get([
+                            $query->get(["PersonID", "Email", "FirstName", "LastName"]);
+                        }])->where('event_id', $eventId)->where("ContactStatusID", 1)->get([
                 "event_id",
                 "person_id",
                 "ContactStatusID"
             ]);
             // Get All trainer for that seminar
             $scheduleLocationIds = PlannedEventSchedule::where('event_id', $eventId)
-                ->leftjoin("planned_schedule", function ($join) {
-                    $join->on('planned_event_schedule.schedule_id', '=', 'planned_schedule.id');
-                })
-                ->groupBy("planned_event_schedule.event_id")
-                ->get([
-                    DB::Raw("GROUP_CONCAT(planned_schedule.LocationID) as locations"),
-                    DB::Raw("GROUP_CONCAT(planned_schedule.id) as schedules")
-                ]);
+                    ->leftjoin("planned_schedule", function ($join) {
+                        $join->on('planned_event_schedule.schedule_id', '=', 'planned_schedule.id');
+                    })
+                    ->groupBy("planned_event_schedule.event_id")
+                    ->get([
+                DB::Raw("GROUP_CONCAT(planned_schedule.LocationID) as locations"),
+                DB::Raw("GROUP_CONCAT(planned_schedule.id) as schedules")
+            ]);
 
 
             // Location Emails
@@ -1254,9 +1204,9 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             $scheduleIds = !empty($scheduleLocationIds) ? array_unique(explode(",", $scheduleLocationIds[0]->schedules)) : [];
 
             $trainersIds = PlannedScheduleSlot::whereIn('ScheduleID', $scheduleIds)
-                ->get([
-                    DB::Raw("GROUP_CONCAT(planned_schedule_slot.trainer) as trainersId")
-                ]);
+                    ->get([
+                DB::Raw("GROUP_CONCAT(planned_schedule_slot.trainer) as trainersId")
+            ]);
 
             $trainers = Person::whereIn('PersonID', array_unique(explode(",", $trainersIds[0]->trainersId)))->get([
                 "PersonID", "Email", DB::Raw("CONCAT(FirstName, ' ', LastName) as displayName")
@@ -1268,15 +1218,15 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             $result["participants"] = $participants;
             $result["trainers"] = $trainers;
             $result["locations"] = $locations;
-            $result["message"] = trans("seminarPlanner.successSeminarCancellation");;
+            $result["message"] = trans("seminarPlanner.successSeminarCancellation");
+            ;
         }
 
         return $result;
     }
 
     // Remove trainer from the seminar slot
-    public function removeTrainer($scheduleId, $slotId, $trainerId)
-    {
+    public function removeTrainer($scheduleId, $slotId, $trainerId) {
         $eventId = Input::get("eventId");
         $scheduleMain = PlannedSchedule::find($scheduleId);
         $slotMain = PlannedScheduleSlot::find($slotId);
@@ -1319,7 +1269,6 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             $slot->detailTrainerConflictMessage = "";
             $slot->trainer = $trainerId;
             $slot->save();
-
         }
 
         // Check if all conflicted slots are clear or not
@@ -1328,50 +1277,45 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             $scheduleMain->trainerConflicted = 0;
             $scheduleMain->detailTrainerConflictMessage = "";
             $scheduleMain->save();
-
         }
 
         $plannedEvents = PlannedEvent::where('id', $eventId)
-            ->with(["eventSchedule.schedule", "eventSchedule.schedule.scheduleLocation",
-                "eventSchedule.schedule.eventScheduleSlot" => function ($query) {
-                    $query->get(["planned_schedule_slot.*",
-                        DB::raw('(select group_concat(concat(PersonID, "-", TRIM(FirstName), " ", TRIM(LastName)) SEPARATOR ", ") as trainerName from person WHERE CONCAT(",", planned_schedule_slot.trainer ,"," ) LIKE CONCAT("%,", PersonID ,",%")) as trainers ')
-                    ]);
-                }, "eventSchedule.schedule.eventScheduleSlot.slotRoom"
-            ])
-            ->first();
+                ->with(["eventSchedule.schedule", "eventSchedule.schedule.scheduleLocation",
+                    "eventSchedule.schedule.eventScheduleSlot" => function ($query) {
+                        $query->get(["planned_schedule_slot.*",
+                            DB::raw('(select group_concat(concat(PersonID, "-", TRIM(FirstName), " ", TRIM(LastName)) SEPARATOR ", ") as trainerName from person WHERE CONCAT(",", planned_schedule_slot.trainer ,"," ) LIKE CONCAT("%,", PersonID ,",%")) as trainers ')
+                        ]);
+                    }, "eventSchedule.schedule.eventScheduleSlot.slotRoom"
+                ])
+                ->first();
 
         $result["plannedEvent"] = $plannedEvents;
         $result["message"] = trans("seminarPlanner.trainerRemoveSuccessfully");
         $result["type"] = "success";
         return $result;
-
     }
 
-    public function getAllLocation()
-    {
+    public function getAllLocation() {
         return $query = Location::with("person")->get(
-            [
-                DB::raw('location.*'),
-                DB::raw('(select count(*) from location_room) as room_count'),
-                DB::raw('(select MaxSize from room inner join location_room where location_room.RoomID=room.RoomID and location_room.LocationID=location.LocationID GROUP BY room.RoomName ORDER BY room.MaxSize DESC limit 1) as max_room')
-            ]);
+                [
+                    DB::raw('location.*'),
+                    DB::raw('(select count(*) from location_room) as room_count'),
+                    DB::raw('(select MaxSize from room inner join location_room where location_room.RoomID=room.RoomID and location_room.LocationID=location.LocationID GROUP BY room.RoomName ORDER BY room.MaxSize DESC limit 1) as max_room')
+        ]);
     }
 
-    public function getActivitiesByID($event_id = 0,$id,$param)
-    {
-        if($param == true){
+    public function getActivitiesByID($event_id = 0, $id, $param) {
+        if ($param == true) {
             return PlannedEvent::with(["eventTask.Task", "eventTask.task.priority", "eventTask.task.taskStatus", "eventTask.task.assignee"])->findOrFail($event_id);
-        }else{
-            return PlannedEvent::with(["eventTask"  => function ($query) use($id) {
-                $query->leftjoin("task", "planned_event_task.task_id" , "=", "task.TaskID");
-                $query->where('task.AssignedToUser', '=', $id);
-            },"eventTask.Task", "eventTask.task.priority", "eventTask.task.taskStatus", "eventTask.task.assignee"])->findOrFail($event_id);
+        } else {
+            return PlannedEvent::with(["eventTask" => function ($query) use($id) {
+                            $query->leftjoin("task", "planned_event_task.task_id", "=", "task.TaskID");
+                            $query->where('task.AssignedToUser', '=', $id);
+                        }, "eventTask.Task", "eventTask.task.priority", "eventTask.task.taskStatus", "eventTask.task.assignee"])->findOrFail($event_id);
         }
     }
 
-    public function savePlannedParticipantDetail($event_id = 0)
-    {
+    public function savePlannedParticipantDetail($event_id = 0) {
         $custom_field = [
             'event_price',
             'planned_no_of_participant'
@@ -1386,34 +1330,32 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         }
     }
 
-    public function getNoOfPlannedParticipant($eventId = 0)
-    {
+    public function getNoOfPlannedParticipant($eventId = 0) {
         $revenue_calculate = PlannedSeminarRevenue::join('seminar_item', 'planned_seminar_revenue.item_id', '=', 'seminar_item.seminar_item_id')
-            ->where("event_id", "=", $eventId)
-            ->where("revenue_type", "=", 'fix')
-            ->get([
-                'planned_seminar_revenue.*',
-                'seminar_item.*'
-            ]);
+                ->where("event_id", "=", $eventId)
+                ->where("revenue_type", "=", 'fix')
+                ->get([
+            'planned_seminar_revenue.*',
+            'seminar_item.*'
+        ]);
 
 
 
         $variable_revenue_calculate = PlannedSeminarRevenue::join('seminar_item', 'planned_seminar_revenue.item_id', '=', 'seminar_item.seminar_item_id')
-            ->where("event_id", "=", $eventId)
-            ->where("revenue_type", "=", 'variable')
-            ->get([
-                'planned_seminar_revenue.*',
-                'seminar_item.*'
-            ]);
+                ->where("event_id", "=", $eventId)
+                ->where("revenue_type", "=", 'variable')
+                ->get([
+            'planned_seminar_revenue.*',
+            'seminar_item.*'
+        ]);
 
         $participantNo = PlannedEvent::where("id", "=", $eventId)->first();
-        $totalAttendance=EventAttendees::where('event_id','=',$eventId)->count();
+        $totalAttendance = EventAttendees::where('event_id', '=', $eventId)->count();
 
-        return compact('participantNo', 'revenue_calculate', 'totalAttendance','variable_revenue_calculate');
+        return compact('participantNo', 'revenue_calculate', 'totalAttendance', 'variable_revenue_calculate');
     }
 
-    public function addPlannedParticipant($eventId)
-    {
+    public function addPlannedParticipant($eventId) {
         $no_of_participant_planned = Input::get('no_of_participant_planned');
         $event_obj = PlannedEvent::findOrFail($eventId);
         $event_obj->planned_no_of_participant = $no_of_participant_planned;
@@ -1423,23 +1365,20 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             return $event_obj;
     }
 
-    public function getSchedulesByID($event_id = 0)
-    {
+    public function getSchedulesByID($event_id = 0) {
 //        \DB::enableQueryLog();
-        return  PlannedEvent::with(['eventSchedule' => function ($query) {
-            $query->join('planned_schedule', 'planned_event_schedule.schedule_id', '=', 'planned_schedule.id');
-            $query->orderBy('planned_schedule.schedule_date', 'ASC');
-            $query->get([
-                'planned_event_schedule.*'
-            ]);
-        }, "eventSchedule.schedule" ,"eventSchedule.schedule.scheduleLocation", 'eventSchedule.schedule.eventScheduleSlot'])
-            ->where('planned_events.id', $event_id)
-            ->get(['planned_events.*']);
+        return PlannedEvent::with(['eventSchedule' => function ($query) {
+                                $query->join('planned_schedule', 'planned_event_schedule.schedule_id', '=', 'planned_schedule.id');
+                                $query->orderBy('planned_schedule.schedule_date', 'ASC');
+                                $query->get([
+                                    'planned_event_schedule.*'
+                                ]);
+                            }, "eventSchedule.schedule", "eventSchedule.schedule.scheduleLocation", 'eventSchedule.schedule.eventScheduleSlot'])
+                        ->where('planned_events.id', $event_id)
+                        ->get(['planned_events.*']);
     }
 
-
-    function deleteScheduleSlot($slotId)
-    {
+    function deleteScheduleSlot($slotId) {
         $slot = PlannedScheduleSlot::where("schedule_slotID", "=", $slotId)->delete();
 
         if ($slot) {
@@ -1449,8 +1388,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         }
     }
 
-    function validateSchedule($schedule_id = 0)
-    {
+    function validateSchedule($schedule_id = 0) {
 
         $result = [];
         $slotCount = count(Input::get('start_time'));
@@ -1464,16 +1402,15 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 
 //                My Updated Query for validation checkup
                 $eventsForSameDateTimeLocation = PlannedEventSchedule::join("planned_schedule", "schedule_id", "=", "planned_schedule.id")
-                    ->join("planned_schedule_slot", "ScheduleID", "=", "planned_schedule.id")
-                    ->where("schedule_date", "=", $scheduleDate)
-                    ->where("schedule.id", "!=", $schedule_id)
-                    ->where("start_time", "=", date("H:i:s", strtotime($slotStartTime[$k])))
-                    ->where("end_time", "=", date("H:i:s", strtotime($slotEndTime[$k])))
-                    ->where("LocationID", "=", $locationID)
-                    ->take(1)->get();
+                                ->join("planned_schedule_slot", "ScheduleID", "=", "planned_schedule.id")
+                                ->where("schedule_date", "=", $scheduleDate)
+                                ->where("schedule.id", "!=", $schedule_id)
+                                ->where("start_time", "=", date("H:i:s", strtotime($slotStartTime[$k])))
+                                ->where("end_time", "=", date("H:i:s", strtotime($slotEndTime[$k])))
+                                ->where("LocationID", "=", $locationID)
+                                ->take(1)->get();
 
 //                Old Query to check Validation
-
 //                $eventsForSameDateTimeLocation = \DB::select("SELECT * FROM event_schedule
 //                                            INNER JOIN schedule ON schedule_id = schedule.id
 //                                            INNER JOIN schedule_slot ON ScheduleID = schedule.id AND schedule_date = '" . $scheduleDate . "'
@@ -1493,14 +1430,12 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         return $result;
     }
 
-    public function getDocumentsByID($event_id = 0)
-    {
+    public function getDocumentsByID($event_id = 0) {
         return PlannedEvent::with(["eventDocument", "eventDocument.document", "eventDocument.document.documentCategory"])->findOrFail($event_id);
     }
 
     // Enter seminar action log in file as well as table
-    function seminarActionsLog($seminar, $action)
-    {
+    function seminarActionsLog($seminar, $action) {
         $seminarData = PlannedEvent::where('id', $seminar->id)->first(['id', 'event_name', 'event_startdate', 'event_enddate', 'cancelReason', 'moveReason'])->toArray();
         if ($action == "move-seminar") {
             $seminarData['seminarStartDateBeforeMove'] = $seminar->seminarStartDateBeforeMove;
@@ -1515,12 +1450,10 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         $seminarDataText = http_build_query($seminarData, '', ', ');
         Log::useDailyFiles(storage_path() . '/logs/seminars.log');
         Log::info($seminarDataText);
-
     }
 
     // Create task for trainer and location for the seminar
-    function createTaskForTrainerLocation($seminarId, $createTaskForTrainer, $createTaskForLocation, $action)
-    {
+    function createTaskForTrainerLocation($seminarId, $createTaskForTrainer, $createTaskForLocation, $action) {
         $plannedSeminar = PlannedEvent::find($seminarId);
         // Check if need to create task fot trainer
         if ($action == 'cancel-seminar') {
@@ -1565,11 +1498,9 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         $result['message'] = "Task Created successfully";
 
         return $result;
-
     }
 
-    public function seminarSeatAllocation($eventId)
-    {
+    public function seminarSeatAllocation($eventId) {
         $allocated_settings = AllocationSettings::query();
         $allocated_settings->with([
             'children',
@@ -1578,58 +1509,88 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             }
         ]);
         return $allocated_settings->where('modelLevel', '=', Auth::user()->LevelValueID)
-            ->where('eventID', '=', $eventId)
-            ->get();
+                        ->where('eventID', '=', $eventId)
+                        ->get();
     }
 
-    public function getAllotmentData($eventId = 0)
-    {
+    public function getAllotmentData($eventId = 0) {
         $allocationdata = AllocationLevelValues::with([
-            'getAttendees' => function ($query) use ($eventId) {
-                $query->where('event_attendees.event_id', '=', $eventId);
-            },
-            'children_rec' => function ($query) use ($eventId) {
-                $query->join('allocation_setting', 'allocation_level_values.LevelValuesID', '=', 'allocation_setting.modelLevel')
-                    ->where('allocation_setting.eventID', '=', $eventId)
-                    ->select([
-                        'allocation_level_values.*',
-                        'allocation_setting.allocatedSeat'
-                    ]);
-            }
-        ])->leftjoin('allocation_setting as a1', function ($join) use ($eventId) {
-            $join->on('allocation_level_values.LevelValuesID', '=', 'a1.modelLevel')
-                ->where('a1.eventID', '=', $eventId);
-        })->leftjoin('user', 'a1.createdBy', '=', 'user.UserID');
+                    'getAttendees' => function ($query) use ($eventId) {
+                        $query->where('event_attendees.event_id', '=', $eventId);
+                    },
+                    'children_rec' => function ($query) use ($eventId) {
+                        $query->join('allocation_setting', 'allocation_level_values.LevelValuesID', '=', 'allocation_setting.modelLevel')
+                                ->where('allocation_setting.eventID', '=', $eventId)
+                                ->select([
+                                    'allocation_level_values.*',
+                                    'allocation_setting.allocatedSeat'
+                        ]);
+                    }
+                ])->leftjoin('allocation_setting as a1', function ($join) use ($eventId) {
+                    $join->on('allocation_level_values.LevelValuesID', '=', 'a1.modelLevel')
+                            ->where('a1.eventID', '=', $eventId);
+                })->leftjoin('user', 'a1.createdBy', '=', 'user.UserID');
         if (Auth::user()->levelID == '3') {
             $allocationdata->where('allocation_level_values.LevelValuesID', '=', Auth::user()->LevelValueID);
         } else {
             $allocationdata->where('allocation_level_values.parent_id', '=', Auth::user()->LevelValueID);
         }
         $allocation_data = $allocationdata->orderBy('allocation_level_values.LevelValuesID', 'ASC')
-            ->get([
-                'allocation_level_values.*',
-                'a1.*',
-                'user.*',
-                'a1.created_at as assginedDate',
-                DB::raw("(select allocatedSeat from allocation_setting where modelLevel=" . Auth::user()->LevelValueID . " AND allocation_setting.eventID=" . $eventId . ")as total_seats")
-
-
-            ]);
+                ->get([
+            'allocation_level_values.*',
+            'a1.*',
+            'user.*',
+            'a1.created_at as assginedDate',
+            DB::raw("(select allocatedSeat from allocation_setting where modelLevel=" . Auth::user()->LevelValueID . " AND allocation_setting.eventID=" . $eventId . ")as total_seats")
+        ]);
 //echo "<pre>";print_r($allocation_data);exit;
         return $allocation_data;
     }
 
-    public function getLevelValuesById($eventId = 0, $levelId = 0)
-    {
+    public function getLevelValuesById($eventId = 0, $levelId = 0) {
         return AllocationSettings::where('eventID', '=', $eventId)
-            ->where('modelLevel', '=', $levelId)
-            ->first();
+                        ->where('modelLevel', '=', $levelId)
+                        ->first();
     }
 
-    public function childLevelSeatAllocatedValue($eventid = 0, $levelID = 0)
-    {
+    public function childLevelSeatAllocatedValue($eventid = 0, $levelID = 0) {
         return AllocationSettings::where('parentID', '=', $levelID)->where('eventID', '=', $eventid)
-            ->sum('allocatedSeat');
+                        ->sum('allocatedSeat');
+    }
+
+    public function changeSeatingMethod($seat_status, $eventId) {
+        $plannedEventObj = PlannedEvent::find($eventId);
+        if (!empty($plannedEventObj->id)) {
+            $success = $plannedEventObj->update([
+                'is_seats_allocated' => $seat_status
+            ]);
+            if ($success) {
+                if ($seat_status == 2) {
+                    $availableSeatObj = \App\Models\EventAvailableSeat::firstOrNew([
+                                'event_id' => $eventId
+                    ]);
+                    $availableSeatObj->fill([
+                        'no_of_release_seat' => $plannedEventObj->max_registration,
+                        'released_by' => Auth::id(),
+                        'LevelValueID' => Auth::user()->LevelValueID
+                    ]);
+                    $availableSeatObj->save();
+                } else {
+                    $allocationSettings = AllocationSettings::firstOrNew([
+                                'eventID' => $eventId,
+                                'parentID' => '0'
+                    ]);
+                    $allocationSettings->fill([
+                        'modelLevel' => Auth::user()->LevelValueID,
+                        'allocatedSeat' => $plannedEventObj->max_registration,
+                        'createdBy' => Auth::id(),
+                    ]);
+                    $allocationSettings->save();
+                }
+                return true;
+            } else
+                return false;
+        }
     }
 
 }
