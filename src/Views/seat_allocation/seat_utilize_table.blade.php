@@ -17,11 +17,12 @@ $remaining_Seats = 0;
 
                         $assigned_to_child = 0;
                         $assigned_to_parent = $allocation->allocatedSeat;
-
+                        $inside_level=0;
                         ?>
 
                         @if(Auth::user()->levelID==1 )
                             <ul class="seat_map with_bkgd devider frankfurt_btn">
+                                <?php $inside_level=1; ?>
                                 @include('seminar_planner.seat_allocation.seat_popover')
                                 <li class="seat_header ">{!! $allocation->name !!}</li>
                                 @if(!empty($allocation->children_rec->toArray()))
@@ -35,7 +36,6 @@ $remaining_Seats = 0;
                                             <ul class="seat_map with_bkgd devider frankfurt_btn"
                                                 style="margin-top: 45px;">
                                                 <li class="seat_header ">{!! $child_seat->name !!}</li>
-
                                                 @for($i=1;$i<=$child_seat->allocatedSeat;$i++)
                                                     <?php  $total_attendees = !empty($child_seat->getAttendees) ? $child_seat->getAttendees()->where('event_id','=',$eventId)->count() : 0 ?>
                                                     @if($i <= $total_attendees)
@@ -63,9 +63,10 @@ $remaining_Seats = 0;
                                 @else
                                     @if($allocation->allocatedSeat!='')
                                         <ul class="seat_map with_bkgd devider frankfurt_btn" style="margin-top: 45px;">
+                                            @if($inside_level==0)
                                             @include('seminar_planner.seat_allocation.seat_popover')
-                                            {{--<li class="seat_header ">{!! $allocation->name !!}</li>--}}
-                                            @for($i=1;$i<=$allocation->allocatedSeat;$i++)
+                                            @endif
+                                             @for($i=1;$i<=$allocation->allocatedSeat;$i++)
                                                 <?php  $total_attendees = !empty($allocation->getAttendees) ? $allocation->getAttendees->count() : 0 ?>
                                                 @if($i <= $total_attendees)
                                                     <li class="seat registered" id="{!! $total_attendees !!}"
