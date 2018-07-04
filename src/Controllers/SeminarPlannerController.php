@@ -462,7 +462,7 @@ class SeminarPlannerController extends Controller {
         $row_date = strtotime($event_obj->event_startdate);
         $today = strtotime(date('Y-m-d'));
 
-        if($row_date > $today || $event_obj->event_status != 'confirm'){
+        if ($row_date > $today || $event_obj->event_status != 'confirm') {
 
             $result = $this->seminar_planning_repository->deleteSeminar($eventId);
             if (isset($result) && !empty($result)) {
@@ -746,8 +746,14 @@ class SeminarPlannerController extends Controller {
     }
 
     public function saveSeatAllocation($eventid, $levelID) {
-        $event_attendees = EventAttendees::where('LevelValuesID', '=', $levelID)
-                        ->where('event_id', '=', $eventid)->count();
+        $allocation_model_values = AllocationSettings::groupBy('eventID')
+                ->where('eventID', '=', $eventid)
+                ->first([
+            DB::raw('GROUP_CONCAT(modelLevel) as modelLevel')
+        ]);
+        $event_attendees = EventAttendees::where('event_id', '=', $eventid)
+                ->whereIn('LevelValuesID', explode(",", !empty($allocation_model_values->modelLevel) ? $allocation_model_values->modelLevel : []))
+                ->count();
         if ($event_attendees > Input::get('allocatedSeat')) {
             return Response::json([
                         "type" => "error",
@@ -765,7 +771,8 @@ class SeminarPlannerController extends Controller {
         $parent_allocated_seats = $this->seminar_planning_repository->getLevelValuesById($eventid, Auth::user()->LevelValueID);
         $get_free_seat = $this->allocated_seat_repository->getTotalFreeSeats($eventid);
         if (!empty($child_allocated_seats) && !empty($parent_allocated_seats->allocatedSeat)) {
-            if ($parent_allocated_seats->allocatedSeat <= $child_allocated_seats) {
+
+            if ($parent_allocated_seats->allocatedSeat <= $child_allocated_seats || $child_allocated_seats > Input::get('allocatedSeat')) {
                 return Response::json([
                             "type" => "error",
                             "message" => CustomFunction::customTrans("general.seats_are_allocated_to_child")
