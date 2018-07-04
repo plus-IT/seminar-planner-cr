@@ -762,7 +762,7 @@ class SeminarPlannerController extends Controller {
                 ->sum('allocatedSeat');
         $level_allocated_seats = $this->seminar_planning_repository->getLevelValuesById($eventid, Auth::user()->LevelValueID);
         $child_allocated_seats = $this->seminar_planning_repository->childLevelSeatAllocatedValue($eventid, $levelID);
-        $parent_allocated_seats = $this->seminar_planning_repository->getLevelValuesById($eventid, $levelID);
+        $parent_allocated_seats = $this->seminar_planning_repository->getLevelValuesById($eventid, Auth::user()->LevelValueID);
         $get_free_seat = $this->allocated_seat_repository->getTotalFreeSeats($eventid);
         if (!empty($child_allocated_seats) && !empty($parent_allocated_seats->allocatedSeat)) {
             if ($parent_allocated_seats->allocatedSeat <= $child_allocated_seats) {

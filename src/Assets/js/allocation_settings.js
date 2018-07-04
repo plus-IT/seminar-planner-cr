@@ -52,6 +52,7 @@ $(document).ready(function () {
                 notify(data.type, data.message)
                 if (data.type == 'success') {
                     $(".still_available_seats").html(max_participants - sum);
+                    $me.attr('seatallocated',allocatedSeat);
                     getInitDataTable();
                 } else {
                     $me.val(old_val);
