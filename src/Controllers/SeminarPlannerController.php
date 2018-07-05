@@ -136,7 +136,6 @@ class SeminarPlannerController extends Controller {
     public function updatePlannedMinMaxData(Request $request, $eventId) {
         $min_registration = Input::get('min_registration');
         $max_registration = Input::get('max_registration');
-        $external_id = Input::get('external_id');
         $modal = 'App\\Models\\PlannedEvent';
         $primaryKey = App::make($modal)->getKeyName();
         $validator = Validator::make($request::all(), [
@@ -147,8 +146,10 @@ class SeminarPlannerController extends Controller {
             $inputs = [
                 'min_registration' => $min_registration,
                 'max_registration' => $max_registration,
-                'external_id' => !empty($external_id) ? $external_id : null
             ];
+            if (Input::has('external_id')) {
+                $inputs['external_id'] = Input::get('external_id');
+            }
             PlannedEvent::where('id', '=', $eventId)->update($inputs);
             return Response::json([
                         "type" => "success"
@@ -772,7 +773,7 @@ class SeminarPlannerController extends Controller {
         $get_free_seat = $this->allocated_seat_repository->getTotalFreeSeats($eventid);
         if (!empty($child_allocated_seats) && !empty($parent_allocated_seats->allocatedSeat)) {
 
-            if ($parent_allocated_seats->allocatedSeat <= $child_allocated_seats  &&  $child_allocated_seats > Input::get('allocatedSeat')) {
+            if ($parent_allocated_seats->allocatedSeat <= $child_allocated_seats && $child_allocated_seats > Input::get('allocatedSeat')) {
                 return Response::json([
                             "type" => "error",
                             "message" => CustomFunction::customTrans("general.seats_are_allocated_to_child")

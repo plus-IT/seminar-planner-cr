@@ -121,20 +121,20 @@ $(document).ready(function () {
         var className = $(this).attr('data-target');
         className = className.replace('#', '');
         $("#save_button_class").removeClass();
-         console.log(className);
-        if(className == 'tab_description'){
+        console.log(className);
+        if (className == 'tab_description') {
             $("#save_button_class").show();
             $("#save_button_class").html(save_description);
             $("#save_button_class").addClass('green btn_simply_green btn default ' + className + '_save');
-        }else if(className == 'tab_activity'){
+        } else if (className == 'tab_activity') {
             $("#save_button_class").show();
             $("#save_button_class").html(save_activity);
             $("#save_button_class").addClass('green btn_simply_green btn default ' + className + '_save');
-        }else if(className == 'tab_document'){
+        } else if (className == 'tab_document') {
             $("#save_button_class").show();
             $("#save_button_class").html(save_document);
             $("#save_button_class").addClass('green btn_simply_green btn default ' + className + '_save');
-        }else{
+        } else {
             $("#save_button_class").hide();
         }
 
@@ -154,39 +154,44 @@ $(document).ready(function () {
         e.start
     });
 
-    
-     $body.on("blur", "#max_registration , #min_registration, .external_id_save", function (e) {
+
+    $body.on("blur", "#max_registration , #min_registration, .external_id_save", function (e) {
         var eventID = $(".eventID").val();
         var min_registration = $('#min_registration').val();
         var max_registration = $('#max_registration').val();
         var external_id = $('.external_id_save').val();
         var totalAttendees = $('#totalAttendees').val();
-        
-        if(parseInt(max_registration) < parseInt(totalAttendees) || parseInt(max_registration) == 0){
-           $('#max_registration').val(totalAttendees);
-           max_registration = $('#max_registration').val();
+
+        if (parseInt(max_registration) < parseInt(totalAttendees) || parseInt(max_registration) == 0) {
+            $('#max_registration').val(totalAttendees);
+            max_registration = $('#max_registration').val();
         }
-        if(parseInt(max_registration) < parseInt(min_registration)){
+
+        var additionalFields = '';
+        if(typeOf external_id!='undefined'){
+            additionalFields='&external_id=' + external_id;
+        }
+        if (parseInt(max_registration) < parseInt(min_registration)) {
             $(this).focus();
             notify('error', minMaxErrorMsg);
             return false;
-        }else{
-             $.ajax({
-                url: base_url + 'seminar-planner/updatePlannedMinMaxData/' + eventID+'?min_registration='+min_registration+'&max_registration='+max_registration+'&external_id='+external_id,
+        } else {
+            $.ajax({
+                url: base_url + 'seminar-planner/updatePlannedMinMaxData/' + eventID + '?min_registration=' + min_registration + '&max_registration=' + max_registration + additionalFields,
                 type: 'get',
                 beforeSend: function (data) {
                     blockUI(".modal-content");
                 },
                 success: function (data) {
-                    if(data.type == 'error'){
+                    if (data.type == 'error') {
                         notify(data.type, data.message);
                         $('.external_id_save').val('').focus();
                     }
-                   unBlockUI(".modal-content");
+                    unBlockUI(".modal-content");
                 }
             });
         }
-     });
+    });
 
     $body.on("click", ".seminar_details_for_portal", function (e) {
 
@@ -386,8 +391,7 @@ $(document).ready(function () {
                         $(this).find("[name='time_slot_chk[]']").prop('checked', true);
                     })
                     schedule_model.text(duplicate_schedule + ' | ' + $eventName);
-                }
-                else {
+                } else {
                     $("[name='model_mode']").val('0');
                     schedule_model.text(edit_schedule + ' | ' + $eventName);
                 }
@@ -697,7 +701,7 @@ $(document).ready(function () {
     var timeout = null;
     $body.on('keyup', ".seminar-search-input", function (e) {
         clearTimeout(timeout)
-        timeout = setTimeout(function() {
+        timeout = setTimeout(function () {
             pageNo = 1;
             var Data = generateFilterURL();
             if (Data != '' && Data != false) {
@@ -989,8 +993,8 @@ $(document).ready(function () {
         $(".slotList").empty();
         // append schedule days
         $("#slotTemplate")
-            .tmpl(schedule.schedule.event_schedule_slot)
-            .appendTo(".slotList");
+                .tmpl(schedule.schedule.event_schedule_slot)
+                .appendTo(".slotList");
 
         $(".itemSlot").droppable({
             accept: ".itemTrainer, .itemRoom",
@@ -1053,13 +1057,13 @@ $(document).ready(function () {
                                 $(".scheduleList").empty();
                                 $(".slotList").empty();
                                 $("#scheduleTemplate")
-                                    .tmpl(data.plannedEvent.event_schedule)
-                                    .appendTo(".scheduleList");
+                                        .tmpl(data.plannedEvent.event_schedule)
+                                        .appendTo(".scheduleList");
 
                                 // append schedule days
                                 $("#slotTemplate")
-                                    .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
-                                    .appendTo(".slotList");
+                                        .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
+                                        .appendTo(".slotList");
 
                                 reassignDragDropEvent();
 
@@ -1206,7 +1210,7 @@ $(document).ready(function () {
             $trainers += $(this).find('div').text() + ', ';
         });
         $trainerName = $trainers.trim().slice(0, -1);
-        console.log('data>> '+$trainerName);
+        console.log('data>> ' + $trainerName);
         $trainers = "";
         $slotDiv.find("[data-index='slot_time']").html($time_slot);
         $slotDiv.find("[data-index='slot_trainer']").html($trainerName);
@@ -1278,7 +1282,7 @@ $(document).ready(function () {
     $(document).click(function () {
         $(".seminarCategoryForExport").select2("close");
     });
-    
+
     $body.on('keyup', '[name="search_trainer"]', function (e) {
         var search_trainer = $(this).val();
         $.ajax({
@@ -1563,8 +1567,8 @@ function generateFilterURL(no_notice) {
         var seminar_planner_type = $(".seminar_planner_type option:selected").val();
         var seminar_planned_by = $('#SeminarPlannedBy').val();
         additionalData = "?search=" + $(".seminar-search-input").val() + "&sortby=" + sortby + "&sort_order=" + sort_order
-            + "&category_id=" + categoryname + "&seminarLocation=" + seminarLocation + "&trainerId="
-            + trainerId + "&is_planned=" + seminar_planner_type + "&planned_by=" + seminar_planned_by;
+                + "&category_id=" + categoryname + "&seminarLocation=" + seminarLocation + "&trainerId="
+                + trainerId + "&is_planned=" + seminar_planner_type + "&planned_by=" + seminar_planned_by;
 
         if (startOfdate != '' && endOfDate != '') {
             additionalData += "&start_date=" + startOfdate + "&end_date=" + endOfDate;
@@ -1589,20 +1593,20 @@ function generateFilterURL(no_notice) {
         currentFilterRequest = false;
     }, 2000);
 
-     if(selectedSeminarBluePrint){
-            $('.checked_item').removeAttr('checked');
-            $.each(selectedSeminarBluePrint, function (index, val) {
-                console.log(selectedSeminarBluePrint);
-                $('.checked_item[value='+val+']').attr("checked","checked");
-            });
-        }
+    if (selectedSeminarBluePrint) {
+        $('.checked_item').removeAttr('checked');
+        $.each(selectedSeminarBluePrint, function (index, val) {
+            console.log(selectedSeminarBluePrint);
+            $('.checked_item[value=' + val + ']').attr("checked", "checked");
+        });
+    }
     return additionalData;
 }
 
 function checkSlotConflit(event1, event2) {
     return event1.start < event2.start
-        ? checkConflict(event1, event2)
-        : checkConflict(event2, event1)
+            ? checkConflict(event1, event2)
+            : checkConflict(event2, event1)
 
     function checkConflict(first, second) {
         if (first.end > second.start) {
@@ -1620,9 +1624,9 @@ $('#event_startdate,#event_enddate').datepicker({
     pickTime: false
 });
 /*$body.on("click", ".get_filter_reset", function (e) {
-    $("#SeminarCategoryID").select2("val", "");
-    $("#CompanyMainContactID").select2("val", "");
-});*/
+ $("#SeminarCategoryID").select2("val", "");
+ $("#CompanyMainContactID").select2("val", "");
+ });*/
 
 $('#daysCalculationPopup').on('show.bs.modal', function () {
     $('.recalculateDatePicker').datepicker({
@@ -1641,7 +1645,7 @@ function loadAutoCompleteCategoryList() {
         delay: 250,
         tags: true,
         tokenSeparators: [','],
-        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+        ajax: {// instead of writing the function to execute the request we use Select2's convenient helper
             url: base_url + "seminar-planner/getCategory",
             dataType: 'json',
             method: "GET",
@@ -1667,7 +1671,7 @@ function loadAutoCompleteLocationList() {
         delay: 250,
         tags: true,
         tokenSeparators: [','],
-        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+        ajax: {// instead of writing the function to execute the request we use Select2's convenient helper
             url: base_url + "seminar-planner/getLocation",
             dataType: 'json',
             method: "GET",
@@ -1693,7 +1697,7 @@ function loadAutoCompleteTrainerList() {
         delay: 250,
         tags: true,
         tokenSeparators: [','],
-        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+        ajax: {// instead of writing the function to execute the request we use Select2's convenient helper
             url: base_url + "seminar-planner/getTrainer",
             dataType: 'json',
             method: "GET",
@@ -1719,7 +1723,7 @@ function loadAutoCompleteSeminarPlannedList() {
         delay: 250,
         tags: true,
         tokenSeparators: [','],
-        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+        ajax: {// instead of writing the function to execute the request we use Select2's convenient helper
             url: base_url + "seminar-planner/getSeminarPlannedBy",
             dataType: 'json',
             method: "GET",
@@ -1768,11 +1772,11 @@ function reinitialScrollLoad(pageNumNoUse, me, source, destination) {
         },
 
         start: function () {
-           /* $('<div class="loading"><img src="' + asset_url + '/global/img/loading-spinner-default.gif"/></div>').appendTo(this);*/
+            /* $('<div class="loading"><img src="' + asset_url + '/global/img/loading-spinner-default.gif"/></div>').appendTo(this);*/
             // you can add your effect before loading data
         },
 
-        ScrollAfterHeight: 95,			//this is the height in percentage after which ajax stars
+        ScrollAfterHeight: 95, //this is the height in percentage after which ajax stars
 
         onload: function (data) {
             var dataObj = $(data);
@@ -1787,7 +1791,7 @@ function reinitialScrollLoad(pageNumNoUse, me, source, destination) {
 
         continueWhile: function (resp) {
             if ($(resp).find('tbody tr').length == 0) { // stops when number of 'li' reaches 100
-                notify('error',no_more_load);
+                notify('error', no_more_load);
                 return false;
             }
             return true;
@@ -1822,8 +1826,8 @@ function getCalendarViewToPlannedSeminars() {
             if (data.type == "success") {
                 $("#bulePrintList").empty();
                 $("#bulePrintListTemplate")
-                    .tmpl(data.bluePrintSeminars)
-                    .appendTo("#bulePrintList");
+                        .tmpl(data.bluePrintSeminars)
+                        .appendTo("#bulePrintList");
 
                 $(".dd-item").draggable({
                     zIndex: 999,
@@ -1894,20 +1898,20 @@ function initCalendarForPlanning() {
                 date.setDate(date.getDate() + 1);
             }
 
-            console.log('alldays>>>>'+ allDay);
+            console.log('alldays>>>>' + allDay);
             console.log(weekendConsider);
 
             var markup = "<tr>" +
-                "<td>${SeminarDay}</td> " +
-                "<td>${SeminarDayTitle}</td> " +
-                "<td>${SeminarCurrentDate}</td> " +
-                "<td>${SeminarCurrentDay}</td> " +
-                "<td>${SeminarChangeDay}</td> " +
-                "<td><input class='form-control form-control-inline recalculateDatePicker required'" +
-                "size='16' type='text' name='begin'" +
-                "value='${SeminarRecalculateDate}'/></td>" +
-                "<td>${SeminarRecalculateDay}</td> " +
-                "</tr>";
+                    "<td>${SeminarDay}</td> " +
+                    "<td>${SeminarDayTitle}</td> " +
+                    "<td>${SeminarCurrentDate}</td> " +
+                    "<td>${SeminarCurrentDay}</td> " +
+                    "<td>${SeminarChangeDay}</td> " +
+                    "<td><input class='form-control form-control-inline recalculateDatePicker required'" +
+                    "size='16' type='text' name='begin'" +
+                    "value='${SeminarRecalculateDate}'/></td>" +
+                    "<td>${SeminarRecalculateDay}</td> " +
+                    "</tr>";
 
             // Compile the markup as a named template
             $.template("daysCalculationBody", markup);
@@ -1959,8 +1963,7 @@ function initCalendarForPlanning() {
                                     calculatedDay.SeminarRecalculateDate = moment(date).format(app_date_format_js.toUpperCase());
                                     calculatedDay.SeminarRecalculateDay = moment(date).format("dddd");
                                     calculatedDay.SeminarChangeDay = moment(date).format("dddd");
-                                }
-                                else {
+                                } else {
                                     console.log("In ELse");
                                     calculatedDay.SeminarCurrentDate = moment(oldDates[key].start).format(app_date_format_js.toUpperCase());
                                     calculatedDay.SeminarCurrentDay = moment(oldDates[key].start).format("dddd");
@@ -1968,7 +1971,7 @@ function initCalendarForPlanning() {
 
                                     // Check if drop-date is valid OR Find next valid date
                                     var dropDay = new Date(date.getTime());
-                                    dropDay.setDate(dropDay.getDate() + (parseInt(val.schedule.duration_between_previous_day) + 1 ));
+                                    dropDay.setDate(dropDay.getDate() + (parseInt(val.schedule.duration_between_previous_day) + 1));
 
                                     if (val.schedule.weekdays) {
                                         console.log(val.schedule.weekdays.split(","))
@@ -2021,7 +2024,7 @@ function initCalendarForPlanning() {
 
                         $(".daysCalculationBody").html("");
                         $.tmpl("daysCalculationBody", dayCalculation)
-                            .appendTo(".daysCalculationBody");
+                                .appendTo(".daysCalculationBody");
 
                         $("#daysCalculationPopup").modal("show");
 
@@ -2057,8 +2060,7 @@ function initCalendarForPlanning() {
                             ;
                             calculatedDay.SeminarRecalculateDay = moment(date).format("dddd");
                             calculatedDay.SeminarChangeDay = moment(date).format("dddd");
-                        }
-                        else {
+                        } else {
 
                             calculatedDay.SeminarCurrentDate = moment(oldDates[key].start).format(app_date_format_js.toUpperCase());
                             calculatedDay.SeminarCurrentDay = moment(oldDates[key].start).format("dddd");
@@ -2066,7 +2068,7 @@ function initCalendarForPlanning() {
 
                             // Check if drop-date is valid OR Find next valid date
                             var dropDay = new Date(date.getTime());
-                            dropDay.setDate(dropDay.getDate() + (parseInt(val.schedule.duration_between_previous_day) + 1 ));
+                            dropDay.setDate(dropDay.getDate() + (parseInt(val.schedule.duration_between_previous_day) + 1));
                             console.log(dropDay, "Dateeeee");
                             if (val.schedule.weekdays) {
                                 console.log(val.schedule.weekdays.split(","))
@@ -2075,8 +2077,7 @@ function initCalendarForPlanning() {
                                     while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
                                         dropDay.setDate(dropDay.getDate() + 1);
                                     }
-                                }
-                                else {
+                                } else {
                                     // Check if schedul has allow only weekends and globle weekends consideration settings is  off
                                     var weekdaysArray = val.schedule.weekdays.split(",");
                                     var isOtherWeekDays = $(weekdaysArray).not(["0", "6"]).get();
@@ -2120,7 +2121,7 @@ function initCalendarForPlanning() {
 
                 $(".daysCalculationBody").html("");
                 $.tmpl("daysCalculationBody", dayCalculation)
-                    .appendTo(".daysCalculationBody");
+                        .appendTo(".daysCalculationBody");
 
                 $("#daysCalculationPopup").modal("show");
 
@@ -2131,7 +2132,7 @@ function initCalendarForPlanning() {
             //console.log(dayCalculation, "calclulation");
             console.log(dateAdd, "Recalculates Days");
             //console.log(oldDates, "old Recalculates Days");
-            $('.recalculateDatePicker').attr('disabled','disabled');
+            $('.recalculateDatePicker').attr('disabled', 'disabled');
 
 
         },
@@ -2153,17 +2154,17 @@ function initCalendarForPlanning() {
             while (checkForHoliday(dDate) == true) {
                 dDate.setDate(dDate.getDate() + 1);
             }
-            if(!originalDragDateObj.event_schedule[0]){
+            if (!originalDragDateObj.event_schedule[0]) {
                 notify('error', plannerWithoutScheduleMsg);
-                return false;   
+                return false;
             }
-            if(originalDragDateObj.event_schedule[0].schedule.weekdays.includes("0") == true && originalDragDateObj.event_schedule[0].schedule.weekdays.includes("6") == true){
+            if (originalDragDateObj.event_schedule[0].schedule.weekdays.includes("0") == true && originalDragDateObj.event_schedule[0].schedule.weekdays.includes("6") == true) {
 
                 $(originalDragDateObj.event_schedule).each(function (key, val) {
-                   
+
                     if (days.length > 0) {
                         var dropDay = new Date(days[key - 1].getTime());
-                        dropDay.setDate(dropDay.getDate() + (parseInt(val.schedule.duration_between_previous_day) + 1 ));
+                        dropDay.setDate(dropDay.getDate() + (parseInt(val.schedule.duration_between_previous_day) + 1));
                     } else {
                         var dropDay = dDate;
                     }
@@ -2218,7 +2219,7 @@ function initCalendarForPlanning() {
                 // Add this blueprint into planned events as draft and set default schedule dates
                 insertBlueprintAsDraftEvent(dateAdd, "drop");
 
-            }else if (weekendConsider != "1" && (dDate.getDay() == 0 || dDate.getDay() == 6)) {
+            } else if (weekendConsider != "1" && (dDate.getDay() == 0 || dDate.getDay() == 6)) {
                 bootbox.confirm({
                     message: weekendWarningMessage,
                     buttons: {
@@ -2242,7 +2243,7 @@ function initCalendarForPlanning() {
                         $(originalDragDateObj.event_schedule).each(function (key, val) {
                             if (days.length > 0) {
                                 var dropDay = new Date(days[key - 1].getTime());
-                                dropDay.setDate(dropDay.getDate() + (parseInt(val.schedule.duration_between_previous_day) + 1 ));
+                                dropDay.setDate(dropDay.getDate() + (parseInt(val.schedule.duration_between_previous_day) + 1));
                             } else {
                                 var dropDay = dDate;
                             }
@@ -2302,7 +2303,7 @@ function initCalendarForPlanning() {
                 $(originalDragDateObj.event_schedule).each(function (key, val) {
                     if (days.length > 0) {
                         var dropDay = new Date(days[key - 1].getTime());
-                        dropDay.setDate(dropDay.getDate() + (parseInt(val.schedule.duration_between_previous_day) + 1 ));
+                        dropDay.setDate(dropDay.getDate() + (parseInt(val.schedule.duration_between_previous_day) + 1));
                     } else {
                         var dropDay = new Date(date.toDate().getTime());
                     }
@@ -2725,10 +2726,10 @@ function updatePlannedEvent(blueprintEventObject, actionType) {
                 dateAdd = new Array();
                 $("#calendar").fullCalendar('refetchEvents');
                 unBlockUI(".page-container");
-                if(data.bluePrintSeminars.event_status != "draft" || data.bluePrintSeminars.event_status == ""){
+                if (data.bluePrintSeminars.event_status != "draft" || data.bluePrintSeminars.event_status == "") {
                     askToInformParticipant(data.participants, "move-seminar");
-                }else{
-                    notify('success',draftRecalculated);
+                } else {
+                    notify('success', draftRecalculated);
                 }
                 // call function to ask for inform participant if any
 
@@ -2813,9 +2814,11 @@ function initSelectDropDown($className) {
 
             function splitVal(string, separator) {
                 var val, i, l;
-                if (string === null || string.length < 1) return [];
+                if (string === null || string.length < 1)
+                    return [];
                 val = string.split(separator);
-                for (i = 0, l = val.length; i < l; i = i + 1) val[i] = $.trim(val[i]);
+                for (i = 0, l = val.length; i < l; i = i + 1)
+                    val[i] = $.trim(val[i]);
                 return val;
             }
 
@@ -2874,9 +2877,11 @@ function initScheduleDefaultSelectDropDown() {
 
             function splitVal(string, separator) {
                 var val, i, l;
-                if (string === null || string.length < 1) return [];
+                if (string === null || string.length < 1)
+                    return [];
                 val = string.split(separator);
-                for (i = 0, l = val.length; i < l; i = i + 1) val[i] = $.trim(val[i]);
+                for (i = 0, l = val.length; i < l; i = i + 1)
+                    val[i] = $.trim(val[i]);
                 return val;
             }
 
@@ -2934,9 +2939,11 @@ function initSelectDropDownByClass($className) {
 
             function splitVal(string, separator) {
                 var val, i, l;
-                if (string === null || string.length < 1) return [];
+                if (string === null || string.length < 1)
+                    return [];
                 val = string.split(separator);
-                for (i = 0, l = val.length; i < l; i = i + 1) val[i] = $.trim(val[i]);
+                for (i = 0, l = val.length; i < l; i = i + 1)
+                    val[i] = $.trim(val[i]);
                 return val;
             }
 
@@ -3020,9 +3027,11 @@ function initSelectDropDownForEditDuplicate() {
 
                 function splitVal(string, separator) {
                     var val, i, l;
-                    if (string === null || string.length < 1) return [];
+                    if (string === null || string.length < 1)
+                        return [];
                     val = string.split(separator);
-                    for (i = 0, l = val.length; i < l; i = i + 1) val[i] = $.trim(val[i]);
+                    for (i = 0, l = val.length; i < l; i = i + 1)
+                        val[i] = $.trim(val[i]);
                     return val;
                 }
 
@@ -3048,8 +3057,8 @@ function initSelectDropDownForEditDuplicate() {
 
 function checkSlotConflit(event1, event2) {
     return event1.start < event2.start
-        ? checkConflict(event1, event2)
-        : checkConflict(event2, event1)
+            ? checkConflict(event1, event2)
+            : checkConflict(event2, event1)
 
     function checkConflict(first, second) {
         if (first.end > second.start && (first.roomId == second.roomId || first.trainers == second.trainers)) {
@@ -3163,23 +3172,23 @@ function getScheduleAndSlotForSeminar($eventId) {
 
                 // append trainer list
                 $("#trainerListTemplate")
-                    .tmpl(data.trainers)
-                    .appendTo(".trainerList");
+                        .tmpl(data.trainers)
+                        .appendTo(".trainerList");
 
                 // append Locations
                 $("#LocationListTemplate")
-                    .tmpl(data.locations)
-                    .appendTo(".locationList");
+                        .tmpl(data.locations)
+                        .appendTo(".locationList");
 
                 // append schedule days
                 $("#scheduleTemplate")
-                    .tmpl(data.plannedEvent.event_schedule)
-                    .appendTo(".scheduleList");
+                        .tmpl(data.plannedEvent.event_schedule)
+                        .appendTo(".scheduleList");
 
                 // append schedule days
                 $("#slotTemplate")
-                    .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
-                    .appendTo(".slotList");
+                        .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
+                        .appendTo(".slotList");
 
                 reassignDragDropEvent();
 
@@ -3207,13 +3216,13 @@ function assignLocationToSchedule(dragElement, dropElement) {
                 $(".scheduleList").empty();
                 $(".slotList").empty();
                 $("#scheduleTemplate")
-                    .tmpl(data.plannedEvent.event_schedule)
-                    .appendTo(".scheduleList");
+                        .tmpl(data.plannedEvent.event_schedule)
+                        .appendTo(".scheduleList");
 
                 // append schedule days
                 $("#slotTemplate")
-                    .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
-                    .appendTo(".slotList");
+                        .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
+                        .appendTo(".slotList");
 
                 // Notify the messagee
                 notify("success", data.message);
@@ -3243,13 +3252,13 @@ function assignTrainerToSlot(dragElement, dropElement) {
                 $(".scheduleList").empty();
                 $(".slotList").empty();
                 $("#scheduleTemplate")
-                    .tmpl(data.plannedEvent.event_schedule)
-                    .appendTo(".scheduleList");
+                        .tmpl(data.plannedEvent.event_schedule)
+                        .appendTo(".scheduleList");
 
                 // append schedule days
                 $("#slotTemplate")
-                    .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
-                    .appendTo(".slotList");
+                        .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
+                        .appendTo(".slotList");
 
                 reassignDragDropEvent();
 
@@ -3282,13 +3291,13 @@ function assignRoomToSlot(roomId, dropElement) {
                 $(".scheduleList").empty();
                 $(".slotList").empty();
                 $("#scheduleTemplate")
-                    .tmpl(data.plannedEvent.event_schedule)
-                    .appendTo(".scheduleList");
+                        .tmpl(data.plannedEvent.event_schedule)
+                        .appendTo(".scheduleList");
 
                 // append schedule days
                 $("#slotTemplate")
-                    .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
-                    .appendTo(".slotList");
+                        .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
+                        .appendTo(".slotList");
 
                 reassignDragDropEvent();
 
@@ -3346,7 +3355,7 @@ function reassignDragDropEvent() {
 
             var dragElement = $.tmplItem(ui.draggable[0]).data;
             var dropElement = $.tmplItem(this).data;
-            if(dropElement.schedule.LocationID != '' && dropElement.schedule.LocationID != dragElement.LocationID){
+            if (dropElement.schedule.LocationID != '' && dropElement.schedule.LocationID != dragElement.LocationID) {
                 bootbox.confirm({
                     message: eventConfirmChangeLocation,
                     buttons: {
@@ -3363,10 +3372,10 @@ function reassignDragDropEvent() {
                         if (response == true) {
                             assignLocationToSchedule(dragElement, dropElement);
                             event.preventDefault();
-                        } 
+                        }
                     }
                 });
-            }else{
+            } else {
                 assignLocationToSchedule(dragElement, dropElement);
                 event.preventDefault();
             }
@@ -3532,7 +3541,7 @@ function markSeminarAsCancel($eventId) {
                 trainerListForSeminar = data.trainers;
                 locationListForSeminar = data.locations;
                 $("#calendar").fullCalendar('refetchEvents');
-            }else{
+            } else {
                 notify("error", data.message);
             }
         }
@@ -3734,53 +3743,56 @@ function getDashboardTaskEvent() {
 
 
 var getFromBetween = {
-    results:[],
-    string:"",
-    getFromBetween:function (sub1,sub2) {
-        if(this.string.indexOf(sub1) < 0 || this.string.indexOf(sub2) < 0) return false;
-        var SP = this.string.indexOf(sub1)+sub1.length;
-        var string1 = this.string.substr(0,SP);
+    results: [],
+    string: "",
+    getFromBetween: function (sub1, sub2) {
+        if (this.string.indexOf(sub1) < 0 || this.string.indexOf(sub2) < 0)
+            return false;
+        var SP = this.string.indexOf(sub1) + sub1.length;
+        var string1 = this.string.substr(0, SP);
         var string2 = this.string.substr(SP);
         var TP = string1.length + string2.indexOf(sub2);
-        return this.string.substring(SP,TP);
+        return this.string.substring(SP, TP);
     },
-    removeFromBetween:function (sub1,sub2) {
-        if(this.string.indexOf(sub1) < 0 || this.string.indexOf(sub2) < 0) return false;
-        var removal = sub1+this.getFromBetween(sub1,sub2)+sub2;
-        this.string = this.string.replace(removal,"");
+    removeFromBetween: function (sub1, sub2) {
+        if (this.string.indexOf(sub1) < 0 || this.string.indexOf(sub2) < 0)
+            return false;
+        var removal = sub1 + this.getFromBetween(sub1, sub2) + sub2;
+        this.string = this.string.replace(removal, "");
     },
-    getAllResults:function (sub1,sub2) {
+    getAllResults: function (sub1, sub2) {
         // first check to see if we do have both substrings
-        if(this.string.indexOf(sub1) < 0 || this.string.indexOf(sub2) < 0) return;
+        if (this.string.indexOf(sub1) < 0 || this.string.indexOf(sub2) < 0)
+            return;
 
         // find one result
-        var result = this.getFromBetween(sub1,sub2);
+        var result = this.getFromBetween(sub1, sub2);
         // push it to the results array
         this.results.push(result);
         // remove the most recently found one from the string
-        this.removeFromBetween(sub1,sub2);
+        this.removeFromBetween(sub1, sub2);
 
         // if there's more substrings
-        if(this.string.indexOf(sub1) > -1 && this.string.indexOf(sub2) > -1) {
-            this.getAllResults(sub1,sub2);
-        }
-        else return;
+        if (this.string.indexOf(sub1) > -1 && this.string.indexOf(sub2) > -1) {
+            this.getAllResults(sub1, sub2);
+        } else
+            return;
     },
-    get:function (string,sub1,sub2) {
+    get: function (string, sub1, sub2) {
         this.results = [];
         this.string = string;
-        this.getAllResults(sub1,sub2);
+        this.getAllResults(sub1, sub2);
         return this.results;
     }
 };
 
 
-function replaceTranslatables(message){
-    if(seminarPlannerTrans){
-        var vars = getFromBetween.get(message,'#','#');
-        for(i in vars){
-            if(seminarPlannerTrans[vars[i]]){
-                message = message.replace(new RegExp('#'+vars[i]+'#', 'g'), seminarPlannerTrans[vars[i]]);
+function replaceTranslatables(message) {
+    if (seminarPlannerTrans) {
+        var vars = getFromBetween.get(message, '#', '#');
+        for (i in vars) {
+            if (seminarPlannerTrans[vars[i]]) {
+                message = message.replace(new RegExp('#' + vars[i] + '#', 'g'), seminarPlannerTrans[vars[i]]);
             }
         }
     }
