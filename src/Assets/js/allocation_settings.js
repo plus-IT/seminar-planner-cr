@@ -140,7 +140,7 @@ $(document).ready(function () {
 });
 function getInitDataTable() {
     $eventID = $(".eventID").val();
-    $oTable.ajax.url(base_url + 'seminar-planner/allocationData/' + $eventID);
+    $oTable.ajax.reload();
 }
 
 function initAllocationTable() {
