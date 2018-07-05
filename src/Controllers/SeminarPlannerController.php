@@ -752,9 +752,12 @@ class SeminarPlannerController extends Controller {
                 ->first([
             DB::raw('GROUP_CONCAT(modelLevel) as modelLevel')
         ]);
-        $event_attendees = EventAttendees::where('event_id', '=', $eventid)
-                ->whereIn('LevelValuesID', explode(",", !empty($allocation_model_values->modelLevel) ? $allocation_model_values->modelLevel : []))
-                ->count();
+        $event_attendees_data = EventAttendees::where('event_id', '=', $eventid);
+        if (Auth::user()->levelID == '1')
+            $event_attendees_data->whereIn('LevelValuesID', explode(",", !empty($allocation_model_values->modelLevel) ? $allocation_model_values->modelLevel : []));
+        else
+            $event_attendees_data->where('LevelValuesID', '=', $levelID);
+        $event_attendees = $event_attendees_data->count();
         if ($event_attendees > Input::get('allocatedSeat')) {
             return Response::json([
                         "type" => "error",
