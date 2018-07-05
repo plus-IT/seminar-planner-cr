@@ -772,7 +772,7 @@ class SeminarPlannerController extends Controller {
         $get_free_seat = $this->allocated_seat_repository->getTotalFreeSeats($eventid);
         if (!empty($child_allocated_seats) && !empty($parent_allocated_seats->allocatedSeat)) {
 
-            if ($parent_allocated_seats->allocatedSeat <= $child_allocated_seats || $child_allocated_seats > Input::get('allocatedSeat')) {
+            if ($parent_allocated_seats->allocatedSeat <= $child_allocated_seats  &&  $child_allocated_seats > Input::get('allocatedSeat')) {
                 return Response::json([
                             "type" => "error",
                             "message" => CustomFunction::customTrans("general.seats_are_allocated_to_child")
