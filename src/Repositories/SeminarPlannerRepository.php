@@ -259,6 +259,8 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface {
         $event->planned_by = Auth::user()->UserID;
         $event->blueprint_id = $inputData['blueprintEventId'];
         $event->event_status = 'draft';
+        $event->external_id = null;
+        
 
         // Add event To planned event table
         $plannedEvents = new PlannedEvent();
