@@ -53,7 +53,7 @@ $(document).ready(function () {
                 if (data.type == 'success') {
                     $(".still_available_seats").html(max_participants - sum);
                     $me.attr('seatallocated', allocatedSeat);
-                    getInitDataTable();
+                    //getInitDataTable();
                 } else {
                     $me.val(old_val);
                     return 'false';
@@ -66,6 +66,7 @@ $(document).ready(function () {
         $('.seatAllocationDataPlace').removeAttr('style');
 
         $(".seatUtilizationDataPlace").slideUp('slow');
+        getInitDataTable();
     });
     $body.on('click', '.start_allocation', function (e) {
         e.preventDefault();
