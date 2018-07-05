@@ -553,6 +553,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface {
                 $seminar->blueprint_id = $singleEvent->blueprint_id;
                 $seminar->className = "plannedSeminar_" . $singleEvent->id;
                 $seminar->event_days = $seminarDay->schedule->event_days;
+                $seminar->event_schedule = $singleEvent->eventSchedule;
                 $seminar->event_status = $singleEvent->event_status;
                 $seminar->locationConflicted = $seminarDay->schedule->locationConflicted;
                 $seminar->trainerConflicted = $seminarDay->schedule->trainerConflicted;
