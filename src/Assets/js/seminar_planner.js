@@ -168,7 +168,7 @@ $(document).ready(function () {
         }
 
         var additionalFields = '';
-        if(typeOf external_id!='undefined'){
+        if(typeof external_id !='undefined'){
             additionalFields='&external_id=' + external_id;
         }
         if (parseInt(max_registration) < parseInt(min_registration)) {
