@@ -52,7 +52,7 @@ $(document).ready(function () {
                 notify(data.type, data.message)
                 if (data.type == 'success') {
                     $(".still_available_seats").html(max_participants - sum);
-                    $me.attr('seatallocated',allocatedSeat);
+                    $me.attr('seatallocated', allocatedSeat);
                     getInitDataTable();
                 } else {
                     $me.val(old_val);
@@ -188,16 +188,19 @@ function changeSeatingStatus(seat_status, event_id, thisButton) {
             blockUI('.modal-body');
         },
         success: function (data) {
-            unBlockUI('.modal-body');
+
             notify(data.type, data.message);
-            thisButton.parents('.seat_allocation_status').css('display', 'none');
-            if (seat_status == '1') {
-                $(".show_allocation_settings").removeAttr('style');
-            } else {
-                $('[data-target="#tab_seminar_seat_allocation"]').attr('disabled', 'disabled');
-                $('[data-target="#tab_seminar_seat_allocation"]').parents('li').toggleClass('active').addClass('disabled');
-                $('[data-target="#tab_description"]').trigger('click');
-            }
+            $("#tab_seminar_seat_allocation").html("");
+            $("[data-target='#tab_seminar_seat_allocation']").trigger('click');
+//            thisButton.parents('.seat_allocation_status').css('display', 'none');
+//            if (seat_status == '1') {
+//                $(".show_allocation_settings").removeAttr('style');
+//            } else {
+//                $('[data-target="#tab_seminar_seat_allocation"]').attr('disabled', 'disabled');
+//                $('[data-target="#tab_seminar_seat_allocation"]').parents('li').toggleClass('active').addClass('disabled');
+//                $('[data-target="#tab_description"]').trigger('click');
+//            }
+            unBlockUI('.modal-body');
         }
 
     })
