@@ -2158,7 +2158,7 @@ function initCalendarForPlanning() {
                 notify('error', plannerWithoutScheduleMsg);
                 return false;
             }
-            if (originalDragDateObj.event_schedule[0].schedule.weekdays.includes("0") == true && originalDragDateObj.event_schedule[0].schedule.weekdays.includes("6") == true) {
+            if (originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("0") >= 0 && originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("6") >= 0) {
 
                 $(originalDragDateObj.event_schedule).each(function (key, val) {
 
@@ -2174,7 +2174,7 @@ function initCalendarForPlanning() {
                     if (val.schedule.weekdays) {
                         console.log(val.schedule.weekdays.split(","))
                         // Check if that day is weekend
-                        if (originalDragDateObj.event_schedule[0].schedule.weekdays.includes("0") == true && originalDragDateObj.event_schedule[0].schedule.weekdays.includes("6") == true) {
+                        if (originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("0") >= 0 && originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("6") >= 0) {
                             while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
                                 dropDay.setDate(dropDay.getDate() + 1);
                             }
