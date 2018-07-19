@@ -2094,16 +2094,16 @@ function initCalendarForPlanning() {
                                     }
                                 }
                             }
-                            calculatedDay.SeminarRecalculateDate = moment(dropDay).format(app_date_format_js.toUpperCase());
-                            calculatedDay.SeminarRecalculateDay = moment(dropDay).format("dddd");
+                             calculatedDay.SeminarCurrentDate = moment(oldDates[key].start).format(app_date_format_js.toUpperCase());
+                            calculatedDay.SeminarCurrentDay = moment(oldDates[key].start).format("dddd");
                             date = dropDay;
                         }
 
                         var copiedEventObject = new Object();
                         copiedEventObject.title = event.event_name + " - " + slot_days + " - " + val.schedule.event_days;
                         copiedEventObject.event_name = event.event_name;
-                        copiedEventObject.start = date;
-                        copiedEventObject.end = date;
+                         copiedEventObject.start = oldDates[key].start;
+                        copiedEventObject.end = oldDates[key].start;
                         copiedEventObject.color = event.color;
                         copiedEventObject.allDay = allDay;
                         copiedEventObject.id = event.event_id + "-" + val.schedule.id;
