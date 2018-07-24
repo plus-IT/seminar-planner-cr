@@ -1937,6 +1937,7 @@ function initCalendarForPlanning() {
 
                         }
 
+                        
                         $(event.event_schedule).each(function (key, val) {
 
                             // check which day user has moves
@@ -2032,7 +2033,8 @@ function initCalendarForPlanning() {
                     }
                 });
             } else {
-
+                var tempcount = 1;
+                            var dropDay1 = new Date(date.getTime());
                 $(event.event_schedule).each(function (key, val) {
 
                     // check which day user has moves
@@ -2052,15 +2054,20 @@ function initCalendarForPlanning() {
                         console.log(oldDates, "Old dates");
                         calculatedDay.SeminarDay = val.schedule.event_days;
                         calculatedDay.SeminarDayTitle = event.event_name + " - " + slot_days + " - " + val.schedule.event_days;
+                        if(tempcount == 1){
+                            dropDay1.setDate(dropDay1.getDate() + (parseInt(val.schedule.duration_between_previous_day)));
+                            console.log(dropDay1, "Dateeeee123");
+                            tempcount = 2;
+                        }
                         if (val.schedule.event_days == event.event_days) {
-                            console.log(date, "Dateeeee");
+                            console.log(dropDay1, "Dateeeee22");
                             calculatedDay.SeminarCurrentDate = moment(originalDragDate).format(app_date_format_js.toUpperCase());
                             calculatedDay.SeminarCurrentDay = moment(originalDragDate).format("dddd");
-                            calculatedDay.SeminarRecalculateDate = moment(date).format(app_date_format_js.toUpperCase());
-                            ;
-                            calculatedDay.SeminarRecalculateDay = moment(date).format("dddd");
-                            calculatedDay.SeminarChangeDay = moment(date).format("dddd");
+                            calculatedDay.SeminarRecalculateDate = moment(dropDay1).format(app_date_format_js.toUpperCase());
+                            calculatedDay.SeminarRecalculateDay = moment(dropDay1).format("dddd");
+                            calculatedDay.SeminarChangeDay = moment(dropDay1).format("dddd");
                         } else {
+                            console.log(dropDay1, "Dateeeee2");
 
                             calculatedDay.SeminarCurrentDate = moment(oldDates[key].start).format(app_date_format_js.toUpperCase());
                             calculatedDay.SeminarCurrentDay = moment(oldDates[key].start).format("dddd");
@@ -2069,7 +2076,7 @@ function initCalendarForPlanning() {
                             // Check if drop-date is valid OR Find next valid date
                             var dropDay = new Date(date.getTime());
                             dropDay.setDate(dropDay.getDate() + (parseInt(val.schedule.duration_between_previous_day) + 1));
-                            console.log(dropDay, "Dateeeee");
+                            console.log(dropDay, "Dateeeee1");
                             if (val.schedule.weekdays) {
                                 console.log(val.schedule.weekdays.split(","))
                                 // Check if that day is weekend
