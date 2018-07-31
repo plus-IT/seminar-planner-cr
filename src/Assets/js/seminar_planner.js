@@ -2092,7 +2092,6 @@ function initCalendarForPlanning() {
                             }
                         }
                         if (val.schedule.event_days == event.event_days) {
-                            console.log(dropDay1, "Dateeeee22");
                             console.log(moment(oldDates[key].start).format(app_date_format_js.toUpperCase()), "Dateeeee2");
                             maindate = dropDay1;
                             calculatedDay.SeminarCurrentDate = moment(originalDragDate).format(app_date_format_js.toUpperCase());
