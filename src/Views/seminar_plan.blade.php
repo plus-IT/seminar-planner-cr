@@ -468,9 +468,9 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" id="btnCancelSeminar" class="btn default btnMoveSeminar green btn_simply_green"
+                <button type="button"  class="btn default btnMoveSeminar green btn_simply_green"
                         >{!! Html::customTrans("seminarPlanner.btnMoveSeminar") !!}</button>
-                <button type="button" class="btn default"
+                <button type="button" class="btn default btnCancelRecalculatedSeminar"
                         data-dismiss="modal">{!! Html::customTrans("general.cancel") !!}</button>
             </div>
         </div>

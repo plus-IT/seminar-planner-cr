@@ -1081,7 +1081,9 @@ $(document).ready(function () {
             }
         });
     });
-
+    $(".btnCancelRecalculatedSeminar").click(function(){
+        callbackForEventDrop();
+    });
     $(".recalculateDaysConfirmBtn").click(function () {
 
         bootbox.confirm({
@@ -2039,6 +2041,7 @@ function initCalendarForPlanning() {
                     moment.locale('de');
                 }
                 var tempcount = 1;
+                var maindate;
                 var dropDay1 = new Date(date.getTime());
                 $(event.event_schedule).each(function (key, val) {
                     // check which day user has moves
@@ -2059,12 +2062,39 @@ function initCalendarForPlanning() {
                         calculatedDay.SeminarDay = val.schedule.event_days;
                         calculatedDay.SeminarDayTitle = event.event_name + " - " + slot_days + " - " + val.schedule.event_days;
                         if(tempcount == 1){
-                            dropDay1.setDate(dropDay1.getDate() + (parseInt(val.schedule.duration_between_previous_day)));
+                            dropDay1.setDate(dropDay1.getDate());
                             console.log(dropDay1, "Dateeeee123");
                             tempcount = 2;
+                             console.log(dropDay, "Dateeeee1");
+                            if (val.schedule.weekdays) {
+                                console.log(val.schedule.weekdays.split(","))
+                                // Check if that day is weekend
+                                if (weekendConsider == "1") {
+                                    while (val.schedule.weekdays.indexOf(dropDay1.getDay().toString()) == -1 || checkForHoliday(dropDay1) == true) {
+                                        dropDay1.setDate(dropDay1.getDate() + (parseInt(val.schedule.duration_between_previous_day)));
+                                    }
+                                }else {
+                                    // Check if schedul has allow only weekends and globle weekends consideration settings is  off
+                                    var weekdaysArray = val.schedule.weekdays.split(",");
+                                    var isOtherWeekDays = $(weekdaysArray).not(["0", "6"]).get();
+                                    if (isOtherWeekDays.length > 0) {
+                                        while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || dropDay.getDay() == 0 || dropDay.getDay() == 6 || checkForHoliday(dropDay) == true) {
+                                            dropDay.setDate(dropDay.getDate() + 1);
+                                        }
+                                    } else {
+                                        alert("Schedule has configure to occurred only on weekend but your global setting not allow to plan on weekends so we overwrite your weekend setting for this day.");
+                                        while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
+                                            dropDay.setDate(dropDay.getDate() + 1);
+                                        }
+
+                                    }
+                                }
+                            }
                         }
                         if (val.schedule.event_days == event.event_days) {
                             console.log(dropDay1, "Dateeeee22");
+                            console.log(moment(oldDates[key].start).format(app_date_format_js.toUpperCase()), "Dateeeee2");
+                            maindate = dropDay1;
                             calculatedDay.SeminarCurrentDate = moment(originalDragDate).format(app_date_format_js.toUpperCase());
                             calculatedDay.SeminarCurrentDay = moment(originalDragDate).format("dddd");
                             calculatedDay.SeminarRecalculateDate = moment(dropDay1).format(app_date_format_js.toUpperCase());
@@ -2076,7 +2106,7 @@ function initCalendarForPlanning() {
                             calculatedDay.SeminarCurrentDate = moment(oldDates[key].start).format(app_date_format_js.toUpperCase());
                             calculatedDay.SeminarCurrentDay = moment(oldDates[key].start).format("dddd");
                             calculatedDay.SeminarChangeDay = "";
-
+                           
                             // Check if drop-date is valid OR Find next valid date
                             var dropDay = new Date(date.getTime());
                             dropDay.setDate(dropDay.getDate() + (parseInt(val.schedule.duration_between_previous_day) + 1));
@@ -2105,16 +2135,17 @@ function initCalendarForPlanning() {
                                     }
                                 }
                             }
-                             calculatedDay.SeminarCurrentDate = moment(oldDates[key].start).format(app_date_format_js.toUpperCase());
+                            calculatedDay.SeminarCurrentDate = moment(oldDates[key].start).format(app_date_format_js.toUpperCase());
                             calculatedDay.SeminarCurrentDay = moment(oldDates[key].start).format("dddd");
+                            maindate = oldDates[key].start;
                             date = dropDay;
                         }
 
                         var copiedEventObject = new Object();
                         copiedEventObject.title = event.event_name + " - " + slot_days + " - " + val.schedule.event_days;
                         copiedEventObject.event_name = event.event_name;
-                         copiedEventObject.start = oldDates[key].start;
-                        copiedEventObject.end = oldDates[key].start;
+                        copiedEventObject.start = maindate;
+                        copiedEventObject.end = maindate;
                         copiedEventObject.color = event.color;
                         copiedEventObject.allDay = allDay;
                         copiedEventObject.id = event.event_id + "-" + val.schedule.id;
