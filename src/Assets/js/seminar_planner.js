@@ -2033,10 +2033,14 @@ function initCalendarForPlanning() {
                     }
                 });
             } else {
+                if(app_language == 'en'){
+                    moment.locale('en');
+                }else{
+                    moment.locale('de');
+                }
                 var tempcount = 1;
-                            var dropDay1 = new Date(date.getTime());
+                var dropDay1 = new Date(date.getTime());
                 $(event.event_schedule).each(function (key, val) {
-
                     // check which day user has moves
                     var calculatedDay = new Object();
                     if (val.schedule.event_days < event.event_days) {
