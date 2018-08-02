@@ -67,7 +67,7 @@
                     <div class="form-group form-md-line-input form-md-floating-label has-info">
                         <select tabindex="15" name="form_id" id="form_id" alt="Feedback Form"
                                 class=" table-group-action-input {!! !empty($event_data->form_id) || !empty(session("setting")->feedback_form_id)  ? 'edited' : '' !!}  form-control">
-                            <option value=""></option>
+                            <option value="" @if(!empty($event_data) && $event_data->form_id == 0) selected @endif ></option>
                             @if(!empty($allFeedbackForm) && !empty($allFeedbackForm))
                                 @foreach($allFeedbackForm as $val)
                                     <option value="{!! $val->id !!}"
