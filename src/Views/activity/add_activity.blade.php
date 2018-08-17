@@ -102,8 +102,10 @@
                             {!! Html::customTrans("general.assignToOther") !!}</label>
                     </div>
                 </div>
-
-                <div class="assign_to_other_div form-group form-md-line-input form-md-floating-label has-info required" style="{!! (!empty($task_data->AssignedToTeam) || !empty($task_data->AssignedToUser)) && $task_data->AssignedToUser !=  \Auth::user()->UserID ? '' : 'display:none' !!}">
+                <div class="assign_to_other_div form-group lineManager manager-auto-select required" style="{!! (!empty($task_data->AssignedToTeam) || !empty($task_data->AssignedToUser)) && $task_data->AssignedToUser !=  \Auth::user()->UserID ? '' : 'display:none' !!}">
+                    {!! Form::select2ajax('AssignedToOther',!empty($task_data->AssignedToUser)?$task_data->AssignedToUser:"",'form-control required', Html::customTrans("general.please_select") ,'getAllAgents',json_encode($assignedToOther))!!}
+                </div>
+               <!-- <div class="assign_to_other_div form-group form-md-line-input form-md-floating-label has-info required" style="{!! (!empty($task_data->AssignedToTeam) || !empty($task_data->AssignedToUser)) && $task_data->AssignedToUser !=  \Auth::user()->UserID ? '' : 'display:none' !!}">
                     <select id="assign_to_other" name="AssignedToOther"
                             class="form-control modal-select2">
                         <option value="">{!! Html::customTrans("general.please_select") !!}</option>
@@ -118,7 +120,7 @@
                         @endif
                     </select>
                     <label for="assign_to_other"></label>
-                </div>
+                </div> -->
             </div>
             <br>
             <div class="form-group form-md-line-input">
