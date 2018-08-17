@@ -136,6 +136,8 @@ class SeminarPlannerController extends Controller {
     public function updatePlannedMinMaxData(Request $request, $eventId) {
         $min_registration = Input::get('min_registration');
         $max_registration = Input::get('max_registration');
+        $external_id = Input::get('external_id');
+        $form_id = Input::get('form_id');
         $modal = 'App\\Models\\PlannedEvent';
         $primaryKey = App::make($modal)->getKeyName();
         $validator = Validator::make($request::all(), [
@@ -143,14 +145,14 @@ class SeminarPlannerController extends Controller {
         ]);
 
         if (!$validator->fails()) {
-            $inputs = [
-                'min_registration' => $min_registration,
-                'max_registration' => $max_registration,
-            ];
-            if (Input::has('external_id')) {
-                $inputs['external_id'] = Input::get('external_id');
+            if (!empty($external_id)) {
+                PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
+                    'max_registration' => $max_registration, 'external_id' => $external_id,'form_id' => $form_id]);
+            } else {
+                PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
+                    'max_registration' => $max_registration,'form_id' => $form_id]);
             }
-            PlannedEvent::where('id', '=', $eventId)->update($inputs);
+
             return Response::json([
                         "type" => "success"
             ]);
@@ -528,9 +530,10 @@ class SeminarPlannerController extends Controller {
                 'planned_events.*,' . $query
         );
         $event_data = $plannedEvent->first();
+        $allFeedbackForm = \App\Models\FeedbackForm::all();
         $app = App::getFacadeRoot();
         $extentionHandler = $app['extentionHandler'];
-        $array = $extentionHandler->getDataAndView('ptlyash_planner_edit_seminar::getDetailForm', compact('event_data'), 'seminar_planner.edit_seminar');
+        $array = $extentionHandler->getDataAndView('ptlyash_planner_edit_seminar::getDetailForm', compact('event_data','allFeedbackForm'), 'seminar_planner.edit_seminar');
         $viewName = $array['view_name'];
         $data = $array['data'];
         return View($viewName, $data);

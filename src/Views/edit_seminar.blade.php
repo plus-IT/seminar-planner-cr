@@ -64,6 +64,20 @@
                   <input type="hidden" placeholder="" name="totalAttendees" id="totalAttendees"
                        value="{!! isset($event_data) && !empty($event_data->totalAttendees) ? $event_data->totalAttendees : 1 !!}">
                 <div class="">
+                    <div class="form-group form-md-line-input form-md-floating-label has-info">
+                        <select tabindex="15" name="form_id" id="form_id" alt="Feedback Form"
+                                class=" table-group-action-input {!! !empty($event_data->form_id) || !empty(session("setting")->feedback_form_id)  ? 'edited' : '' !!}  form-control">
+                            <option value="" @if(!empty($event_data) && $event_data->form_id == 0) selected @endif ></option>
+                            @if(!empty($allFeedbackForm) && !empty($allFeedbackForm))
+                                @foreach($allFeedbackForm as $val)
+                                    <option value="{!! $val->id !!}"
+                                            @if(!empty($event_data) && $event_data->form_id == $val->id) selected
+                                            @elseif($val->id == session("setting")->feedback_form_id) selected @endif>{!! $val->name !!}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                        <label for="feedbackFormId">{!! Html::customTrans("event.selectFeedbackForm") !!}</label>
+                    </div>
                     <div class="form-group form-md-line-input form-md-floating-label  required">
                         <input type="number" placeholder="" name="min_registration" id="min_registration"
                                class="form-control {!! (!empty($event_data->min_registration)) ? 'edited' :'' !!}"

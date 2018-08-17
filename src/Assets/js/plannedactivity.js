@@ -141,6 +141,7 @@ $(document).on("ready", function () {
                 $("#add_activity_btn").hide();
                 $("#tab_activity_form").html(data);
                 setViewByMode("#tab_activity");
+                 loadSelect2WithMacro();
             },
 
         });
@@ -165,6 +166,7 @@ $(document).on("ready", function () {
                 unBlockUI(".modal-body");
                 $("#tab_activity_form").html(data);
                 setViewByMode("#tab_activity");
+                 loadSelect2WithMacro();
             },
         });
     });
