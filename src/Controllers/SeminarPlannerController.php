@@ -917,5 +917,39 @@ class SeminarPlannerController extends Controller {
             ]);
         }
     }
+    
+     public function getTrainnerMaterials($event_id = 0)
+    {
+        if ($event_id != 0) {
+            $event_training_materials_data = \App\Models\PlannedEvent::find($event_id);
+            $settings = \App\Models\Settings::first();
+            return view('dbNetz.seminar.training_materials_info', compact('event_training_materials_data','settings'));
+        } else {
+            return view('dbNetz.seminar.training_materials_info');
+        }
+    }
+    
+    public function addTrainingMaterials($event_id = 0) {
+        $eventData = \App\Models\PlannedEvent::findOrFail($event_id);
+        return view('dbNetz.seminar.add_training_materials', compact('eventData'));
+    }
+   
+    public function saveTrainingMaterials($event_id = 0) {
+        $event_obj = \App\Models\PlannedEvent::findOrfail($event_id);
+        $event_obj->order_no = Input::get('order_no');
+        $event_obj->order_name = Input::get('order_name');
+        if (!$event_obj->save()) {
+            return Response::json([
+                        "type" => "error",
+                        "message" => CustomFunction::customTrans("events.event_error"),
+            ]);
+        } else {
+            return Response::json([
+                        "type" => "success",
+                        "message" => CustomFunction::customTrans("events.event_add_training_materlials_success"),
+            ]);
+        }
+    }
+    
 
 }

@@ -281,6 +281,8 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <button style="display: none" type="button"  data-templatetype="training-materials" data-moduletype="seminar-planner" id="send_email_training_materials" class="btn default green btn_simply_green send-mail"
+                        >{!! Html::customTrans("general.send_mail") !!}</button>
                 <button type="button" id="save_button_class" class="btn default  save_address_data green btn_simply_green"
                         >{!! Html::customTrans("general.save") !!}</button>
                 <button type="button" class="btn default cancel-popup"

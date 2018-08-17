@@ -63,7 +63,8 @@
                         </a>
                     </li>
                     @endif
-
+                    <li class="training_materials_li"><a data-toggle="tabajax" href="{!!url(LaravelLocalization::getCurrentLocale() . "/" .'seminar-planner/training_materials/'. $event_data->id)!!}"
+                   data-target="#tab_training_materials"><i class="fa fa-file-text"></i> <p>{!! Html::customTrans("event.training_materials") !!}</p>  </a></li>
                 </ul>
                 <div class="tab-content">
                     <div id="tab_description" class="tab-pane active">
@@ -91,6 +92,8 @@
                     <div id="tab_seminar_seat_allocation" class="tab-pane">
                     </div>
                     @endif
+                    <div id="tab_training_materials" class="tab-pane">
+                    </div>
                 </div>
             </div>
         </div>

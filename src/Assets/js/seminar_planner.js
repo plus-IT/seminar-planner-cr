@@ -134,11 +134,73 @@ $(document).ready(function () {
             $("#save_button_class").show();
             $("#save_button_class").html(save_document);
             $("#save_button_class").addClass('green btn_simply_green btn default ' + className + '_save');
+        }else if (className == 'tab_training_materials') {
+            $("#save_button_class").show();
+            $("#send_email_training_materials").show();
+            $("#save_button_class").html(saveTrainingMaterials);
+            $("#save_button_class").addClass('green btn_simply_green btn default ' + className + '_save');
+            setTimeout(function () {
+                $("#send_email_training_materials").attr('emailtosend',$('.order_email').val());
+            },300);
         } else {
             $("#save_button_class").hide();
+             $("#send_emai_training_materials").hide();
         }
 
     });
+    
+    $body.on("click", ".tab_training_materials_save", function (e) {
+        var event_id = $("[name=eventID]").val();
+        //  If add reset opration buttun to the detail tab
+        var url = base_url + "seminar-planner/save_training_materials/" + event_id;
+        $.ajax({
+            method: "PUT",
+            url: url,
+            beforeSend: function () {
+                blockUI(".page-container");
+            },
+            data: $(".add_description_form").find('*').serialize(),
+            success: function (data) {
+                unBlockUI(".page-container");
+                $("#tab_training_materials").html("");
+                Layout.initJsStuff();
+                setViewByMode("#tab_detail_form");
+                notify(data.type, data.message);
+                $(".training_materials_li a").trigger("click");
+                $("#send_email_training_materials").show();
+
+
+            }
+        });
+    });
+    $body.on("click", "#tab_training_materials_edit_btn_planner", function (e) {
+        e.preventDefault();
+        var event_id = $("[name=eventID]").val();
+        //  If add reset opration buttun to the detail tab
+        var url = base_url + "seminar-planner/add_training_materials/" + event_id;
+
+        $.ajax({
+            method: "GET",
+            url: url,
+            beforeSend: function () {
+                blockUI(".page-container");
+            },
+            success: function (data) {
+                if (data.type != 'error') {
+                    unBlockUI(".page-container");
+                    $("#tab_training_materials").html(data);
+                    setViewByMode("#tab_training_materials");
+                    $('#send_email_training_materials').hide();
+
+                } else {
+                    unBlockUI(".page-container");
+                    notify(data.type, data.message);
+                }
+
+            }
+        });
+    });
+    
     $body.on("click", "#is_deploy_internet", function (e) {
         e.stopPropagation();
         if ($(this).is(':checked')) {
