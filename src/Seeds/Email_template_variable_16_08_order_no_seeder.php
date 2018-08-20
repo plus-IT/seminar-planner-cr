@@ -17,7 +17,7 @@ class Email_template_variable_16_08_order_no_seeder extends Seeder {
             [
                 'moduleId'=>'5',
                 'module_name' => 'Event',
-                'variable_text' => '#ORDERNAME#',
+                'variable_text' => '#EVENT_ORDERNAME#',
                 'variable_value' => 'OrderName',
                 'actual_variable_name' => 'order_name',
                 'variable_object_name' => 'seminarDetails',
@@ -26,7 +26,7 @@ class Email_template_variable_16_08_order_no_seeder extends Seeder {
             [
                 'moduleId'=>'5',
                 'module_name' => 'Event',
-                'variable_text' => '#ORDERNUMBER#',
+                'variable_text' => '#EVENT_ORDERNUMBER#',
                 'variable_value' => 'OrderNumber',
                 'actual_variable_name' => 'order_no',
                 'variable_object_name' => 'seminarDetails',
@@ -35,10 +35,28 @@ class Email_template_variable_16_08_order_no_seeder extends Seeder {
             [
                 'moduleId'=>'5',
                 'module_name' => 'Event',
-                'variable_text' => '#BEFORESTARTDATE#',
+                'variable_text' => '#EVENT_BEFORESTARTDATE#',
                 'variable_value' => 'EventBeforeStartdate',
                 'actual_variable_name' => 'event_startdate',
                 'variable_object_name' => 'seminarDetails',
+                'variable_type' => 'singleLine'
+            ],
+            [
+                'moduleId'=>'5',
+                'module_name' => 'Event',
+                'variable_text' => '#EVENT_PARTICIPANT_MAX#',
+                'variable_value' => 'max_registration',
+                'actual_variable_name' => 'max_registration',
+                'variable_object_name' => 'seminarDetails',
+                'variable_type' => 'singleLine'
+            ],
+            [
+                'moduleId'=>'5',
+                'module_name' => 'Location',
+                'variable_text' => '#LOCATION_ADDRESS#',
+                'variable_value' => 'LocationName',
+                'actual_variable_name' => 'LocationName',
+                'variable_object_name' => 'locationDetails',
                 'variable_type' => 'singleLine'
             ]
         ]);
