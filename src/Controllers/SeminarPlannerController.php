@@ -944,12 +944,12 @@ class SeminarPlannerController extends Controller {
         if (!$event_obj->save()) {
             return Response::json([
                         "type" => "error",
-                        "message" => CustomFunction::customTrans("events.event_error"),
+                        "message" => CustomFunction::customTrans("event.event_error"),
             ]);
         } else {
             return Response::json([
                         "type" => "success",
-                        "message" => CustomFunction::customTrans("events.event_add_training_materlials_success"),
+                        "message" => CustomFunction::customTrans("event.event_add_training_materlials_success"),
             ]);
         }
     }

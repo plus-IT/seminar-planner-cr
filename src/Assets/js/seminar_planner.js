@@ -135,10 +135,10 @@ $(document).ready(function () {
             $("#save_button_class").html(save_document);
             $("#save_button_class").addClass('green btn_simply_green btn default ' + className + '_save');
         }else if (className == 'tab_training_materials') {
-            $("#save_button_class").show();
             $("#send_email_training_materials").show();
             $("#save_button_class").html(saveTrainingMaterials);
             $("#save_button_class").addClass('green btn_simply_green btn default ' + className + '_save');
+            $("#save_button_class").hide();
             setTimeout(function () {
                 $("#send_email_training_materials").attr('emailtosend',$('.order_email').val());
             },300);
@@ -168,6 +168,7 @@ $(document).ready(function () {
                 notify(data.type, data.message);
                 $(".training_materials_li a").trigger("click");
                 $("#send_email_training_materials").show();
+                $("#save_button_class").hide();
 
 
             }
@@ -191,6 +192,7 @@ $(document).ready(function () {
                     $("#tab_training_materials").html(data);
                     setViewByMode("#tab_training_materials");
                     $('#send_email_training_materials').hide();
+                    $("#save_button_class").show();
 
                 } else {
                     unBlockUI(".page-container");
