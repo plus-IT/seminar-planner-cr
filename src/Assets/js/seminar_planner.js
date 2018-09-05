@@ -121,6 +121,7 @@ $(document).ready(function () {
         var className = $(this).attr('data-target');
         className = className.replace('#', '');
         $("#save_button_class").removeClass();
+        $("#send_email_training_materials").hide();
         console.log(className);
         if (className == 'tab_description') {
             $("#save_button_class").show();
@@ -134,25 +135,33 @@ $(document).ready(function () {
             $("#save_button_class").show();
             $("#save_button_class").html(save_document);
             $("#save_button_class").addClass('green btn_simply_green btn default ' + className + '_save');
-        }else if (className == 'tab_training_materials') {
-            $("#send_email_training_materials").show();
+        } else if (className == 'tab_training_materials') {
+
             $("#save_button_class").html(saveTrainingMaterials);
             $("#save_button_class").addClass('green btn_simply_green btn default ' + className + '_save');
             $("#save_button_class").hide();
             setTimeout(function () {
-                $("#send_email_training_materials").attr('emailtosend',$('.order_email').val());
-            },300);
+                console.log("inside dir");
+                if ($(".order_no").text().trim() != "" || $(".order_name").text().trim() != "") {
+                    console.log("inside training butoon")
+                    $("#send_email_training_materials").show();
+                    $("#send_email_training_materials").attr('emailtosend', $('.order_email').val());
+                }
+            }, 300);
         } else {
             $("#save_button_class").hide();
-             $("#send_emai_training_materials").hide();
+
         }
 
     });
-    
+
+
+
     $body.on("click", ".tab_training_materials_save", function (e) {
         var event_id = $("[name=eventID]").val();
         //  If add reset opration buttun to the detail tab
         var url = base_url + "seminar-planner/save_training_materials/" + event_id;
+
         $.ajax({
             method: "PUT",
             url: url,
@@ -166,8 +175,9 @@ $(document).ready(function () {
                 Layout.initJsStuff();
                 setViewByMode("#tab_detail_form");
                 notify(data.type, data.message);
-                $(".training_materials_li a").trigger("click");
                 $("#send_email_training_materials").show();
+                $(".training_materials_li a").trigger("click");
+
                 $("#save_button_class").hide();
 
 
@@ -187,22 +197,20 @@ $(document).ready(function () {
                 blockUI(".page-container");
             },
             success: function (data) {
+                unBlockUI(".page-container");
                 if (data.type != 'error') {
-                    unBlockUI(".page-container");
                     $("#tab_training_materials").html(data);
                     setViewByMode("#tab_training_materials");
                     $('#send_email_training_materials').hide();
                     $("#save_button_class").show();
-
                 } else {
-                    unBlockUI(".page-container");
                     notify(data.type, data.message);
                 }
 
             }
         });
     });
-    
+
     $body.on("click", "#is_deploy_internet", function (e) {
         e.stopPropagation();
         if ($(this).is(':checked')) {
@@ -225,10 +233,10 @@ $(document).ready(function () {
         var min_registration = $('#min_registration').val();
         var max_registration = $('#max_registration').val();
         var external_id = $('.external_id_save').val();
-        var additionalData='?min_registration=' + min_registration + '&max_registration=' + max_registration + '&external_id=' + external_id+'&form_id='+form_id;
-        setSeminarPlannerData(eventID,additionalData);
+        var additionalData = '?min_registration=' + min_registration + '&max_registration=' + max_registration + '&external_id=' + external_id + '&form_id=' + form_id;
+        setSeminarPlannerData(eventID, additionalData);
     });
-    
+
     $body.on("blur", "#max_registration , #min_registration, .external_id_save, #form_id", function (e) {
         var eventID = $(".eventID").val();
         var min_registration = $('#min_registration').val();
@@ -236,7 +244,7 @@ $(document).ready(function () {
         var external_id = $('.external_id_save').val();
         var totalAttendees = $('#totalAttendees').val();
         var form_id = $('#form_id').val();
-        var additionalData='?min_registration=' + min_registration + '&max_registration=' + max_registration + '&external_id=' + external_id+'&form_id='+form_id;
+        var additionalData = '?min_registration=' + min_registration + '&max_registration=' + max_registration + '&external_id=' + external_id + '&form_id=' + form_id;
         if (parseInt(max_registration) < parseInt(totalAttendees) || parseInt(max_registration) == 0) {
             $('#max_registration').val(totalAttendees);
             max_registration = $('#max_registration').val();
@@ -246,8 +254,8 @@ $(document).ready(function () {
             notify('error', minMaxErrorMsg);
             return false;
         } else {
-            setSeminarPlannerData(eventID,additionalData);
-           
+            setSeminarPlannerData(eventID, additionalData);
+
         }
     });
 
@@ -1139,7 +1147,7 @@ $(document).ready(function () {
             }
         });
     });
-    $(".btnCancelRecalculatedSeminar").click(function(){
+    $(".btnCancelRecalculatedSeminar").click(function () {
         callbackForEventDrop();
     });
     $(".recalculateDaysConfirmBtn").click(function () {
@@ -1997,7 +2005,7 @@ function initCalendarForPlanning() {
 
                         }
 
-                        
+
                         $(event.event_schedule).each(function (key, val) {
 
                             // check which day user has moves
@@ -2093,9 +2101,9 @@ function initCalendarForPlanning() {
                     }
                 });
             } else {
-                if(app_language == 'en'){
+                if (app_language == 'en') {
                     moment.locale('en');
-                }else{
+                } else {
                     moment.locale('de');
                 }
                 var tempcount = 1;
@@ -2119,11 +2127,11 @@ function initCalendarForPlanning() {
                         console.log(oldDates, "Old dates");
                         calculatedDay.SeminarDay = val.schedule.event_days;
                         calculatedDay.SeminarDayTitle = event.event_name + " - " + slot_days + " - " + val.schedule.event_days;
-                        if(tempcount == 1){
+                        if (tempcount == 1) {
                             dropDay1.setDate(dropDay1.getDate());
                             console.log(dropDay1, "Dateeeee123");
                             tempcount = 2;
-                             console.log(dropDay, "Dateeeee1");
+                            console.log(dropDay, "Dateeeee1");
                             if (val.schedule.weekdays) {
                                 console.log(val.schedule.weekdays.split(","))
                                 // Check if that day is weekend
@@ -2131,7 +2139,7 @@ function initCalendarForPlanning() {
                                     while (val.schedule.weekdays.indexOf(dropDay1.getDay().toString()) == -1 || checkForHoliday(dropDay1) == true) {
                                         dropDay1.setDate(dropDay1.getDate() + (parseInt(val.schedule.duration_between_previous_day)));
                                     }
-                                }else {
+                                } else {
                                     // Check if schedul has allow only weekends and globle weekends consideration settings is  off
                                     var weekdaysArray = val.schedule.weekdays.split(",");
                                     var isOtherWeekDays = $(weekdaysArray).not(["0", "6"]).get();
@@ -2163,7 +2171,7 @@ function initCalendarForPlanning() {
                             calculatedDay.SeminarCurrentDate = moment(oldDates[key].start).format(app_date_format_js.toUpperCase());
                             calculatedDay.SeminarCurrentDay = moment(oldDates[key].start).format("dddd");
                             calculatedDay.SeminarChangeDay = "";
-                           
+
                             // Check if drop-date is valid OR Find next valid date
                             var dropDay = new Date(date.getTime());
                             dropDay.setDate(dropDay.getDate() + (parseInt(val.schedule.duration_between_previous_day) + 1));
@@ -3884,9 +3892,9 @@ var getFromBetween = {
         return this.results;
     }
 };
-function setSeminarPlannerData(eventID,additionalData){
+function setSeminarPlannerData(eventID, additionalData) {
     $.ajax({
-        url: base_url + 'seminar-planner/updatePlannedMinMaxData/' + eventID+additionalData,
+        url: base_url + 'seminar-planner/updatePlannedMinMaxData/' + eventID + additionalData,
         type: 'get',
         beforeSend: function (data) {
             blockUI(".modal-content");
