@@ -31,7 +31,7 @@ $(document).ready(function () {
             $(this).val(old_val);
             return 'false';
         }
-        if (sum >= max_participants) {
+        if (sum > max_participants) {
             is_free_seat = 1;
             fee_seat_count = total_max_participants - max_participants;
         }
@@ -51,8 +51,11 @@ $(document).ready(function () {
                 unBlockUI('.model-body');
                 notify(data.type, data.message)
                 if (data.type == 'success') {
-                    $(".still_available_seats").html(max_participants - sum);
+                    $(".still_available_seats").html(Math.max(0, max_participants - sum));
                     $me.attr('seatallocated', allocatedSeat);
+                    if (is_free_seat == 1) {
+                        $(".total_free_seats").html(Math.max(0, total_free_seats - fee_seat_count));
+                    }
                     //getInitDataTable();
                 } else {
                     $me.val(old_val);

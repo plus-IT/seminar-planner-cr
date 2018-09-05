@@ -147,10 +147,10 @@ class SeminarPlannerController extends Controller {
         if (!$validator->fails()) {
             if (!empty($external_id)) {
                 PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
-                    'max_registration' => $max_registration, 'external_id' => $external_id,'form_id' => $form_id]);
+                    'max_registration' => $max_registration, 'external_id' => $external_id, 'form_id' => $form_id]);
             } else {
                 PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
-                    'max_registration' => $max_registration,'form_id' => $form_id]);
+                    'max_registration' => $max_registration, 'form_id' => $form_id]);
             }
 
             return Response::json([
@@ -533,7 +533,7 @@ class SeminarPlannerController extends Controller {
         $allFeedbackForm = \App\Models\FeedbackForm::all();
         $app = App::getFacadeRoot();
         $extentionHandler = $app['extentionHandler'];
-        $array = $extentionHandler->getDataAndView('ptlyash_planner_edit_seminar::getDetailForm', compact('event_data','allFeedbackForm'), 'seminar_planner.edit_seminar');
+        $array = $extentionHandler->getDataAndView('ptlyash_planner_edit_seminar::getDetailForm', compact('event_data', 'allFeedbackForm'), 'seminar_planner.edit_seminar');
         $viewName = $array['view_name'];
         $data = $array['data'];
         return View($viewName, $data);
@@ -750,9 +750,7 @@ class SeminarPlannerController extends Controller {
     }
 
     public function saveSeatAllocation($eventid, $levelID) {
-        $allocation_model_values = AllocationSettings::groupBy('eventID')
-                ->where('eventID', '=', $eventid)
-                ->first([
+        $allocation_model_values = AllocationSettings::groupBy('eventID')->where('eventID', '=', $eventid)->first([
             DB::raw('GROUP_CONCAT(modelLevel) as modelLevel')
         ]);
         $event_attendees_data = EventAttendees::where('event_id', '=', $eventid);
@@ -773,12 +771,11 @@ class SeminarPlannerController extends Controller {
                 ->where('eventID', '=', $eventid)
                 ->where('modelLevel', '!=', $levelID)
                 ->sum('allocatedSeat');
-        $level_allocated_seats = $this->seminar_planning_repository->getLevelValuesById($eventid, Auth::user()->LevelValueID);
+        //$level_allocated_seats = $this->seminar_planning_repository->getLevelValuesById($eventid, Auth::user()->LevelValueID);
         $child_allocated_seats = $this->seminar_planning_repository->childLevelSeatAllocatedValue($eventid, $levelID);
         $parent_allocated_seats = $this->seminar_planning_repository->getLevelValuesById($eventid, Auth::user()->LevelValueID);
         $get_free_seat = $this->allocated_seat_repository->getTotalFreeSeats($eventid);
         if (!empty($child_allocated_seats) && !empty($parent_allocated_seats->allocatedSeat)) {
-
             if ($parent_allocated_seats->allocatedSeat <= $child_allocated_seats && $child_allocated_seats > Input::get('allocatedSeat')) {
                 return Response::json([
                             "type" => "error",
@@ -788,8 +785,8 @@ class SeminarPlannerController extends Controller {
         }
         $already_allocated_seats = $already_allocated_seats + Input::get('allocatedSeat');
 
-        if (!empty($level_allocated_seats->allocatedSeat)) {
-            $total_available_seats = $get_free_seat + $level_allocated_seats->allocatedSeat;
+        if (!empty($parent_allocated_seats->allocatedSeat)) {
+            $total_available_seats = $get_free_seat + $parent_allocated_seats->allocatedSeat;
             if ($already_allocated_seats > $total_available_seats) {
                 return Response::json([
                             "type" => "error",
@@ -920,23 +917,22 @@ class SeminarPlannerController extends Controller {
             ]);
         }
     }
-    
-     public function getTrainnerMaterials($event_id = 0)
-    {
+
+    public function getTrainnerMaterials($event_id = 0) {
         if ($event_id != 0) {
             $event_training_materials_data = \App\Models\PlannedEvent::find($event_id);
             $settings = \App\Models\Settings::first();
-            return view('dbNetz.seminar.training_materials_info', compact('event_training_materials_data','settings'));
+            return view('dbNetz.seminar.training_materials_info', compact('event_training_materials_data', 'settings'));
         } else {
             return view('dbNetz.seminar.training_materials_info');
         }
     }
-    
+
     public function addTrainingMaterials($event_id = 0) {
         $eventData = \App\Models\PlannedEvent::findOrFail($event_id);
         return view('dbNetz.seminar.add_training_materials', compact('eventData'));
     }
-   
+
     public function saveTrainingMaterials($event_id = 0) {
         $event_obj = \App\Models\PlannedEvent::findOrfail($event_id);
         $event_obj->order_no = Input::get('order_no');
@@ -953,6 +949,5 @@ class SeminarPlannerController extends Controller {
             ]);
         }
     }
-    
 
 }
