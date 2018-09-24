@@ -23,30 +23,35 @@ $(document).on("ready", function () {
 
 
     $('#event_select').select2("destroy").select2({
-         placeholder: "",
-         minimumInputLength: 3,
-         delay: 250,
-         tags: true,
-         tokenSeparators: [','],
+        placeholder: "",
+        minimumInputLength: 0,
+        delay: 250,
+        tags: true,
+        tokenSeparators: [','],
          ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-             url: base_url + "event_list?sort_by=event_startdate&sort_order=asc",
+             url: base_url + "get/event_list?sort_by=event_startdate&sort_order=asc",
              dataType: 'json',
              method: "GET",
              data: function (term, page) {
                  return {
-                     search_text: term // search term
-                 };
+                    search_text: term, //search term
+                    is_filter:1,
+                    page_limit: 10, // page size
+                    page: page, // page number
+
+                };
              },
              results: function (data, page) { // parse the results into the format expected by Select2. 
                 return {
-                    results: $.map(data, function (item) {
+                    results: $.map(data.items, function (item) {
                         return {
-                            text: item.event_name+' ('+formatJavascriptDate(item.event_startdate) +' - '+ formatJavascriptDate(item.event_enddate)+')',
+                            text: item.event_name,
                             slug: item.event_name,
                             id: item.id
                         }
-                    })
-                 };
+                    }),
+                    more: data.pagination
+                };
 
              }
          },
