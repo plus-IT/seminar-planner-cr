@@ -126,10 +126,10 @@ $remaining_Seats = 0;
     <div class="row">
         <div class="seat_info">
             <ul>
-                <li><img src="../../images/seat_reserved.png"/> Reserved</li>
-                <li><img src="../../images/seat_free.png"/> Free</li>
-                <li><img src="../../images/seat_registered.png"/> Registered</li>
-                <li><img src="../../images/seat_available.png"/> Available</li>
+                <li><img src="../../images/seat_reserved.png"/> {!! Html::customTrans("seminarPlanner.reserved") !!}</li>
+                <li><img src="../../images/seat_free.png"/> {!! Html::customTrans("seminarPlanner.free") !!}</li>
+                <li><img src="../../images/seat_registered.png"/> {!! Html::customTrans("seminarPlanner.registered") !!}</li>
+                <li><img src="../../images/seat_available.png"/> {!! Html::customTrans("seminarPlanner.available") !!}</li>
             </ul>
         </div>
     </div>
