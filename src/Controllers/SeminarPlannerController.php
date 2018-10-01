@@ -729,10 +729,10 @@ class SeminarPlannerController extends Controller {
 //        print_r(Auth::user());exit;
 
         $allocation_data = $this->seminar_planning_repository->getAllotmentData($event_id);
-
+        $user_level=Auth::user()->levelID;
         return Datatables::of($allocation_data)
-                        ->addColumn('seats', function ($allocation_data) {
-                            return "<input type='number' name='allocation_seat_total[]' organization='" . $allocation_data->meta_value . "' class='allocation_seat_total' id='" . $allocation_data->LevelValuesID . "' value='" . $allocation_data->allocatedSeat . "' seatAllocated='" . $allocation_data->allocatedSeat . "'>";
+                        ->addColumn('seats', function ($allocation_data)use($user_level)  {
+                            return "<input type='number' name='allocation_seat_total[]' organization='" . $allocation_data->meta_value . "' class='allocation_seat_total' id='" . $allocation_data->LevelValuesID . "' value='" . $allocation_data->allocatedSeat . "' seatAllocated='" . $allocation_data->allocatedSeat . "'".($user_level->levelID==3)?'disabled':''." >";
                         })
                         ->addColumn('createdBy', function ($allocation_data) {
                             return $allocation_data->FirstName . " " . $allocation_data->LastName;
