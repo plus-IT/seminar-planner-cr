@@ -33,7 +33,7 @@ $(document).ready(function () {
         }
         if (sum > max_participants) {
             is_free_seat = 1;
-            fee_seat_count = total_max_participants - max_participants;
+            fee_seat_count = Math.max(allocatedSeat - old_val, 0);
         }
         $.ajax({
             url: base_url + 'seminar-planner/allocateSeat/details/' + eventID + '/' + levelID,
