@@ -56,6 +56,7 @@ $(document).ready(function () {
                     if (is_free_seat == 1) {
                         $(".total_free_seats").html(Math.max(0, total_free_seats - fee_seat_count));
                     }
+                    $(".max_participants").text(sum);
                     //getInitDataTable();
                 } else {
                     $me.val(old_val);
