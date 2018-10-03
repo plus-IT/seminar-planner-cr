@@ -64,18 +64,13 @@ class SeminarPlannerController extends Controller {
     }
 
     public function seminarSeatAllocation($eventId = 0) {
+        $plannedEventObj = PlannedEvent::where('id', $eventId)->first();
         $allocation_settings = $this->seminar_planning_repository->seminarSeatAllocation($eventId);
         $allocated_seats = AllocationSettings::where('parentID', '=', Auth::user()->LevelValueID)
                         ->where('eventID', '=', $eventId)->sum('allocatedSeat');
-        $free_seats = EventAvailableSeat::where('event_id', '=', $eventId)->sum('no_of_release_seat');
+        $free_seats = $plannedEventObj->no_of_release_seat; //EventAvailableSeat::where('event_id', '=', $eventId)->sum('no_of_release_seat');
         $free_seats = !empty($free_seats) ? $free_seats : 0;
-        $plannedEventObj = PlannedEvent::where('id', $eventId)->first([
-            'is_seats_allocated'
-        ]);
-//        echo "<pre>";
-//        print_r($allocation_settings);
-//        print_r($allocated_seats);
-//        exit;
+
         return view('seminar_planner.seat_allocation.seat_allocation_info', compact('allocation_settings', 'allocated_seats', 'free_seats', 'plannedEventObj'));
     }
 
@@ -733,11 +728,10 @@ class SeminarPlannerController extends Controller {
         return Datatables::of($allocation_data)
                         ->addColumn('seats', function ($allocation_data)use($user_level) {
                             if ($user_level == 3) {
-                              return  $allocation_data->allocatedSeat;
+                                return $allocation_data->allocatedSeat;
                             } else {
                                 return "<input type='number' name='allocation_seat_total[]' organization='" . $allocation_data->meta_value . "' class='allocation_seat_total' id='" . $allocation_data->LevelValuesID . "' value='" . $allocation_data->allocatedSeat . "' seatAllocated='" . $allocation_data->allocatedSeat . "' >";
                             }
-                            
                         })
                         ->addColumn('createdBy', function ($allocation_data) {
                             return $allocation_data->FirstName . " " . $allocation_data->LastName;
@@ -753,7 +747,8 @@ class SeminarPlannerController extends Controller {
 //        echo "<pre>";
 //        print_r($allocation_data);
 //        exit;
-        $get_free_seat = EventAvailableSeat::where('event_id', '=', $eventId)->sum('no_of_release_seat');
+        $plannedEventObj = PlannedEvent::find($eventId); //EventAvailableSeat::where('event_id', '=', $eventId)->sum('no_of_release_seat');
+        $get_free_seat = $plannedEventObj->no_of_release_seat;
         return view('seminar_planner.seat_allocation.seat_utilize_table', compact('allocation_data', 'get_free_seat', 'eventId'));
     }
 
