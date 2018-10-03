@@ -742,6 +742,9 @@ class SeminarPlannerController extends Controller {
                         ->addColumn('createdBy', function ($allocation_data) {
                             return $allocation_data->FirstName . " " . $allocation_data->LastName;
                         })
+                        ->addColumn('updated_at', function ($allocation_data) {
+                            return format_date($allocation_data->updated_at);
+                        })
                         ->make(true);
     }
 
