@@ -753,16 +753,13 @@ class SeminarPlannerController extends Controller {
     }
 
     public function saveSeatAllocation($eventid, $levelID) {
-        $allocation_model_values = AllocationSettings::groupBy('eventID')->where('eventID', '=', $eventid)->first([
-            DB::raw('GROUP_CONCAT(modelLevel) as modelLevel')
-        ]);
-        $event_attendees_data = EventAttendees::where('event_id', '=', $eventid);
-        if (Auth::user()->levelID == '1')
-            $event_attendees_data->whereIn('LevelValuesID', explode(",", !empty($allocation_model_values->modelLevel) ? $allocation_model_values->modelLevel : []));
-        else
-            $event_attendees_data->where('LevelValuesID', '=', $levelID);
-        $event_attendees = $event_attendees_data->count();
-        if ($event_attendees > Input::get('allocatedSeat')) {
+        $child_attendeess=0;
+	$getTotalSeat=AllocationSettings::where('eventID', '=', $eventid)->where('modelLevel', '=', $levelID)->first();
+	if(!empty($getTotalSeat->modelLevel)){
+	$child_attendeess=EventAttendees::join('allocation_setting','allocation_setting.modelLevel','=','event_attendees.LevelValuesID')
+				->where('eventID', '=', $eventid)->where('parentID','=',$getTotalSeat->modelLevel)->count();
+	}
+         if($child_attendeess > Input::get('allocatedSeat')) {
             return Response::json([
                         "type" => "error",
                         "message" => CustomFunction::customTrans("general.participant_is_already_assigned_then_given_seat_number")

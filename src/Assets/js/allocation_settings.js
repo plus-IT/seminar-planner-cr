@@ -13,6 +13,7 @@ $(document).ready(function () {
         var max_participants = parseFloat($(".max_participants").text());
         var total_free_seats = parseFloat($(".total_free_seats").text());
         var total_max_participants = max_participants + total_free_seats;
+        var still_available_seats = parseFloat($(".total_free_seats").text());
         var sum = 0;
         var fee_seat_count = 0;
         var old_val = $(this).attr('seatallocated');
@@ -32,8 +33,11 @@ $(document).ready(function () {
             return 'false';
         }
         if (sum > max_participants) {
-            is_free_seat = 1;
-            fee_seat_count = Math.max(allocatedSeat - old_val, 0);
+            if (still_available_seats < allocatedSeat) {
+                is_free_seat = 1;
+                let toal_seats = allocatedSeat - still_available_seats - old_val;
+                fee_seat_count = Math.max(toal_seats, 0);
+            }
         }
         $.ajax({
             url: base_url + 'seminar-planner/allocateSeat/details/' + eventID + '/' + levelID,
@@ -57,7 +61,7 @@ $(document).ready(function () {
                         $(".total_free_seats").html(Math.max(0, total_free_seats - fee_seat_count));
                         $(".max_participants").text(sum);
                     }
-                    
+
                     //getInitDataTable();
                 } else {
                     $me.val(old_val);
@@ -197,7 +201,7 @@ function changeSeatingStatus(seat_status, event_id, thisButton) {
 
             notify(data.type, data.message);
 
-//            thisButton.parents('.seat_allocation_status').css('display', 'none');
+            //            thisButton.parents('.seat_allocation_status').css('display', 'none');
             if (seat_status == '1') {
                 $("#tab_seminar_seat_allocation").html("");
                 $("[data-target='#tab_seminar_seat_allocation']").trigger('click');
