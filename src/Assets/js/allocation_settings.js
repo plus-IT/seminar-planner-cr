@@ -13,10 +13,10 @@ $(document).ready(function () {
         var max_participants = parseFloat($(".max_participants").text());
         var total_free_seats = parseFloat($(".total_free_seats").text());
         var total_max_participants = max_participants + total_free_seats;
-        var still_available_seats = parseFloat($(".total_free_seats").text());
+        var still_available_seats = parseFloat($(".still_available_seats").text());
         var sum = 0;
         var fee_seat_count = 0;
-        var old_val = $(this).attr('seatallocated');
+            var old_val = $(this).attr('seatallocated');
         var $me = $(this);
         var is_free_seat = 0;
 
