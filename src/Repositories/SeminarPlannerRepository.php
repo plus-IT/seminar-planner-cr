@@ -490,10 +490,8 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface {
             $event->whereIn('planned_by', $plannedBy);
         }
 
-        if (!Input::has("conflict_event_id")) {
-            $event->whereRaw("(`event_startdate` >= DATE('" . $start_date . "') and `event_startdate` <= DATE('" . $end_date . "')
-                                OR `event_enddate` >= DATE('" . $start_date . "') and `event_enddate` <= DATE('" . $end_date . "')
-                               )");
+         if (!Input::has("conflict_event_id")) {
+            $event->whereRaw("`event_startdate` >= DATE('" . $start_date . "') and `event_enddate` <= DATE('" . $end_date . "')");
         }
 
         // Check we need to show cancel seminars
