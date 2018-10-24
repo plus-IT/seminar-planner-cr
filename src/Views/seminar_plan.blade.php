@@ -448,7 +448,7 @@
                         </select>
                         <label for="seminarCancelReason" class="tooltips"
                                data-placement="{!! Config::get('myconfig.tooltip_placement') !!}"
-                               data-original-title="{!! trans('contact.ToolTipCancelReasonText') !!}">{!! Html::customTrans("contact.cancel_reason") !!}</label>
+                               data-original-title="{!! trans('contact.ToolTipCancelReasonText') !!}">{!! Html::customTrans("seminarPlanner.cancel_reason") !!}</label>
                     </div>
 </div>
 <div class="modal-footer">
