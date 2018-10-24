@@ -296,11 +296,11 @@ class SeminarPlannerController extends Controller {
         $all_system_user_obj = []; //User::where("UserID", "!=", Auth::user()->UserID);
         $all_event_category = [];
         $currentDate = ($id == "") ? Carbon::today()->format('Y-m-d') : PlannedEvent::where('id', $id)->first()->event_startdate;
-
+        $cancel_reason_list = \App\Models\CancelReason::all();
         // adding all translations of seminar planner
         $translations = \Lang::get('seminarPlanner');
 
-        return view('seminar_planner.seminar_planner', compact('seminar_days_new', 'holidays', 'all_trainer', 'all_regions', 'all_event_category', 'all_system_user', 'id', 'currentDate', 'translations'));
+        return view('seminar_planner.seminar_planner', compact('seminar_days_new', 'cancel_reason_list', 'holidays', 'all_trainer', 'all_regions', 'all_event_category', 'all_system_user', 'id', 'currentDate', 'translations'));
     }
 
     public function getSeminarTable() {
@@ -441,8 +441,9 @@ class SeminarPlannerController extends Controller {
         $row_date = strtotime($event_obj->event_startdate);
         $today = strtotime(date('Y-m-d'));
 
-        if ($row_date > $today) {
+        if ($row_date >= $today) {
             $result = $this->seminar_planning_repository->cancelSeminar($eventId);
+            
             if (isset($result) && !empty($result)) {
                 // // Attach trigger
                 $data = PlannedEvent::getEventForSalesforceEntry($eventId);
@@ -753,13 +754,21 @@ class SeminarPlannerController extends Controller {
     }
 
     public function saveSeatAllocation($eventid, $levelID) {
-        $child_attendeess=0;
-	$getTotalSeat=AllocationSettings::where('eventID', '=', $eventid)->where('modelLevel', '=', $levelID)->first();
-	if(!empty($getTotalSeat->modelLevel)){
-	$child_attendeess=EventAttendees::join('allocation_setting','allocation_setting.modelLevel','=','event_attendees.LevelValuesID')
-				->where('eventID', '=', $eventid)->where('parentID','=',$getTotalSeat->modelLevel)->count();
-	}
-         if($child_attendeess > Input::get('allocatedSeat')) {
+        $child_attendeess = 0;
+        $getTotalSeat = AllocationSettings::where('eventID', '=', $eventid)->where('modelLevel', '=', $levelID)->first();
+        if (!empty($getTotalSeat->modelLevel)) {
+            $parent_data = AllocationSettings::where('eventID', '=', $eventid)->where('modelLevel', '=', $levelID)->with(['parent_allocation.getAttendeesByLevelValues', 'getAttendeesByLevelValues'])->first();
+            /* $child_attendeess=EventAttendees::join('allocation_setting','allocation_setting.modelLevel','=','event_attendees.LevelValuesID')
+              ->where('event_id', '=', $eventid)->where('parentID','=',$getTotalSeat->modelLevel)->get(); */
+            if (!empty($parent_data->parent_allocation->getAttendeesByLevelValues)) {
+                $child_attendeess = $parent_data->parent_allocation->getAttendeesByLevelValues->count();
+            }
+            if (!empty($parent_data->getAttendeesByLevelValues)) {
+                $child_attendeess = $parent_data->getAttendeesByLevelValues->count();
+            }
+        }
+
+        if ($child_attendeess > Input::get('allocatedSeat')) {
             return Response::json([
                         "type" => "error",
                         "message" => CustomFunction::customTrans("general.participant_is_already_assigned_then_given_seat_number")
@@ -948,6 +957,19 @@ class SeminarPlannerController extends Controller {
                         "message" => CustomFunction::customTrans("event.event_add_training_materlials_success"),
             ]);
         }
+    }
+
+    public function searchCancelReason() {
+        $inputAll = Input::all();
+        $cancel_reason_obj = \App\Models\CancelReason::query();
+        if (isset($inputAll['q']) && $inputAll['q'] != '') {
+            $cancel_reason_obj->where(function ($query) use ($inputAll) {
+                $query->where("cancel_reason.reason_en", "like", "%" . $inputAll['q'] . "%");
+                $query->orWhere("cancel_reason.reason_de", "like", "%" . $inputAll['q'] . "%");
+            });
+        }
+        $cancel_reason_data = $cancel_reason_obj->paginate(10);
+        return response()->json(['items' => $cancel_reason_data->toArray()['data'], 'pagination' => $cancel_reason_data->nextPageUrl() ? true : false]);
     }
 
 }

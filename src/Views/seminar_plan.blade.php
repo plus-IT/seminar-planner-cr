@@ -432,13 +432,24 @@
                 </div>
             </div>
             <div class="modal-body" style="">
-                <div class="textarea-note">
-                    <div class="form-group form-md-line-input required">
-<textarea class="form-control required" name="text" id="seminarCancelReason" rows="4" cols="86" placeholder="{!! Html::customTrans("seminarPlanner.writeReasonForCancelSeminar") !!}" maxlength="300"></textarea>
-<label for="text"></label>
-</div>
-
-</div>
+<div class="form-group form-md-line-input form-md-floating-label has-info">
+                        <select name="cancelReason" id="seminarCancelReason" alt="cancel_reason" template="list"
+                                tableType="cancel_reason" editView="CancelReason"
+                                class="addlookup table-group-action-input  form-control edited"
+                                >
+                            <option value=""></option>
+                            @if(!empty($cancel_reason_list))
+                            @foreach($cancel_reason_list as $val)
+                            <option value="{!! $val->id !!}" class="dropdown-capitalize"
+                                    >{!! (LaravelLocalization::getCurrentLocale() == 'en') ?  $val->reason_en : (!empty($val->reason_de) ? $val->reason_de : $val->reason_en ) !!}</option>
+                            @endforeach
+                            @endif
+                            <option value="createJob">{!! Html::customTrans("general.createNedit") !!}</option>
+                        </select>
+                        <label for="seminarCancelReason" class="tooltips"
+                               data-placement="{!! Config::get('myconfig.tooltip_placement') !!}"
+                               data-original-title="{!! trans('contact.ToolTipCancelReasonText') !!}">{!! Html::customTrans("contact.cancel_reason") !!}</label>
+                    </div>
 </div>
 <div class="modal-footer">
     <button type="button" id="btnCancelSeminar" class="btn default btnCancelSeminar"
@@ -449,6 +460,7 @@
 </div>
 </div>
 </div>
+>
 
 <!-- reason for move confirm seminar -->
 <div class="modal fade " id="seminarMove" tabindex="-1" role="" aria-hidden="true" >

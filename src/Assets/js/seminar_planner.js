@@ -328,6 +328,9 @@ $(document).ready(function () {
     $('#edit_seminar').on('hidden.bs.modal', function () {
         destroyEditors();
     });
+    $('#seminarCancellation').on('hidden.bs.modal', function () {
+        $("[name='cancelReason']").val("");
+    });
 
     $body.on("mouseenter", ".getPopOverHere", function (e) {
         var current = $(this);
