@@ -432,10 +432,11 @@
                 </div>
             </div>
             <div class="modal-body" style="">
-<div class="form-group form-md-line-input form-md-floating-label has-info">
+                
+                    <div class="form-group form-md-line-input form-md-floating-label has-info">
                         <select name="cancelReason" id="seminarCancelReason" alt="cancel_reason" template="list"
                                 tableType="cancel_reason" editView="CancelReason"
-                                class="addlookup table-group-action-input  form-control edited"
+                                class="addlookup table-group-action-input  form-control edited required"
                                 >
                             <option value=""></option>
                             @if(!empty($cancel_reason_list))
@@ -460,7 +461,7 @@
 </div>
 </div>
 </div>
->
+
 
 <!-- reason for move confirm seminar -->
 <div class="modal fade " id="seminarMove" tabindex="-1" role="" aria-hidden="true" >

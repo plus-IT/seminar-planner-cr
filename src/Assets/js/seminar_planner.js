@@ -3635,6 +3635,10 @@ function deleteSeminar($eventId) {
 // change the status of the seminar and store reason
 function markSeminarAsCancel($eventId) {
     var reasonForCancellation = $("#seminarCancelReason").val();
+    if(reasonForCancellation==""){
+        notify('error',validation_message);
+        return false;
+    }
     $.ajax({
         url: base_url + "seminar-planner/cancel-seminar/" + clickEventId,
         method: "POST",
