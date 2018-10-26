@@ -3659,6 +3659,7 @@ function markSeminarAsCancel($eventId) {
                 notify("success", seminarCancelSuccess);
                 trainerListForSeminar = data.trainers;
                 locationListForSeminar = data.locations;
+                
                 $("#calendar").fullCalendar('refetchEvents');
             } else {
                 notify("error", data.message);
@@ -3702,6 +3703,7 @@ function actionsAfterRecalculateDate() {
 // ASk to inform participant based on action and participant count
 function informLevel2User(users,participants) {
     level2UserList = users;
+    seminar_planner_participants=participants;
     bootbox.confirm({
         message: askToSendEmailToLevel2User,
         buttons: {
