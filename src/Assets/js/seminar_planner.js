@@ -3635,8 +3635,8 @@ function deleteSeminar($eventId) {
 // change the status of the seminar and store reason
 function markSeminarAsCancel($eventId) {
     var reasonForCancellation = $("#seminarCancelReason").val();
-    if(reasonForCancellation==""){
-        notify('error',validation_message);
+    if (reasonForCancellation == "") {
+        notify('error', validation_message);
         return false;
     }
     $.ajax({
@@ -3650,7 +3650,11 @@ function markSeminarAsCancel($eventId) {
             unBlockUI(".modal-content");
             $("#seminarCancellation").modal("hide");
             if (data.type == "success") {
-                askToInformParticipant(data.participants, "cancel-seminar");
+                if (user_level == 1) {
+                    informLevel2User()
+                } else {
+                    askToInformParticipant(data.participants, "cancel-seminar");
+                }
                 notify("success", seminarCancelSuccess);
                 trainerListForSeminar = data.trainers;
                 locationListForSeminar = data.locations;
