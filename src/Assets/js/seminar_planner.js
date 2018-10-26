@@ -3653,7 +3653,7 @@ function markSeminarAsCancel($eventId) {
                 if (user_level == 1) {
                     informLevel2User(data.users_list,data.participants);
                 } 
-                askToInformParticipant(data.participants, "cancel-seminar");
+                
                 
                 notify("success", seminarCancelSuccess);
                 trainerListForSeminar = data.trainers;
@@ -3699,7 +3699,7 @@ function actionsAfterRecalculateDate() {
 }
 
 // ASk to inform participant based on action and participant count
-function informLevel2User(users) {
+function informLevel2User(users,participants) {
     participantListForSeminar = users;
     bootbox.confirm({
         message: askToSendEmailToLevel2User,
@@ -3715,8 +3715,9 @@ function informLevel2User(users) {
         },
         callback: function (response) {
             if (response) {
-          
                 $(".informLevel2UserOnCancelSeminar").trigger("click");
+            }else{
+                askToInformParticipant(participants, "cancel-seminar");
             }
 
         }

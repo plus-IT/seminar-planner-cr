@@ -237,7 +237,7 @@
         <a href="javascript:;" style="display: none;"
            emailToSend = ""
            class="send-mail informLevel2UserOnCancelSeminar"
-           data-templateType="inform-participant-on-cancel-seminar" data-moduleType="seminar-planner">
+           data-templateType="inform-user-on-cancel-seminar" data-moduleType="seminar-planner">
         </a>
         <a href="javascript:;" style="display: none;"
            emailToSend = ""
