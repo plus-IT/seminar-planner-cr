@@ -11,6 +11,7 @@ var clickEvent;
 var $source = "";
 var html;
 var participantListForSeminar; // Use for inform particiant on cancel and move seminar
+var level2UserList; // Use for inform level2 users on cancel seminar
 var trainerListForSeminar; // Use for inform trainer on cancel and move seminar
 var locationListForSeminar; // Use for inform location on cancel and move seminar
 var newDropDate = false; // used when new event is droped and scheduled on next available day
@@ -3700,7 +3701,7 @@ function actionsAfterRecalculateDate() {
 
 // ASk to inform participant based on action and participant count
 function informLevel2User(users,participants) {
-    participantListForSeminar = users;
+    level2UserList = users;
     bootbox.confirm({
         message: askToSendEmailToLevel2User,
         buttons: {
