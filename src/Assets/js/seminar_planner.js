@@ -3651,7 +3651,7 @@ function markSeminarAsCancel($eventId) {
             $("#seminarCancellation").modal("hide");
             if (data.type == "success") {
                 if (user_level == 1) {
-                    informLevel2User()
+                    informLevel2User(levelt2_users);
                 } else {
                     askToInformParticipant(data.participants, "cancel-seminar");
                 }
@@ -3699,6 +3699,27 @@ function actionsAfterRecalculateDate() {
 }
 
 // ASk to inform participant based on action and participant count
+function informLevel2User(users){
+    participantListForSeminar = users;
+     bootbox.confirm({
+        message: askToSendEmailToLevel2User,
+        buttons: {
+            'cancel': {
+                label: cancel_button,
+                className: 'btn-default pull-right'
+            },
+            'confirm': {
+                label: ok_button,
+                className: 'btn-primary pull-right'
+            }
+        },
+        callback: function (response) {
+           $(".informParticipantOnCancelSeminar").trigger("click");
+          
+        }
+    });
+}
+
 function askToInformParticipant(participants, action) {
     var informParticipant = 0;
     var createTaskCancelTrainer = 0;
