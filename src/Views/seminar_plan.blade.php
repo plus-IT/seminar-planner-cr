@@ -236,6 +236,11 @@
         </a>
         <a href="javascript:;" style="display: none;"
            emailToSend = ""
+           class="send-mail informLevel2UserOnCancelSeminar"
+           data-templateType="inform-participant-on-cancel-seminar" data-moduleType="seminar-planner">
+        </a>
+        <a href="javascript:;" style="display: none;"
+           emailToSend = ""
            class="send-mail informParticipantOnChangeSeminar"
            data-templateType="inform-participant-on-change-date-seminar" data-moduleType="seminar-planner">
         </a>

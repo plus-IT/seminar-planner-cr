@@ -260,7 +260,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface {
         $event->blueprint_id = $inputData['blueprintEventId'];
         $event->event_status = 'draft';
         $event->external_id = null;
-        
+
 
         // Add event To planned event table
         $plannedEvents = new PlannedEvent();
@@ -490,7 +490,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface {
             $event->whereIn('planned_by', $plannedBy);
         }
 
-         if (!Input::has("conflict_event_id")) {
+        if (!Input::has("conflict_event_id")) {
             $event->whereRaw("`event_startdate` >= DATE('" . $start_date . "') and `event_enddate` <= DATE('" . $end_date . "')");
         }
 
@@ -1219,11 +1219,23 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface {
             $result["participants"] = $participants;
             $result["trainers"] = $trainers;
             $result["locations"] = $locations;
+            $result["users_list"] = $this->getLevel2UsersDetail($eventId);
             $result["message"] = trans("seminarPlanner.successSeminarCancellation");
             ;
         }
 
         return $result;
+    }
+
+    public function getLevel2UsersDetail($event_id) {
+        $level2_users = \App\Models\AllocationSettings::join('role', 'allocation_setting.modelLevel', '=', 'role.LevelValueID')
+                ->join('user_allocation_role', 'role.RoleID', '=', 'user_allocation_role.RoleID')
+                ->join('person', 'user_allocation_role.UserID', '=', 'person.UserID')
+                ->where('allocation_setting.parentID', '=', Auth::user()->LevelValueID)
+                ->where('allocation_setting.eventID', '=', $event_id)
+                ->get()
+                ->implode('PersonID', ",");
+        return implode(',', array_unique(explode(',', $level2_users)));
     }
 
     // Remove trainer from the seminar slot

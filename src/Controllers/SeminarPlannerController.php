@@ -443,7 +443,7 @@ class SeminarPlannerController extends Controller {
 
         if ($row_date >= $today) {
             $result = $this->seminar_planning_repository->cancelSeminar($eventId);
-            
+
             if (isset($result) && !empty($result)) {
                 // // Attach trigger
                 $data = PlannedEvent::getEventForSalesforceEntry($eventId);
@@ -971,5 +971,7 @@ class SeminarPlannerController extends Controller {
         $cancel_reason_data = $cancel_reason_obj->paginate(10);
         return response()->json(['items' => $cancel_reason_data->toArray()['data'], 'pagination' => $cancel_reason_data->nextPageUrl() ? true : false]);
     }
+
+   
 
 }

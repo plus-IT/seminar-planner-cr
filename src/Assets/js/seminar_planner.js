@@ -3651,10 +3651,10 @@ function markSeminarAsCancel($eventId) {
             $("#seminarCancellation").modal("hide");
             if (data.type == "success") {
                 if (user_level == 1) {
-                    informLevel2User(levelt2_users);
-                } else {
-                    askToInformParticipant(data.participants, "cancel-seminar");
-                }
+                    informLevel2User(data.users_list,data.participants);
+                } 
+                askToInformParticipant(data.participants, "cancel-seminar");
+                
                 notify("success", seminarCancelSuccess);
                 trainerListForSeminar = data.trainers;
                 locationListForSeminar = data.locations;
@@ -3699,9 +3699,9 @@ function actionsAfterRecalculateDate() {
 }
 
 // ASk to inform participant based on action and participant count
-function informLevel2User(users){
+function informLevel2User(users) {
     participantListForSeminar = users;
-     bootbox.confirm({
+    bootbox.confirm({
         message: askToSendEmailToLevel2User,
         buttons: {
             'cancel': {
@@ -3714,8 +3714,11 @@ function informLevel2User(users){
             }
         },
         callback: function (response) {
-           $(".informParticipantOnCancelSeminar").trigger("click");
+            if (response) {
           
+                $(".informLevel2UserOnCancelSeminar").trigger("click");
+            }
+
         }
     });
 }
