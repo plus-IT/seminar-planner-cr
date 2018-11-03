@@ -1113,11 +1113,12 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface {
         $seminar->event_status = "confirm";
         $seminar->confirm_by = Auth::user()->UserID;
         $seminar->confirm_at = date("Y-m-d");
-
+        
         if (!$seminar->save()) {
             $result["type"] = "error";
             $result["message"] = trans("general.error");
         } else {
+             \App\WorkflowManager\EventManager::trigger('send-email-to-trainer-on-event-confirmed', $seminar);
             $result["type"] = "success";
             $result["message"] = trans("seminarPlanner.successSeminarConfirmation");
         }
