@@ -16,6 +16,7 @@ var trainerListForSeminar; // Use for inform trainer on cancel and move seminar
 var locationListForSeminar; // Use for inform location on cancel and move seminar
 var newDropDate = false; // used when new event is droped and scheduled on next available day
 var saveClickCallback = false;
+var allEventTrainers;
 
 var currentDate;
 $body = $("body");
@@ -3579,12 +3580,37 @@ function confirmSeminar($eventId) {
             unBlockUI(".page-container");
             if (data.type == "success") {
                 notify("success", data.message);
+                allEventTrainers=data.trainers.join(",");
+                sendEmailToAllTrainers(data.trainers);
                 $("#calendar").fullCalendar('refetchEvents');
             } else if (data.type == "danger") {
                 getScheduleAndSlotForSeminar(eventId);
             } else {
                 notify("error", data.message);
             }
+        }
+    });
+}
+
+function sendEmailToAllTrainers() {
+    bootbox.confirm({
+        message: askToSendEmailToLevel2User,
+        buttons: {
+            'cancel': {
+                label: cancel_button,
+                className: 'btn-default pull-right'
+            },
+            'confirm': {
+                label: ok_button,
+                className: 'btn-primary pull-right'
+            }
+        },
+        callback: function (response) {
+            if (response) {
+                $(".sendemailtoalltrainers").trigger("click");
+            }
+            $("#calendar").fullCalendar('refetchEvents');
+
         }
     });
 }
@@ -3652,14 +3678,14 @@ function markSeminarAsCancel($eventId) {
             $("#seminarCancellation").modal("hide");
             if (data.type == "success") {
                 if (user_level == 1) {
-                    informLevel2User(data.users_list,data.participants);
-                } 
-                
-                
+                    informLevel2User(data.users_list, data.participants);
+                }
+
+
                 notify("success", seminarCancelSuccess);
                 trainerListForSeminar = data.trainers;
                 locationListForSeminar = data.locations;
-                
+
                 $("#calendar").fullCalendar('refetchEvents');
             } else {
                 notify("error", data.message);
@@ -3701,9 +3727,9 @@ function actionsAfterRecalculateDate() {
 }
 
 // ASk to inform participant based on action and participant count
-function informLevel2User(users,participants) {
+function informLevel2User(users, participants) {
     level2UserList = users;
-    seminar_planner_participants=participants;
+    seminar_planner_participants = participants;
     bootbox.confirm({
         message: askToSendEmailToLevel2User,
         buttons: {
@@ -3719,7 +3745,7 @@ function informLevel2User(users,participants) {
         callback: function (response) {
             if (response) {
                 $(".informLevel2UserOnCancelSeminar").trigger("click");
-            }else{
+            } else {
                 askToInformParticipant(participants, "cancel-seminar");
             }
 
@@ -3732,79 +3758,79 @@ function askToInformParticipant(participants, action) {
     var createTaskCancelTrainer = 0;
     var createTaskCancelLocation = 0;
     participantListForSeminar = participants;
-
+    askToInformTrainer();
     // if(participantListForSeminar.length > 0) {
-    bootbox.confirm({
-        message: askToCreateTaskToCancelTrainer,
-        buttons: {
-            'cancel': {
-                label: cancel_button,
-                className: 'btn-default pull-right'
-            },
-            'confirm': {
-                label: ok_button,
-                className: 'btn-primary pull-right'
-            }
-        },
-        callback: function (response) {
-            if (response == true) {
-                createTaskCancelTrainer = 1;
-            }
-            bootbox.confirm({
-                message: askToCreateTaskToCancelLocation,
-                buttons: {
-                    'cancel': {
-                        label: cancel_button,
-                        className: 'btn-default pull-right'
-                    },
-                    'confirm': {
-                        label: ok_button,
-                        className: 'btn-primary pull-right'
-                    }
-                },
-                callback: function (response) {
-                    if (response == true) {
-                        createTaskCancelLocation = 1;
-                    }
-                    // Call ajax to create task based on user input
-                    createTasksForSeminar(createTaskCancelTrainer, createTaskCancelLocation, action);
-                    bootbox.confirm({
-                        message: askToInformParticipantMessage,
-                        buttons: {
-                            'cancel': {
-                                label: cancel_button,
-                                className: 'btn-default pull-right'
-                            },
-                            'confirm': {
-                                label: ok_button,
-                                className: 'btn-primary pull-right'
-                            }
-                        },
-                        callback: function (response) {
-                            if (response == true) {
-                                if (participantListForSeminar.length > 0) {
-                                    informParticipant = 1;
-                                    if (action == 'cancel-seminar') {
-                                        $(".informParticipantOnCancelSeminar").trigger("click");
-                                    } else if (action == 'move-seminar') {
-                                        $(".informParticipantOnChangeSeminar").trigger("click");
-                                    }
-                                } else {
-                                    notify("warning", noParticipantRegisterWarning);
-                                }
-
-                            } else {
-                                askToInformTrainer();
-                            }
-                            // Call ajax to inform participants
-                            console.log("trigger event to popup to send email");
-                        }
-                    });
-                }
-            });
-
-        }
-    });
+    /*   bootbox.confirm({
+     message: askToCreateTaskToCancelTrainer,
+     buttons: {
+     'cancel': {
+     label: cancel_button,
+     className: 'btn-default pull-right'
+     },
+     'confirm': {
+     label: ok_button,
+     className: 'btn-primary pull-right'
+     }
+     },
+     callback: function (response) {
+     if (response == true) {
+     createTaskCancelTrainer = 1;
+     }
+     bootbox.confirm({
+     message: askToCreateTaskToCancelLocation,
+     buttons: {
+     'cancel': {
+     label: cancel_button,
+     className: 'btn-default pull-right'
+     },
+     'confirm': {
+     label: ok_button,
+     className: 'btn-primary pull-right'
+     }
+     },
+     callback: function (response) {
+     if (response == true) {
+     createTaskCancelLocation = 1;
+     }
+     // Call ajax to create task based on user input
+     createTasksForSeminar(createTaskCancelTrainer, createTaskCancelLocation, action);
+     bootbox.confirm({
+     message: askToInformParticipantMessage,
+     buttons: {
+     'cancel': {
+     label: cancel_button,
+     className: 'btn-default pull-right'
+     },
+     'confirm': {
+     label: ok_button,
+     className: 'btn-primary pull-right'
+     }
+     },
+     callback: function (response) {
+     if (response == true) {
+     if (participantListForSeminar.length > 0) {
+     informParticipant = 1;
+     if (action == 'cancel-seminar') {
+     $(".informParticipantOnCancelSeminar").trigger("click");
+     } else if (action == 'move-seminar') {
+     $(".informParticipantOnChangeSeminar").trigger("click");
+     }
+     } else {
+     notify("warning", noParticipantRegisterWarning);
+     }
+     
+     } else {
+     askToInformTrainer();
+     }
+     // Call ajax to inform participants
+     console.log("trigger event to popup to send email");
+     }
+     });
+     }
+     });
+     
+     }
+     });*/
     // }else{
     //    notify("warning", noParticipantRegisterWarning);
     //

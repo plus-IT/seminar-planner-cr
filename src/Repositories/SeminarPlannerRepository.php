@@ -1121,6 +1121,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface {
              \App\WorkflowManager\EventManager::trigger('send-email-to-trainer-on-event-confirmed', $seminar);
             $result["type"] = "success";
             $result["message"] = trans("seminarPlanner.successSeminarConfirmation");
+            $result["trainers"]=$seminar->getTrainerIds();
         }
 
 
