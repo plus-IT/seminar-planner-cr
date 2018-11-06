@@ -263,6 +263,8 @@ $(document).ready(function () {
 
     $body.on("click", ".seminar_details_for_portal", function (e) {
 
+
+        var $me = $(this);
         setTimeout(function () {
 
             var eventID = $(".eventID").val();
@@ -287,6 +289,10 @@ $(document).ready(function () {
                 },
                 success: function (data) {
                     unBlockUI(".modal-content");
+                    if ($me.attr('id') == 'confirm_seminar') {
+                        allEventTrainers = data.join(",");
+                        sendEmailToAllTrainers();
+                    }
                     $("#calendar").fullCalendar('refetchEvents');
                 }
             });
@@ -3580,7 +3586,7 @@ function confirmSeminar($eventId) {
             unBlockUI(".page-container");
             if (data.type == "success") {
                 notify("success", data.message);
-                allEventTrainers=data.trainers.join(",");
+                allEventTrainers = data.trainers.join(",");
                 sendEmailToAllTrainers(data.trainers);
                 $("#calendar").fullCalendar('refetchEvents');
             } else if (data.type == "danger") {
@@ -3594,7 +3600,7 @@ function confirmSeminar($eventId) {
 
 function sendEmailToAllTrainers() {
     bootbox.confirm({
-        message: askToSendEmailToLevel2User,
+        message: askToSendEmailAllTrainers,
         buttons: {
             'cancel': {
                 label: cancel_button,

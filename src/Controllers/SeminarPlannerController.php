@@ -89,7 +89,7 @@ class SeminarPlannerController extends Controller {
                 EventManager::trigger("create-campaigns", $data);
             }
 
-            return "true";
+            return $planed_obj->getTrainerIds();
         } else {
             return "false";
         }
