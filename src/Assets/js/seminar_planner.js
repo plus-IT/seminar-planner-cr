@@ -289,7 +289,7 @@ $(document).ready(function () {
                 },
                 success: function (data) {
                     unBlockUI(".modal-content");
-                    if ($me.attr('id') == 'confirm_seminar') {
+                    if ($me.attr('id') == 'confirm_seminar' && $me.is(':checked')) {
                         allEventTrainers = data.join(",");
                         sendEmailToAllTrainers();
                     }
