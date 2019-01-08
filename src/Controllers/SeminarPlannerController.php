@@ -261,7 +261,7 @@ class SeminarPlannerController extends Controller {
     public function getActivities($event_id = 0, User $user) {
         $id = Auth::user()->UserID;
         if ($event_id != 0) {
-            $activity_data = $this->seminar_planning_repository->getActivitiesByID($event_id, $id, $user->hasPermission('tasks.viewOther'));
+            $activity_data = $this->seminar_planning_repository->getActivitiesByID($event_id, $id, $user->hasPermission('seminarPlanner.viewOther'));
             return view('seminar_planner.activity.activity_info', compact('activity_data'));
         } else {
             return view('seminar_planner.activity.activity_info');
