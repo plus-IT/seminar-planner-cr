@@ -15,6 +15,7 @@ use Response;
 use App\Http\Requests\StoreUpdateActivityRequest;
 use App\Library\CustomFunction;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 
 
 /**
@@ -34,9 +35,17 @@ class PlannedTaskController extends Controller
      */
     public function __construct(PlannedTaskRepositoryInterface $task_repository)
     {
-        $this->middleware('acl:activity.create', ['only' => ['create', 'store']]);
-        $this->middleware('acl:activity.update', ['only' => ['edit', 'update']]);
-        $this->middleware('acl:activity.delete', ['only' => ['destroy']]);
+        $moduleName = explode('/',URL::previous());
+
+        if($moduleName[4] == 'home'){
+            $this->middleware('acl:tasks.editOther', ['only' => ['edit', 'update','create', 'store']]);
+            $this->middleware('acl:tasks.deleteOther', ['only' => ['destroy']]);
+        }else{
+            $this->middleware('acl:seminarPlanner.task', ['only' => ['show']]);
+            $this->middleware('acl:seminarPlanner.taskAdd', ['only' => ['create', 'store']]);
+            $this->middleware('acl:seminarPlanner.taskEdit', ['only' => ['edit', 'update']]);
+            $this->middleware('acl:seminarPlanner.taskDelete', ['only' => ['destroy']]);
+        }
         $this->task_repository = $task_repository;
     }
 
