@@ -139,24 +139,28 @@ class SeminarPlannerController extends Controller {
                     'external_id' => 'unique:tenant.planned_events,external_id,' . $eventId . ',' . $primaryKey
         ]);
 
-        if (!$validator->fails()) {
-            if (!empty($external_id)) {
+        if (!empty($external_id) && $external_id != 'undefined') {
+            if (!$validator->fails()) {
+
                 PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
                     'max_registration' => $max_registration, 'external_id' => $external_id, 'form_id' => $form_id]);
-            } else {
-                PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
-                    'max_registration' => $max_registration, 'form_id' => $form_id]);
-            }
 
+                return Response::json([
+                            "type" => "success"
+                ]);
+            } else {
+                $validationMsg = CustomFunction::customTrans("general.uniqueMessagePreText") . " " . CustomFunction::customTrans("lookupTable.external_id") . " " . CustomFunction::customTrans("general.uniqueExternalId_general");
+
+                return Response::json([
+                            "type" => "error",
+                            "message" => $validationMsg
+                ]);
+            }
+        } else {
+            PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
+                'max_registration' => $max_registration, 'form_id' => $form_id]);
             return Response::json([
                         "type" => "success"
-            ]);
-        } else {
-            $validationMsg = CustomFunction::customTrans("general.uniqueMessagePreText") . " " . CustomFunction::customTrans("lookupTable.external_id") . " " . CustomFunction::customTrans("general.uniqueExternalId_general");
-
-            return Response::json([
-                        "type" => "error",
-                        "message" => $validationMsg
             ]);
         }
     }
