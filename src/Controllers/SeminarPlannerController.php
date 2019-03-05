@@ -976,6 +976,14 @@ class SeminarPlannerController extends Controller {
         return response()->json(['items' => $cancel_reason_data->toArray()['data'], 'pagination' => $cancel_reason_data->nextPageUrl() ? true : false]);
     }
 
-   
+   public function saveEventRegion($event){
+       $event_region=Input::get('event_region');
+       $plannedObj=PlannedEvent::find($event);
+       
+       if(!empty($plannedObj->id)){
+        $plannedObj->event_region=$event_region;
+        $plannedObj->save();
+       }
+   }
 
 }

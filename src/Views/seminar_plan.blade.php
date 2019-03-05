@@ -217,6 +217,19 @@
                             </div>
 
                         </div>
+                        <div class="col-xs-6 col-md-4">
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">{!! Html::customTrans("seminarPlanner.event_region") !!}</label>
+                                    <div class="col-md-9">
+                                        <div class="form-group">
+                                            {!! Form::select2ajax('event_region',"",'filterselect table-group-action-input form-control filter', "" ,'event/getAllRBRegions',"",50)!!}
+    
+                                        </div>
+    
+                                    </div>
+                                </div>
+    
+                            </div>
                         <div class=" col-xs-6 col-md-4">
                             <label class="col-md-3 control-label"> </label>
                             <div class="form-group">

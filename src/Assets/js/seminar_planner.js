@@ -329,6 +329,7 @@ $(document).ready(function () {
                 $("#edit_seminar").modal("show");
                 $(".tooltips").tooltip();
                 $('[data-target=#tab_description]').trigger('click')
+                loadSelect2WithMacro();
             }
         });
     });
@@ -339,7 +340,9 @@ $(document).ready(function () {
     $('#seminarCancellation').on('hidden.bs.modal', function () {
         $("[name='cancelReason']").val("");
     });
-
+    $body.on('hidden.bs.modal',"#edit_seminar", function () {
+       $(".editSeminarData").html("");
+    })
     $body.on("mouseenter", ".getPopOverHere", function (e) {
         var current = $(this);
         $(this).css('cursor', 'pointer');

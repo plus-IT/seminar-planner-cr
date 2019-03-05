@@ -10,6 +10,7 @@ Route::group(['prefix' => (env('APP_ENV') === 'testing' ? 'en' : LaravelLocaliza
     Route::group(['middleware' => 'tenant_acess'], function () {
         Route::group(['middleware' => 'force.ssl'], function () {
             Route::group(['middleware' => 'auth'], function () {
+                Route::get('save_event_region/{event_id}', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@saveEventRegion');
                 Route::post('seminar-planner/export', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@exportToXml');
                 Route::get('seminar-planner/exportlist', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@exportList');
                 Route::get('seminar_planned/seat_status/{seat_status}/{event_id}', 'Ptlyash\SeminarPlannerCR\Controllers\SeminarPlannerController@changeSeatingMethod');

@@ -78,7 +78,8 @@ function PrepareFilterUrl() {
         "&event_category_id=" + $("[name=event_category]").val() +
         "&trainer_id=" + $("[name=trainer]").val() +
         "&planned_by=" + $("[name=planned_by]").val() +
-        "&status=" + $("[name=event_status]").val();
+        "&status=" + $("[name=event_status]").val()+
+        "&event_region=" + $("[name=event_region]").val();
     return url;
 }
 
