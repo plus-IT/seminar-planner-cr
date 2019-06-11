@@ -218,7 +218,7 @@
 
                         </div>
                         <div class="col-xs-6 col-md-4">
-                                <div class="form-group">
+                                <div class="form-group lineManager manager-auto-select">
                                     <label class="col-md-3 control-label">{!! Html::customTrans("seminarPlanner.event_region") !!}</label>
                                     <div class="col-md-9">
                                         <div class="form-group">
