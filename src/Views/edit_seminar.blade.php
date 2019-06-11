@@ -48,7 +48,7 @@
 
                 <div class="assign_to_other_div form-group lineManager manager-auto-select required">
                         <label class="col-md-4 control-label">{!! trans("events.event_region") !!} </label>
-                        {!! Form::select2ajax('event_region',!empty($event_data->event_region)?$event_data->event_region:'','table-group-action-input save_event_region form-control', trans("general.select") ,'event/getAllRBRegions',!empty($event_data->event_region)?$event_data->event_region:'',10,1)!!}
+                        {!! Form::select2ajax('event_region',!empty($event_data->event_region)?$event_data->event_region:'','table-group-action-input save_event_region form-control', trans("general.select") ,'event/getAllRBRegions',!empty($event_data->event_region)?$event_data->event_region:'',1,1)!!}
                 </div>
                 <div class="">
                     <div class="form-group form-md-line-input form-md-floating-label  required">
