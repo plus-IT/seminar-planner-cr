@@ -454,7 +454,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface {
             $color = "'#a94442'";
         }
         if (Input::has("event_region")  && Input::get("event_region") != '') {
-            $event->where('planned_events.event_region', explode(",",Input::get("event_region")));
+            $event->whereIn('planned_events.event_region', explode(",",Input::get("event_region")));
            
         }
 
