@@ -119,7 +119,7 @@ $limit = 5;
 
                         </ul>
                       </span>
-                         <button class="btn person-filter tooltips filter_trigger"
+                         <button class="btn tooltips filter_trigger"
                                 type="button"
                                 data-ele_id="personFilter" data-original-title="{!! Html::customTrans("general.filter") !!}">
                             <i class="listicon"></i></button>
