@@ -341,7 +341,7 @@ $(document).ready(function () {
         $("[name='cancelReason']").val("");
     });
     $body.on('hidden.bs.modal',"#edit_seminar", function () {
-       $(".editSeminarData").html("");
+       ////$(".editSeminarData").html("");
     })
     $body.on("mouseenter", ".getPopOverHere", function (e) {
         var current = $(this);
