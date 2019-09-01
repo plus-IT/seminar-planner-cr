@@ -230,6 +230,19 @@
                                 </div>
     
                             </div>
+                        <div class="col-xs-6 col-md-4">
+                            <div class="form-group lineManager manager-auto-select">
+                                <label class="col-md-3 control-label">{!! Html::customTrans("seminarPlanner.type_of_seminar") !!}</label>
+                                <div class="col-md-9">
+                                    <div class="form-group">
+                                        {!! Form::select2ajax('TechniqueID',"",'filterselect table-group-action-input form-control filter', "" ,'event/calender/getAllTypeOfSeminar',"",50)!!}
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
                         <div class=" col-xs-6 col-md-4">
                             <label class="col-md-3 control-label"> </label>
                             <div class="form-group">

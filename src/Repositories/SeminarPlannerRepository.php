@@ -493,10 +493,15 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface {
             $plannedBy = explode(",", Input::get("planned_by"));
             $event->whereIn('planned_by', $plannedBy);
         }
-
-        if (!Input::has("conflict_event_id")) {
-            $event->whereRaw("`event_startdate` >= DATE('" . $start_date . "') and `event_enddate` <= DATE('" . $end_date . "')");
+        if (Input::get("TechniqueID") != "null" && !empty(Input::get("TechniqueID"))) {
+            $techniqueID = explode(",", Input::get("TechniqueID"));
+            $event->whereIn('planned_events.TechniqueID', $techniqueID);
         }
+//          Code is duplicate
+//        Removed by : Bindesh
+//        if (!Input::has("conflict_event_id")) {
+//            $event->whereRaw("`event_startdate` >= DATE('" . $start_date . "') and `event_enddate` <= DATE('" . $end_date . "')");
+//        }
 
         // Check we need to show cancel seminars
         if ($seminarPlannerSetting->show_cancel_seminars == 0) {
