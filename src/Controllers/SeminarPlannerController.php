@@ -159,7 +159,7 @@ class SeminarPlannerController extends Controller {
             }
         } else {
             PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
-                'max_registration' => $max_registration, 'form_id' => $form_id]);
+                'max_registration' => $max_registration, 'form_id' => $form_id,'action_number'=>$action_number]);
             return Response::json([
                         "type" => "success"
             ]);
