@@ -239,14 +239,15 @@ $(document).ready(function () {
         setSeminarPlannerData(eventID, additionalData);
     });
 
-    $body.on("blur", "#max_registration , #min_registration, .external_id_save, #form_id", function (e) {
+    $body.on("blur", "#max_registration , #min_registration, .external_id_save, #form_id,#action_number", function (e) {
         var eventID = $(".eventID").val();
         var min_registration = $('#min_registration').val();
         var max_registration = $('#max_registration').val();
         var external_id = $('.external_id_save').val();
         var totalAttendees = $('#totalAttendees').val();
         var form_id = $('#form_id').val();
-        var additionalData = '?min_registration=' + min_registration + '&max_registration=' + max_registration + '&external_id=' + external_id + '&form_id=' + form_id;
+		var action_number=$("#action_number").val();
+        var additionalData = '?min_registration=' + min_registration + '&max_registration=' + max_registration + '&external_id=' + external_id + '&form_id=' + form_id+'&action_number='+action_number;
         if (parseInt(max_registration) < parseInt(totalAttendees) || parseInt(max_registration) == 0) {
             $('#max_registration').val(totalAttendees);
             max_registration = $('#max_registration').val();

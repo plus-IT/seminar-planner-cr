@@ -45,7 +45,14 @@
                     </div>
                     @yield('setMeOnWaitingList')
                 </form>
+				<div class="form-group form-md-line-input form-md-floating-label ">
 
+					<input tabindex="11" class="form-control  {!! !empty($event_data->action_number) ? 'edited' : ''  !!}"
+						   size="16" type="text" style="margin-right: 7px" name="action_number" id="action_number"
+						   value="@if(!empty($event_data->action_number)){!! $event_data->action_number !!}@endif"
+						   maxlength="15"/>
+					<label for="action_number">{!! Html::customTrans("event.action_number") !!}</label>
+				</div>
                 <div class="assign_to_other_div form-group lineManager manager-auto-select">
                        <label class="col-md-4 control-label">{!! trans("events.event_region") !!} </label>
                         {!! Form::select2ajax('event_region',!empty($event_data->event_region)?$event_data->event_region:'','table-group-action-input required save_event_region form-control', trans("general.select") ,'event/getAllRBRegions',!empty($event_data->event_region)?$event_data->event_region:'',1,1)!!}

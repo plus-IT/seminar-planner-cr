@@ -131,6 +131,7 @@ class SeminarPlannerController extends Controller {
     public function updatePlannedMinMaxData(Request $request, $eventId) {
         $min_registration = Input::get('min_registration');
         $max_registration = Input::get('max_registration');
+		$action_number=Input::get('action_number');
         $external_id = Input::get('external_id');
         $form_id = Input::get('form_id');
         $modal = 'App\\Models\\PlannedEvent';
@@ -143,7 +144,7 @@ class SeminarPlannerController extends Controller {
             if (!$validator->fails()) {
 
                 PlannedEvent::where('id', '=', $eventId)->update(['min_registration' => $min_registration,
-                    'max_registration' => $max_registration, 'external_id' => $external_id, 'form_id' => $form_id]);
+                    'max_registration' => $max_registration, 'external_id' => $external_id, 'form_id' => $form_id,'action_number'=>$action_number]);
 
                 return Response::json([
                             "type" => "success"
