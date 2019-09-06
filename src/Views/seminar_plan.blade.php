@@ -222,7 +222,7 @@
                                     <label class="col-md-3 control-label">{!! Html::customTrans("seminarPlanner.event_region") !!}</label>
                                     <div class="col-md-9">
                                         <div class="form-group">
-                                            {!! Form::select2ajax('event_region',"",'filterselect table-group-action-input form-control filter', "" ,'event/getAllRBRegions',"",50)!!}
+                                            {!! Form::select2ajax('event_region',(Auth::user()->IsSuperAdmin())?'':$LevelValueID,'filterselect table-group-action-input form-control filter', "" ,'event/getAllRBRegions',(Auth::user()->IsSuperAdmin())?'':$LevelValueID,50,1)!!}
     
                                         </div>
     
