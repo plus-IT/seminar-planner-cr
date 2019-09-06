@@ -50,7 +50,7 @@
 					<input tabindex="11" class="form-control  {!! !empty($event_data->action_number) ? 'edited' : ''  !!}"
 						   size="16" type="text" style="margin-right: 7px" name="action_number" id="action_number"
 						   value="@if(!empty($event_data->action_number)){!! $event_data->action_number !!}@endif"
-						   maxlength="15"/>
+						   />
 					<label for="action_number">{!! Html::customTrans("event.action_number") !!}</label>
 				</div>
                 <div class="assign_to_other_div form-group lineManager manager-auto-select">
