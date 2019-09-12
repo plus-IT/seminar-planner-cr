@@ -11,6 +11,7 @@ $(document).on("ready", function () {
         
         $(".filterselect ").select2('val', 'All');
         $('#event_select').select2('val', '');
+        $('#event_region').select2('val', '');
 
         initcalendar();
     });
