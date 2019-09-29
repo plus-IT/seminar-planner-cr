@@ -453,10 +453,17 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface {
             $event->where('planned_events.id', Input::get("conflict_event_id"));
             $color = "'#a94442'";
         }
+        if(Input::has('start') && Input::get('start')!=''){
+            $event->where('event_startdate','>=',Input::get('start'));
+        }
+        if(Input::has('end') && Input::get('end')!=''){
+            $event->where('event_enddate','<=',Input::get('end'));
+        }
         if (Input::has("event_region")  && Input::get("event_region") != '') {
             $event->whereIn('planned_events.event_region', explode(",",Input::get("event_region")));
            
         }
+
 
         if (Input::get("event_category_id") != "null" && !empty(Input::get("event_category_id"))) {
             $is_enable = \App\Accessories\FTM::isEnabled('seminar-multicategory-support');
