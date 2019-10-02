@@ -877,6 +877,7 @@ $(document).ready(function () {
         $("#SeminarTrainerId").select2("val", "");
         $("input#SeminarPlannedBy").select2("val", "");
         $('.seminar_planner_type').val('');
+        $("#event_region_filter").select2('data','');
         window.setTimeout(function () {
             $('#SeminarCategoryID').trigger('change');
         }, 1000);
@@ -884,7 +885,7 @@ $(document).ready(function () {
 
     });
 
-    $body.on("change", "#CompanyMainContactID,#SeminarCategoryID,#SeminarTrainerId,.seminar_planner_type,#SeminarPlannedBy", function (e) {
+    $body.on("change", "#CompanyMainContactID,#SeminarCategoryID,#SeminarTrainerId,.seminar_planner_type,#SeminarPlannedBy,#event_region", function (e) {
         e.preventDefault();
 
         var Data = generateFilterURL();
@@ -1649,10 +1650,11 @@ function generateFilterURL(no_notice) {
         var trainerId = $("#SeminarTrainerId").val();
         var seminar_planner_type = $(".seminar_planner_type option:selected").val();
         var seminar_planned_by = $('#SeminarPlannedBy').val();
+        var event_region = $('[name="event_region_filter"]').val();
         additionalData = "?search=" + $(".seminar-search-input").val() + "&sortby=" + sortby + "&sort_order=" + sort_order
                 + "&category_id=" + categoryname + "&seminarLocation=" + seminarLocation + "&trainerId="
-                + trainerId + "&is_planned=" + seminar_planner_type + "&planned_by=" + seminar_planned_by;
-
+                + trainerId + "&is_planned=" + seminar_planner_type + "&planned_by=" + seminar_planned_by+"&event_region="+event_region;
+console.log(additionalData)
         if (startOfdate != '' && endOfDate != '') {
             additionalData += "&start_date=" + startOfdate + "&end_date=" + endOfDate;
         }

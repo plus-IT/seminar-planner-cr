@@ -179,6 +179,21 @@ $limit = 5;
                                             <h4 class="panel-title">
                                                 <a class="accordion-toggle"
                                                    data-toggle="collapse"
+                                                   href="#event_region"
+                                                   data-parent="#accordion2">
+                                                    {!! Html::customTrans("seminarPlanner.event_region") !!} </a>
+                                            </h4>
+                                        </div>
+                                        <div id="event_region"
+                                             class="panel-collapse collapse">
+                                            <form>
+                                                {!! Form::select2ajax('event_region_filter',(Auth::user()->IsSuperAdmin())?'':$LevelValueID,' table-group-action-input form-control ', "" ,'event/getAllRBRegions',(Auth::user()->IsSuperAdmin())?'':$LevelValueID,50,1)!!}
+                                            </form>
+                                        </div>
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a class="accordion-toggle"
+                                                   data-toggle="collapse"
                                                    href="#trainer"
                                                    data-parent="#accordion2">
                                                     {!! Html::customTrans("seminarPlanner.trainer") !!} </a>

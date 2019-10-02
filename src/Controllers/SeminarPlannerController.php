@@ -310,6 +310,7 @@ class SeminarPlannerController extends Controller {
 
     public function getSeminarTable() {
 
+
         $all_data = $this->getAllDetails();
         return view('seminar_planner.seminar_list_table', $all_data);
     }
