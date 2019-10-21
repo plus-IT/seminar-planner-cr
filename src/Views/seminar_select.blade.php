@@ -187,7 +187,7 @@ $limit = 5;
                                         <div id="event_region"
                                              class="panel-collapse collapse">
                                             <form>
-                                                {!! Form::select2ajax('event_region_filter',(Auth::user()->IsSuperAdmin())?'':$LevelValueID,' table-group-action-input form-control ', "" ,'event/getAllRBRegions',(Auth::user()->IsSuperAdmin())?'':$LevelValueID,50,1)!!}
+                                                {!! Form::select2ajax('event_region_filter',$LevelValueID,' table-group-action-input form-control ', "" ,'event/getAllRBRegions',(Auth::user()->IsSuperAdmin())?'':$LevelValueID,50,1)!!}
                                             </form>
                                         </div>
                                         <div class="panel-heading">
