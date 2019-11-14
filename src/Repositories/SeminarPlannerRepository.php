@@ -469,12 +469,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             $event->where('planned_events.id', Input::get("conflict_event_id"));
             $color = "'#a94442'";
         }
-        if (Input::has('start') && Input::get('start') != '') {
-            $event->where('event_startdate', '>=', Input::get('start'));
-        }
-        if (Input::has('end') && Input::get('end') != '') {
-            $event->where('event_enddate', '<=', Input::get('end'));
-        }
+       
         if (Input::has("event_region") && Input::get("event_region") != '') {
             $event->whereIn('planned_events.event_region', explode(",", Input::get("event_region")));
 
@@ -532,6 +527,10 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
         }
 
         $event->groupBy('planned_events.id');
+
+         $event->whereRaw("(`event_startdate` >= DATE('" . $start_date ."') and `event_startdate` <= DATE('" . $end_date . "')
+        OR `event_enddate` >= DATE('" . $start_date ."') and `event_enddate` <= DATE('" . $end_date . "')
+       )");
 
         if ($plannedSeminarId != "")
             $event->where('planned_events.id', '=', $plannedSeminarId);

@@ -2283,7 +2283,7 @@ function initCalendarForPlanning() {
                 return false;
             }
             if (originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("0") >= 0 && originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("6") >= 0) {
-
+                    alert('inside if');return;
                 $(originalDragDateObj.event_schedule).each(function (key, val) {
 
                     if (days.length > 0) {
@@ -2295,30 +2295,30 @@ function initCalendarForPlanning() {
 
                     var weekdays = val.schedule.weekdays.split(",");
 
-                    if (val.schedule.weekdays) {
-                        console.log(val.schedule.weekdays.split(","))
-                        // Check if that day is weekend
-                        if (originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("0") >= 0 && originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("6") >= 0) {
-                            while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
-                                dropDay.setDate(dropDay.getDate() + 1);
-                            }
-                        } else {
-                            // Check if schedul has allow only weekends and globle weekends consideration settings is  off
-                            var weekdaysArray = val.schedule.weekdays.split(",");
-                            var isOtherWeekDays = $(weekdaysArray).not(["0", "6"]).get();
-                            if (isOtherWeekDays.length > 0) {
-                                while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || dropDay.getDay() == 0 || dropDay.getDay() == 6 || checkForHoliday(dropDay) == true) {
-                                    dropDay.setDate(dropDay.getDate() + 1);
-                                }
-                            } else {
-                                alert("Schedule has configure to occurred only on weekend but your global setting not allow to plan on weekends so we overwrite your weekend setting for this day.");
-                                while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
-                                    dropDay.setDate(dropDay.getDate() + 1);
-                                }
+                    // if (val.schedule.weekdays) {
+                    //     console.log(val.schedule.weekdays.split(","))
+                    //     // Check if that day is weekend
+                    //     if (originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("0") >= 0 && originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("6") >= 0) {
+                    //         while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
+                    //             dropDay.setDate(dropDay.getDate() + 1);
+                    //         }
+                    //     } else {
+                    //         // Check if schedul has allow only weekends and globle weekends consideration settings is  off
+                    //         var weekdaysArray = val.schedule.weekdays.split(",");
+                    //         var isOtherWeekDays = $(weekdaysArray).not(["0", "6"]).get();
+                    //         if (isOtherWeekDays.length > 0) {
+                    //             while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || dropDay.getDay() == 0 || dropDay.getDay() == 6 || checkForHoliday(dropDay) == true) {
+                    //                 dropDay.setDate(dropDay.getDate() + 1);
+                    //             }
+                    //         } else {
+                    //             alert("Schedule has configure to occurred only on weekend but your global setting not allow to plan on weekends so we overwrite your weekend setting for this day.");
+                    //             while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
+                    //                 dropDay.setDate(dropDay.getDate() + 1);
+                    //             }
 
-                            }
-                        }
-                    }
+                    //         }
+                    //     }
+                    // }
 
                     // add dropday into days array
                     days.push(dropDay);
@@ -2344,6 +2344,7 @@ function initCalendarForPlanning() {
                 insertBlueprintAsDraftEvent(dateAdd, "drop");
 
             } else if (weekendConsider != "1" && (dDate.getDay() == 0 || dDate.getDay() == 6)) {
+                
                 bootbox.confirm({
                     message: weekendWarningMessage,
                     buttons: {
@@ -2374,30 +2375,30 @@ function initCalendarForPlanning() {
 
                             var weekdays = val.schedule.weekdays.split(",");
 
-                            if (val.schedule.weekdays) {
-                                console.log(val.schedule.weekdays.split(","))
-                                // Check if that day is weekend
-                                if (weekendConsider == "1" || response == false) {
-                                    while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
-                                        dropDay.setDate(dropDay.getDate() + 1);
-                                    }
-                                } else {
-                                    // Check if schedul has allow only weekends and globle weekends consideration settings is  off
-                                    var weekdaysArray = val.schedule.weekdays.split(",");
-                                    var isOtherWeekDays = $(weekdaysArray).not(["0", "6"]).get();
-                                    if (isOtherWeekDays.length > 0) {
-                                        while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || dropDay.getDay() == 0 || dropDay.getDay() == 6 || checkForHoliday(dropDay) == true) {
-                                            dropDay.setDate(dropDay.getDate() + 1);
-                                        }
-                                    } else {
-                                        alert("Schedule has configure to occurred only on weekend but your global setting not allow to plan on weekends so we overwrite your weekend setting for this day.");
-                                        while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
-                                            dropDay.setDate(dropDay.getDate() + 1);
-                                        }
+                            // if (val.schedule.weekdays) {
+                            //     console.log(val.schedule.weekdays.split(","))
+                            //     // Check if that day is weekend
+                            //     if (weekendConsider == "1" || response == false) {
+                            //         while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
+                            //             dropDay.setDate(dropDay.getDate() + 1);
+                            //         }
+                            //     } else {
+                            //         // Check if schedul has allow only weekends and globle weekends consideration settings is  off
+                            //         var weekdaysArray = val.schedule.weekdays.split(",");
+                            //         var isOtherWeekDays = $(weekdaysArray).not(["0", "6"]).get();
+                            //         if (isOtherWeekDays.length > 0) {
+                            //             while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || dropDay.getDay() == 0 || dropDay.getDay() == 6 || checkForHoliday(dropDay) == true) {
+                            //                 dropDay.setDate(dropDay.getDate() + 1);
+                            //             }
+                            //         } else {
+                            //             alert("Schedule has configure to occurred only on weekend but your global setting not allow to plan on weekends so we overwrite your weekend setting for this day.");
+                            //             while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
+                            //                 dropDay.setDate(dropDay.getDate() + 1);
+                            //             }
 
-                                    }
-                                }
-                            }
+                            //         }
+                            //     }
+                            // }
 
                             // add dropday into days array
                             days.push(dropDay);
@@ -2424,6 +2425,7 @@ function initCalendarForPlanning() {
                     }
                 });
             } else {
+
                 $(originalDragDateObj.event_schedule).each(function (key, val) {
                     if (days.length > 0) {
                         var dropDay = new Date(days[key - 1].getTime());
@@ -2434,30 +2436,30 @@ function initCalendarForPlanning() {
 
                     var weekdays = val.schedule.weekdays.split(",");
 
-                    if (val.schedule.weekdays) {
-                        console.log(val.schedule.weekdays.split(","))
-                        // Check if that day is weekend
-                        if (weekendConsider == "1") {
-                            while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
-                                dropDay.setDate(dropDay.getDate() + 1);
-                            }
-                        } else {
-                            // Check if schedul has allow only weekends and globle weekends consideration settings is  off
-                            var weekdaysArray = val.schedule.weekdays.split(",");
-                            var isOtherWeekDays = $(weekdaysArray).not(["0", "6"]).get();
-                            if (isOtherWeekDays.length > 0) {
-                                while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || dropDay.getDay() == 0 || dropDay.getDay() == 6 || checkForHoliday(dropDay) == true) {
-                                    dropDay.setDate(dropDay.getDate() + 1);
-                                }
-                            } else {
-                                alert("Schedule has configure to occurred only on weekend but your global setting not allow to plan on weekends so we overwrite your weekend setting for this day.");
-                                while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
-                                    dropDay.setDate(dropDay.getDate() + 1);
-                                }
+                    // if (val.schedule.weekdays) {
+                    //     console.log(val.schedule.weekdays.split(","))
+                    //     // Check if that day is weekend
+                    //     if (weekendConsider == "1") {
+                    //         while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
+                    //             dropDay.setDate(dropDay.getDate() + 1);
+                    //         }
+                    //     } else {
+                    //         // Check if schedul has allow only weekends and globle weekends consideration settings is  off
+                    //         var weekdaysArray = val.schedule.weekdays.split(",");
+                    //         var isOtherWeekDays = $(weekdaysArray).not(["0", "6"]).get();
+                    //         if (isOtherWeekDays.length > 0) {
+                    //             while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || dropDay.getDay() == 0 || dropDay.getDay() == 6 || checkForHoliday(dropDay) == true) {
+                    //                 dropDay.setDate(dropDay.getDate() + 1);
+                    //             }
+                    //         } else {
+                    //             alert("Schedule has configure to occurred only on weekend but your global setting not allow to plan on weekends so we overwrite your weekend setting for this day.");
+                    //             while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
+                    //                 dropDay.setDate(dropDay.getDate() + 1);
+                    //             }
 
-                            }
-                        }
-                    }
+                    //         }
+                    //     }
+                    // }
 
                     // add dropday into days array
                     days.push(dropDay);
