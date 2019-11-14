@@ -469,7 +469,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
             $event->where('planned_events.id', Input::get("conflict_event_id"));
             $color = "'#a94442'";
         }
-       
+
         if (Input::has("event_region") && Input::get("event_region") != '') {
             $event->whereIn('planned_events.event_region', explode(",", Input::get("event_region")));
 
@@ -534,7 +534,7 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 
         if ($plannedSeminarId != "")
             $event->where('planned_events.id', '=', $plannedSeminarId);
-
+     
         $event->with(['plannedQualification' => function ($qur) {
             $qur->select(['id', 'name', 'start_date', 'end_date']);
         }]);

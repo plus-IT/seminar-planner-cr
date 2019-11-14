@@ -844,9 +844,10 @@ class SeminarPlannerController extends Controller {
     public function getTrainerList() {
 
         $search_cat = '';
+	    $role=\App\Models\Role::where('slug','=','trainer')->first();
         if (Input::has('q'))
             $search_cat = strtolower(Input::get('q'));
-        $trainers = Person::where("is_trainer", "1")
+        $trainers = Person::whereRaw('(find_in_set('.$role->RoleID.',person.RoleID))')
                 ->where(function ($query) use ($search_cat) {
                     $query->orWhere('person.FirstName', 'like', '%' . $search_cat . '%')
                     ->orWhere('person.LastName', 'like', '%' . $search_cat . '%')
