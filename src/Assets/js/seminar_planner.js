@@ -246,7 +246,7 @@ $(document).ready(function () {
         var external_id = $('.external_id_save').val();
         var totalAttendees = $('#totalAttendees').val();
         var form_id = $('#form_id').val();
-		var action_number=$("#action_number").val();
+        var action_number=$("#action_number").val();
         var additionalData = '?min_registration=' + min_registration + '&max_registration=' + max_registration + '&external_id=' + external_id + '&form_id=' + form_id+'&action_number='+action_number;
         if (parseInt(max_registration) < parseInt(totalAttendees) || parseInt(max_registration) == 0) {
             $('#max_registration').val(totalAttendees);
@@ -2022,7 +2022,7 @@ function initCalendarForPlanning() {
 
                         }
 
-
+                         var dropDay = new Date(date.getTime());
                         $(event.event_schedule).each(function (key, val) {
 
                             // check which day user has moves
@@ -2056,9 +2056,9 @@ function initCalendarForPlanning() {
                                     calculatedDay.SeminarChangeDay = "";
 
                                     // Check if drop-date is valid OR Find next valid date
-                                    var dropDay = new Date(date.getTime());
+                                   
                                     dropDay.setDate(dropDay.getDate() + (parseInt(val.schedule.duration_between_previous_day) + 1));
-
+                                    console.log('dropDay',dropDay)
                                     if (val.schedule.weekdays) {
                                         console.log(val.schedule.weekdays.split(","))
                                         // Check if that day is weekend
@@ -2159,6 +2159,7 @@ function initCalendarForPlanning() {
                                 } else {
                                     // Check if schedul has allow only weekends and globle weekends consideration settings is  off
                                     var weekdaysArray = val.schedule.weekdays.split(",");
+                                    var dropDay = new Date(date.getTime());
                                     var isOtherWeekDays = $(weekdaysArray).not(["0", "6"]).get();
                                     if (isOtherWeekDays.length > 0) {
                                         while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || dropDay.getDay() == 0 || dropDay.getDay() == 6 || checkForHoliday(dropDay) == true) {
@@ -2219,6 +2220,8 @@ function initCalendarForPlanning() {
                             }
                             calculatedDay.SeminarCurrentDate = moment(oldDates[key].start).format(app_date_format_js.toUpperCase());
                             calculatedDay.SeminarCurrentDay = moment(oldDates[key].start).format("dddd");
+                            calculatedDay.SeminarRecalculateDate = moment(dropDay).format(app_date_format_js.toUpperCase());
+                            calculatedDay.SeminarRecalculateDay = moment(dropDay).format("dddd");
                             maindate = oldDates[key].start;
                             date = dropDay;
                         }
@@ -2226,8 +2229,8 @@ function initCalendarForPlanning() {
                         var copiedEventObject = new Object();
                         copiedEventObject.title = event.event_name + " - " + slot_days + " - " + val.schedule.event_days;
                         copiedEventObject.event_name = event.event_name;
-                        copiedEventObject.start = maindate;
-                        copiedEventObject.end = maindate;
+                        copiedEventObject.start = date;
+                        copiedEventObject.end = date;
                         copiedEventObject.color = event.color;
                         copiedEventObject.allDay = allDay;
                         copiedEventObject.id = event.event_id + "-" + val.schedule.id;
