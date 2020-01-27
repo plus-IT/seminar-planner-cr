@@ -2286,7 +2286,7 @@ function initCalendarForPlanning() {
                 return false;
             }
             if (originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("0") >= 0 && originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("6") >= 0) {
-                    alert('inside if');return;
+                  
                 $(originalDragDateObj.event_schedule).each(function (key, val) {
 
                     if (days.length > 0) {
