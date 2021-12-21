@@ -246,8 +246,8 @@ $(document).ready(function () {
         var external_id = $('.external_id_save').val();
         var totalAttendees = $('#totalAttendees').val();
         var form_id = $('#form_id').val();
-        var action_number=$("#action_number").val();
-        var additionalData = '?min_registration=' + min_registration + '&max_registration=' + max_registration + '&external_id=' + external_id + '&form_id=' + form_id+'&action_number='+action_number;
+        var action_number = $("#action_number").val();
+        var additionalData = '?min_registration=' + min_registration + '&max_registration=' + max_registration + '&external_id=' + external_id + '&form_id=' + form_id + '&action_number=' + action_number;
         if (parseInt(max_registration) < parseInt(totalAttendees) || parseInt(max_registration) == 0) {
             $('#max_registration').val(totalAttendees);
             max_registration = $('#max_registration').val();
@@ -341,8 +341,8 @@ $(document).ready(function () {
     $('#seminarCancellation').on('hidden.bs.modal', function () {
         $("[name='cancelReason']").val("");
     });
-    $body.on('hidden.bs.modal',"#edit_seminar", function () {
-       ////$(".editSeminarData").html("");
+    $body.on('hidden.bs.modal', "#edit_seminar", function () {
+        ////$(".editSeminarData").html("");
     })
     $body.on("mouseenter", ".getPopOverHere", function (e) {
         var current = $(this);
@@ -376,7 +376,7 @@ $(document).ready(function () {
                     $.ajax({
                         url: base_url + 'seminar-planner/schedule/' + $href,
                         type: 'Delete',
-                        data: {'event_id': $event_id},
+                        data: { 'event_id': $event_id },
                         beforeSend: function () {
                             blockUI(".modal-content");
                         },
@@ -877,7 +877,7 @@ $(document).ready(function () {
         $("#SeminarTrainerId").select2("val", "");
         $("input#SeminarPlannedBy").select2("val", "");
         $('.seminar_planner_type').val('');
-        $("#event_region_filter").select2('data','');
+        $("#event_region_filter").select2('data', '');
         window.setTimeout(function () {
             $('#SeminarCategoryID').trigger('change');
         }, 1000);
@@ -1075,8 +1075,8 @@ $(document).ready(function () {
         $(".slotList").empty();
         // append schedule days
         $("#slotTemplate")
-                .tmpl(schedule.schedule.event_schedule_slot)
-                .appendTo(".slotList");
+            .tmpl(schedule.schedule.event_schedule_slot)
+            .appendTo(".slotList");
 
         $(".itemSlot").droppable({
             accept: ".itemTrainer, .itemRoom",
@@ -1139,13 +1139,13 @@ $(document).ready(function () {
                                 $(".scheduleList").empty();
                                 $(".slotList").empty();
                                 $("#scheduleTemplate")
-                                        .tmpl(data.plannedEvent.event_schedule)
-                                        .appendTo(".scheduleList");
+                                    .tmpl(data.plannedEvent.event_schedule)
+                                    .appendTo(".scheduleList");
 
                                 // append schedule days
                                 $("#slotTemplate")
-                                        .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
-                                        .appendTo(".slotList");
+                                    .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
+                                    .appendTo(".slotList");
 
                                 reassignDragDropEvent();
 
@@ -1380,8 +1380,8 @@ $(document).ready(function () {
                 unBlockUI(".modal-content");
                 $(".trainerList").html("");
                 $("#trainerListTemplate")
-                        .tmpl(data)
-                        .appendTo(".trainerList");
+                    .tmpl(data)
+                    .appendTo(".trainerList");
                 reassignDragDropEvent();
                 $(".scheduleListWrapper,.SlotListWrapper").css('height', $(".trainerlLocationListWrapper").height());
             }
@@ -1401,8 +1401,8 @@ $(document).ready(function () {
                 unBlockUI(".modal-content");
                 $(".locationList").html("");
                 $("#LocationListTemplate")
-                        .tmpl(data)
-                        .appendTo(".locationList");
+                    .tmpl(data)
+                    .appendTo(".locationList");
                 reassignDragDropEvent();
                 $(".scheduleListWrapper,.SlotListWrapper").css('height', $(".trainerlLocationListWrapper").height());
             }
@@ -1652,9 +1652,9 @@ function generateFilterURL(no_notice) {
         var seminar_planned_by = $('#SeminarPlannedBy').val();
         var event_region = $('[name="event_region_filter"]').val();
         additionalData = "?search=" + $(".seminar-search-input").val() + "&sortby=" + sortby + "&sort_order=" + sort_order
-                + "&category_id=" + categoryname + "&seminarLocation=" + seminarLocation + "&trainerId="
-                + trainerId + "&is_planned=" + seminar_planner_type + "&planned_by=" + seminar_planned_by+"&event_region="+event_region;
-console.log(additionalData)
+            + "&category_id=" + categoryname + "&seminarLocation=" + seminarLocation + "&trainerId="
+            + trainerId + "&is_planned=" + seminar_planner_type + "&planned_by=" + seminar_planned_by + "&event_region=" + event_region;
+        console.log(additionalData)
         if (startOfdate != '' && endOfDate != '') {
             additionalData += "&start_date=" + startOfdate + "&end_date=" + endOfDate;
         }
@@ -1690,8 +1690,8 @@ console.log(additionalData)
 
 function checkSlotConflit(event1, event2) {
     return event1.start < event2.start
-            ? checkConflict(event1, event2)
-            : checkConflict(event2, event1)
+        ? checkConflict(event1, event2)
+        : checkConflict(event2, event1)
 
     function checkConflict(first, second) {
         if (first.end > second.start) {
@@ -1911,8 +1911,8 @@ function getCalendarViewToPlannedSeminars() {
             if (data.type == "success") {
                 $("#bulePrintList").empty();
                 $("#bulePrintListTemplate")
-                        .tmpl(data.bluePrintSeminars)
-                        .appendTo("#bulePrintList");
+                    .tmpl(data.bluePrintSeminars)
+                    .appendTo("#bulePrintList");
 
                 $(".dd-item").draggable({
                     zIndex: 999,
@@ -1963,7 +1963,7 @@ function initCalendarForPlanning() {
             });
         },
         eventDrop: function (event, allDay, revertFunc, jsEvent, ui, view) {
-             originalDragDateObj = event;
+            originalDragDateObj = event;
             clickEventId = event.id;
             var CurrentDate = new Date();
             var date = event.start.toDate();
@@ -1985,16 +1985,16 @@ function initCalendarForPlanning() {
 
 
             var markup = "<tr>" +
-                    "<td>${SeminarDay}</td> " +
-                    "<td>${SeminarDayTitle}</td> " +
-                    "<td>${SeminarCurrentDate}</td> " +
-                    "<td>${SeminarCurrentDay}</td> " +
-                    "<td>${SeminarChangeDay}</td> " +
-                    "<td><input class='form-control form-control-inline recalculateDatePicker required'" +
-                    "size='16' type='text' name='begin'" +
-                    "value='${SeminarRecalculateDate}'/></td>" +
-                    "<td>${SeminarRecalculateDay}</td> " +
-                    "</tr>";
+                "<td>${SeminarDay}</td> " +
+                "<td>${SeminarDayTitle}</td> " +
+                "<td>${SeminarCurrentDate}</td> " +
+                "<td>${SeminarCurrentDay}</td> " +
+                "<td>${SeminarChangeDay}</td> " +
+                "<td><input class='form-control form-control-inline recalculateDatePicker required'" +
+                "size='16' type='text' name='begin'" +
+                "value='${SeminarRecalculateDate}'/></td>" +
+                "<td>${SeminarRecalculateDay}</td> " +
+                "</tr>";
 
             // Compile the markup as a named template
             $.template("daysCalculationBody", markup);
@@ -2106,7 +2106,7 @@ function initCalendarForPlanning() {
 
                         $(".daysCalculationBody").html("");
                         $.tmpl("daysCalculationBody", dayCalculation)
-                                .appendTo(".daysCalculationBody");
+                            .appendTo(".daysCalculationBody");
 
                         $("#daysCalculationPopup").modal("show");
 
@@ -2127,8 +2127,8 @@ function initCalendarForPlanning() {
                     // check which day user has moves
                     var calculatedDay = new Object();
                     if (parseInt(val.schedule.event_days) < parseInt(event.event_days)) {
-                        console.log("val.schedule.event_days===>",val.schedule.event_days);
-                        console.log("val.schedule.event_days===>",event.event_days);
+                        console.log("val.schedule.event_days===>", val.schedule.event_days);
+                        console.log("val.schedule.event_days===>", event.event_days);
                         calculatedDay.SeminarDay = val.schedule.event_days;
                         calculatedDay.SeminarDayTitle = event.event_name + " - " + slot_days + " - " + val.schedule.event_days;
                         calculatedDay.SeminarCurrentDate = moment(oldDates[key].start).format(app_date_format_js.toUpperCase());
@@ -2139,8 +2139,8 @@ function initCalendarForPlanning() {
 
                         dateAdd.push(oldDates[key]);
                     } else {
-                        console.log("val.schedule.event_days else===>",val.schedule.event_days);
-                        console.log("val.schedule.event_days else===>",event.event_days);
+                        console.log("val.schedule.event_days else===>", val.schedule.event_days);
+                        console.log("val.schedule.event_days else===>", event.event_days);
                         calculatedDay.SeminarDay = val.schedule.event_days;
                         calculatedDay.SeminarDayTitle = event.event_name + " - " + slot_days + " - " + val.schedule.event_days;
 
@@ -2215,10 +2215,10 @@ function initCalendarForPlanning() {
                                     }
                                 }
                             }
-//                            calculatedDay.SeminarRecalculateDate = moment(dropDay).format(app_date_format_js.toUpperCase());
-//                            calculatedDay.SeminarRecalculateDay = moment(dropDay).format("dddd");
-//                            
-//                          //Author: Ankit 
+                            //                            calculatedDay.SeminarRecalculateDate = moment(dropDay).format(app_date_format_js.toUpperCase());
+                            //                            calculatedDay.SeminarRecalculateDay = moment(dropDay).format("dddd");
+                            //                            
+                            //                          //Author: Ankit 
                             //For rescheduling only one planned schedule
                             calculatedDay.SeminarRecalculateDate = moment(dropDay).format(app_date_format_js.toUpperCase());
                             calculatedDay.SeminarRecalculateDay = moment(dropDay).format("dddd");
@@ -2231,8 +2231,8 @@ function initCalendarForPlanning() {
                         copiedEventObject.event_name = event.event_name;
                         //Author: Ankit 
                         //For rescheduling only one planned schedule
-//                        copiedEventObject.start = date;
-//                        copiedEventObject.end = date;
+                        //                        copiedEventObject.start = date;
+                        //                        copiedEventObject.end = date;
                         copiedEventObject.start = date;
                         copiedEventObject.end = date;
 
@@ -2253,7 +2253,7 @@ function initCalendarForPlanning() {
 
                 $(".daysCalculationBody").html("");
                 $.tmpl("daysCalculationBody", dayCalculation)
-                        .appendTo(".daysCalculationBody");
+                    .appendTo(".daysCalculationBody");
 
                 $("#daysCalculationPopup").modal("show");
 
@@ -2286,7 +2286,7 @@ function initCalendarForPlanning() {
                 return false;
             }
             if (originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("0") >= 0 && originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("6") >= 0) {
-                  
+
                 $(originalDragDateObj.event_schedule).each(function (key, val) {
 
                     if (days.length > 0) {
@@ -2298,30 +2298,30 @@ function initCalendarForPlanning() {
 
                     var weekdays = val.schedule.weekdays.split(",");
 
-                    // if (val.schedule.weekdays) {
-                    //     console.log(val.schedule.weekdays.split(","))
-                    //     // Check if that day is weekend
-                    //     if (originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("0") >= 0 && originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("6") >= 0) {
-                    //         while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
-                    //             dropDay.setDate(dropDay.getDate() + 1);
-                    //         }
-                    //     } else {
-                    //         // Check if schedul has allow only weekends and globle weekends consideration settings is  off
-                    //         var weekdaysArray = val.schedule.weekdays.split(",");
-                    //         var isOtherWeekDays = $(weekdaysArray).not(["0", "6"]).get();
-                    //         if (isOtherWeekDays.length > 0) {
-                    //             while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || dropDay.getDay() == 0 || dropDay.getDay() == 6 || checkForHoliday(dropDay) == true) {
-                    //                 dropDay.setDate(dropDay.getDate() + 1);
-                    //             }
-                    //         } else {
-                    //             alert("Schedule has configure to occurred only on weekend but your global setting not allow to plan on weekends so we overwrite your weekend setting for this day.");
-                    //             while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
-                    //                 dropDay.setDate(dropDay.getDate() + 1);
-                    //             }
+                    if (val.schedule.weekdays) {
+                        console.log(val.schedule.weekdays.split(","))
+                        // Check if that day is weekend
+                        if (originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("0") >= 0 && originalDragDateObj.event_schedule[0].schedule.weekdays.indexOf("6") >= 0) {
+                            while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
+                                dropDay.setDate(dropDay.getDate() + 1);
+                            }
+                        } else {
+                            // Check if schedul has allow only weekends and globle weekends consideration settings is  off
+                            var weekdaysArray = val.schedule.weekdays.split(",");
+                            var isOtherWeekDays = $(weekdaysArray).not(["0", "6"]).get();
+                            if (isOtherWeekDays.length > 0) {
+                                while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || dropDay.getDay() == 0 || dropDay.getDay() == 6 || checkForHoliday(dropDay) == true) {
+                                    dropDay.setDate(dropDay.getDate() + 1);
+                                }
+                            } else {
+                                alert("Schedule has configure to occurred only on weekend but your global setting not allow to plan on weekends so we overwrite your weekend setting for this day.");
+                                while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
+                                    dropDay.setDate(dropDay.getDate() + 1);
+                                }
 
-                    //         }
-                    //     }
-                    // }
+                            }
+                        }
+                    }
 
                     // add dropday into days array
                     days.push(dropDay);
@@ -2347,7 +2347,7 @@ function initCalendarForPlanning() {
                 insertBlueprintAsDraftEvent(dateAdd, "drop");
 
             } else if (weekendConsider != "1" && (dDate.getDay() == 0 || dDate.getDay() == 6)) {
-                
+
                 bootbox.confirm({
                     message: weekendWarningMessage,
                     buttons: {
@@ -2378,30 +2378,30 @@ function initCalendarForPlanning() {
 
                             var weekdays = val.schedule.weekdays.split(",");
 
-                            // if (val.schedule.weekdays) {
-                            //     console.log(val.schedule.weekdays.split(","))
-                            //     // Check if that day is weekend
-                            //     if (weekendConsider == "1" || response == false) {
-                            //         while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
-                            //             dropDay.setDate(dropDay.getDate() + 1);
-                            //         }
-                            //     } else {
-                            //         // Check if schedul has allow only weekends and globle weekends consideration settings is  off
-                            //         var weekdaysArray = val.schedule.weekdays.split(",");
-                            //         var isOtherWeekDays = $(weekdaysArray).not(["0", "6"]).get();
-                            //         if (isOtherWeekDays.length > 0) {
-                            //             while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || dropDay.getDay() == 0 || dropDay.getDay() == 6 || checkForHoliday(dropDay) == true) {
-                            //                 dropDay.setDate(dropDay.getDate() + 1);
-                            //             }
-                            //         } else {
-                            //             alert("Schedule has configure to occurred only on weekend but your global setting not allow to plan on weekends so we overwrite your weekend setting for this day.");
-                            //             while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
-                            //                 dropDay.setDate(dropDay.getDate() + 1);
-                            //             }
+                            if (val.schedule.weekdays) {
+                                console.log(val.schedule.weekdays.split(","))
+                                // Check if that day is weekend
+                                if (weekendConsider == "1" || response == false) {
+                                    while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
+                                        dropDay.setDate(dropDay.getDate() + 1);
+                                    }
+                                } else {
+                                    // Check if schedul has allow only weekends and globle weekends consideration settings is  off
+                                    var weekdaysArray = val.schedule.weekdays.split(",");
+                                    var isOtherWeekDays = $(weekdaysArray).not(["0", "6"]).get();
+                                    if (isOtherWeekDays.length > 0) {
+                                        while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || dropDay.getDay() == 0 || dropDay.getDay() == 6 || checkForHoliday(dropDay) == true) {
+                                            dropDay.setDate(dropDay.getDate() + 1);
+                                        }
+                                    } else {
+                                        alert("Schedule has configure to occurred only on weekend but your global setting not allow to plan on weekends so we overwrite your weekend setting for this day.");
+                                        while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
+                                            dropDay.setDate(dropDay.getDate() + 1);
+                                        }
 
-                            //         }
-                            //     }
-                            // }
+                                    }
+                                }
+                            }
 
                             // add dropday into days array
                             days.push(dropDay);
@@ -2439,30 +2439,30 @@ function initCalendarForPlanning() {
 
                     var weekdays = val.schedule.weekdays.split(",");
 
-                    // if (val.schedule.weekdays) {
-                    //     console.log(val.schedule.weekdays.split(","))
-                    //     // Check if that day is weekend
-                    //     if (weekendConsider == "1") {
-                    //         while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
-                    //             dropDay.setDate(dropDay.getDate() + 1);
-                    //         }
-                    //     } else {
-                    //         // Check if schedul has allow only weekends and globle weekends consideration settings is  off
-                    //         var weekdaysArray = val.schedule.weekdays.split(",");
-                    //         var isOtherWeekDays = $(weekdaysArray).not(["0", "6"]).get();
-                    //         if (isOtherWeekDays.length > 0) {
-                    //             while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || dropDay.getDay() == 0 || dropDay.getDay() == 6 || checkForHoliday(dropDay) == true) {
-                    //                 dropDay.setDate(dropDay.getDate() + 1);
-                    //             }
-                    //         } else {
-                    //             alert("Schedule has configure to occurred only on weekend but your global setting not allow to plan on weekends so we overwrite your weekend setting for this day.");
-                    //             while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
-                    //                 dropDay.setDate(dropDay.getDate() + 1);
-                    //             }
+                    if (val.schedule.weekdays) {
+                        console.log(val.schedule.weekdays.split(","))
+                        // Check if that day is weekend
+                        if (weekendConsider == "1") {
+                            while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
+                                dropDay.setDate(dropDay.getDate() + 1);
+                            }
+                        } else {
+                            // Check if schedul has allow only weekends and globle weekends consideration settings is  off
+                            var weekdaysArray = val.schedule.weekdays.split(",");
+                            var isOtherWeekDays = $(weekdaysArray).not(["0", "6"]).get();
+                            if (isOtherWeekDays.length > 0) {
+                                while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || dropDay.getDay() == 0 || dropDay.getDay() == 6 || checkForHoliday(dropDay) == true) {
+                                    dropDay.setDate(dropDay.getDate() + 1);
+                                }
+                            } else {
+                                alert("Schedule has configure to occurred only on weekend but your global setting not allow to plan on weekends so we overwrite your weekend setting for this day.");
+                                while (val.schedule.weekdays.indexOf(dropDay.getDay().toString()) == -1 || checkForHoliday(dropDay) == true) {
+                                    dropDay.setDate(dropDay.getDate() + 1);
+                                }
 
-                    //         }
-                    //     }
-                    // }
+                            }
+                        }
+                    }
 
                     // add dropday into days array
                     days.push(dropDay);
@@ -2592,7 +2592,7 @@ function insertBlueprintAsDraftEvent(blueprintEventObject, actionType) {
     $.ajax({
         url: base_url + "seminar-planner/insertBlueprintAsDraftEvent",
         method: "POST",
-        data: {"schedules": scheduleObjectArray, "blueprintEventId": originalDragDateObj.id, "actionType": actionType},
+        data: { "schedules": scheduleObjectArray, "blueprintEventId": originalDragDateObj.id, "actionType": actionType },
         beforeSend: function () {
             blockUI(".page-container");
         },
@@ -2665,18 +2665,18 @@ function initEditors() {
 
     CKEDITOR.inline('requirements_editor', {
         toolbarGroups: [
-            {name: 'others'},
-            {name: 'clipboard', groups: ['clipboard']},
+            { name: 'others' },
+            { name: 'clipboard', groups: ['clipboard'] },
             //{ name: 'editing', groups: [ 'find', 'selection', 'spellchecker' ] },
             //{ name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
-            {name: 'basicstyles', groups: ['basicstyles', 'list', 'cleanup', 'indent']},
-            {name: 'stylesonly', groups: ['Styles']},
+            { name: 'basicstyles', groups: ['basicstyles', 'list', 'cleanup', 'indent'] },
+            { name: 'stylesonly', groups: ['Styles'] },
             '/',
-            {name: 'paragraph', groups: ['align']},
-            {name: 'styles', groups: ['Format', 'Font', 'FontSize']},
-            {name: 'colors'}
+            { name: 'paragraph', groups: ['align'] },
+            { name: 'styles', groups: ['Format', 'Font', 'FontSize'] },
+            { name: 'colors' }
         ]
-    }, {width: 300});
+    }, { width: 300 });
 
     if (CKEDITOR.instances.content_editor) {
         CKEDITOR.instances.content_editor.destroy();
@@ -2684,18 +2684,18 @@ function initEditors() {
 
     CKEDITOR.inline('content_editor', {
         toolbarGroups: [
-            {name: 'others'},
-            {name: 'clipboard', groups: ['clipboard']},
+            { name: 'others' },
+            { name: 'clipboard', groups: ['clipboard'] },
             //{ name: 'editing', groups: [ 'find', 'selection', 'spellchecker' ] },
             //{ name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
-            {name: 'basicstyles', groups: ['basicstyles', 'list', 'cleanup', 'indent']},
-            {name: 'stylesonly', groups: ['Styles']},
+            { name: 'basicstyles', groups: ['basicstyles', 'list', 'cleanup', 'indent'] },
+            { name: 'stylesonly', groups: ['Styles'] },
             '/',
-            {name: 'paragraph', groups: ['align']},
-            {name: 'styles', groups: ['Format', 'Font', 'FontSize']},
-            {name: 'colors'}
+            { name: 'paragraph', groups: ['align'] },
+            { name: 'styles', groups: ['Format', 'Font', 'FontSize'] },
+            { name: 'colors' }
         ]
-    }, {width: 300});
+    }, { width: 300 });
 
     if (CKEDITOR.instances.overview_editor) {
         CKEDITOR.instances.overview_editor.destroy();
@@ -2703,18 +2703,18 @@ function initEditors() {
 
     CKEDITOR.inline('overview_editor', {
         toolbarGroups: [
-            {name: 'others'},
-            {name: 'clipboard', groups: ['clipboard']},
+            { name: 'others' },
+            { name: 'clipboard', groups: ['clipboard'] },
             //{ name: 'editing', groups: [ 'find', 'selection', 'spellchecker' ] },
             //{ name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
-            {name: 'basicstyles', groups: ['basicstyles', 'list', 'cleanup', 'indent']},
-            {name: 'stylesonly', groups: ['Styles']},
+            { name: 'basicstyles', groups: ['basicstyles', 'list', 'cleanup', 'indent'] },
+            { name: 'stylesonly', groups: ['Styles'] },
             '/',
-            {name: 'paragraph', groups: ['align']},
-            {name: 'styles', groups: ['Format', 'Font', 'FontSize']},
-            {name: 'colors'}
+            { name: 'paragraph', groups: ['align'] },
+            { name: 'styles', groups: ['Format', 'Font', 'FontSize'] },
+            { name: 'colors' }
         ]
-    }, {width: 300});
+    }, { width: 300 });
 
     if (CKEDITOR.instances.target_group_editor) {
         CKEDITOR.instances.target_group_editor.destroy();
@@ -2722,18 +2722,18 @@ function initEditors() {
 
     CKEDITOR.inline('target_group_editor', {
         toolbarGroups: [
-            {name: 'others'},
-            {name: 'clipboard', groups: ['clipboard']},
+            { name: 'others' },
+            { name: 'clipboard', groups: ['clipboard'] },
             //{ name: 'editing', groups: [ 'find', 'selection', 'spellchecker' ] },
             //{ name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
-            {name: 'basicstyles', groups: ['basicstyles', 'list', 'cleanup', 'indent']},
-            {name: 'stylesonly', groups: ['Styles']},
+            { name: 'basicstyles', groups: ['basicstyles', 'list', 'cleanup', 'indent'] },
+            { name: 'stylesonly', groups: ['Styles'] },
             '/',
-            {name: 'paragraph', groups: ['align']},
-            {name: 'styles', groups: ['Format', 'Font', 'FontSize']},
-            {name: 'colors'}
+            { name: 'paragraph', groups: ['align'] },
+            { name: 'styles', groups: ['Format', 'Font', 'FontSize'] },
+            { name: 'colors' }
         ]
-    }, {width: 300});
+    }, { width: 300 });
     for (instance in CKEDITOR.instances) {
         var editor = CKEDITOR.instances[instance];
         if (editor) {
@@ -3186,8 +3186,8 @@ function initSelectDropDownForEditDuplicate() {
 
 function checkSlotConflit(event1, event2) {
     return event1.start < event2.start
-            ? checkConflict(event1, event2)
-            : checkConflict(event2, event1)
+        ? checkConflict(event1, event2)
+        : checkConflict(event2, event1)
 
     function checkConflict(first, second) {
         if (first.end > second.start && (first.roomId == second.roomId || first.trainers == second.trainers)) {
@@ -3301,23 +3301,23 @@ function getScheduleAndSlotForSeminar($eventId) {
 
                 // append trainer list
                 $("#trainerListTemplate")
-                        .tmpl(data.trainers)
-                        .appendTo(".trainerList");
+                    .tmpl(data.trainers)
+                    .appendTo(".trainerList");
 
                 // append Locations
                 $("#LocationListTemplate")
-                        .tmpl(data.locations)
-                        .appendTo(".locationList");
+                    .tmpl(data.locations)
+                    .appendTo(".locationList");
 
                 // append schedule days
                 $("#scheduleTemplate")
-                        .tmpl(data.plannedEvent.event_schedule)
-                        .appendTo(".scheduleList");
+                    .tmpl(data.plannedEvent.event_schedule)
+                    .appendTo(".scheduleList");
 
                 // append schedule days
                 $("#slotTemplate")
-                        .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
-                        .appendTo(".slotList");
+                    .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
+                    .appendTo(".slotList");
 
                 reassignDragDropEvent();
 
@@ -3345,13 +3345,13 @@ function assignLocationToSchedule(dragElement, dropElement) {
                 $(".scheduleList").empty();
                 $(".slotList").empty();
                 $("#scheduleTemplate")
-                        .tmpl(data.plannedEvent.event_schedule)
-                        .appendTo(".scheduleList");
+                    .tmpl(data.plannedEvent.event_schedule)
+                    .appendTo(".scheduleList");
 
                 // append schedule days
                 $("#slotTemplate")
-                        .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
-                        .appendTo(".slotList");
+                    .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
+                    .appendTo(".slotList");
 
                 // Notify the messagee
                 notify("success", data.message);
@@ -3381,13 +3381,13 @@ function assignTrainerToSlot(dragElement, dropElement) {
                 $(".scheduleList").empty();
                 $(".slotList").empty();
                 $("#scheduleTemplate")
-                        .tmpl(data.plannedEvent.event_schedule)
-                        .appendTo(".scheduleList");
+                    .tmpl(data.plannedEvent.event_schedule)
+                    .appendTo(".scheduleList");
 
                 // append schedule days
                 $("#slotTemplate")
-                        .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
-                        .appendTo(".slotList");
+                    .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
+                    .appendTo(".slotList");
 
                 reassignDragDropEvent();
 
@@ -3420,13 +3420,13 @@ function assignRoomToSlot(roomId, dropElement) {
                 $(".scheduleList").empty();
                 $(".slotList").empty();
                 $("#scheduleTemplate")
-                        .tmpl(data.plannedEvent.event_schedule)
-                        .appendTo(".scheduleList");
+                    .tmpl(data.plannedEvent.event_schedule)
+                    .appendTo(".scheduleList");
 
                 // append schedule days
                 $("#slotTemplate")
-                        .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
-                        .appendTo(".slotList");
+                    .tmpl(data.plannedEvent.event_schedule[0].schedule.event_schedule_slot)
+                    .appendTo(".slotList");
 
                 reassignDragDropEvent();
 
@@ -3686,7 +3686,7 @@ function markSeminarAsCancel($eventId) {
     $.ajax({
         url: base_url + "seminar-planner/cancel-seminar/" + clickEventId,
         method: "POST",
-        data: {"cancelReason": reasonForCancellation},
+        data: { "cancelReason": reasonForCancellation },
         beforeSend: function () {
             blockUI(".modal-content");
         },
