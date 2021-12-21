@@ -528,8 +528,9 @@ class SeminarPlannerRepository implements SeminarPlannerRepositoryInterface
 
         $event->groupBy('planned_events.id');
 
-         $event->whereRaw("(`event_startdate` >= DATE('" . $start_date ."') and `event_startdate` <= DATE('" . $end_date . "')
-        OR `event_enddate` >= DATE('" . $start_date ."') and `event_enddate` <= DATE('" . $end_date . "')
+        $event->whereRaw("(`event_startdate` >= DATE('" . $start_date ."') and `event_startdate` <= DATE('" . $end_date . "')
+        OR `event_enddate` >= DATE('" . $start_date ."') and `event_enddate` <= DATE('" . $end_date . "') 
+         OR `event_startdate` <= DATE('" . $start_date ."') and `event_enddate` >= DATE('" . $end_date . "') 
        )");
 
         if ($plannedSeminarId != "")
